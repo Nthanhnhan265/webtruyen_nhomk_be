@@ -1,15 +1,15 @@
 //Require
-require('dotenv').config(); 
+require('dotenv').config();
 const path = require('path')
-const express = require('express'); 
+const express = require('express');
 const config = require('./config/config');
-const app = express(); 
-const api = require('./routes/api.js'); 
+const app = express();
+const api = require('./routes/api.js');
 const PORT = process.env.PORT
-const sequelize = require('./config/db_config.js'); 
+const sequelize = require('./config/db_config.js');
 // configuration: static files, json() and urlencoded()
-config(app,express); 
-app.use('/user',api)
-app.listen(PORT || 3001,()=>{
-    console.log(`server is running on ${PORT}`); 
+config(app, express);
+app.use('/api', api)
+app.listen(PORT || 3001, () => {
+    console.log(`server is running on ${PORT}`);
 })
