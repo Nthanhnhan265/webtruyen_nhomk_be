@@ -14,10 +14,21 @@
   "dependencies": {
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
+    "module-alias": "^2.2.3",
     "mysql2": "^3.11.3",
     "sequelize": "^6.37.4"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"
+  },
+  
+  "_moduleAliases": {
+    "@models": "src/models",
+    "@controllers": "src/controllers",
+    "@utils": "src/utils",
+    "@config" : "src/config",
+    "@services": "src/services"
   }
+
+
 }
