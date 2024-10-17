@@ -5,4 +5,5 @@ const config = (app,middleware)=>{
     app.use(middleware.json())
     app.use(middleware.urlencoded({extended:true}))
 }
+
 module.exports = config

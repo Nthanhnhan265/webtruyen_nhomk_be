@@ -1,3 +1,4 @@
+//Require
 require('dotenv').config(); 
 const path = require('path')
 const express = require('express'); 
@@ -5,6 +6,7 @@ const config = require('./config/config');
 const app = express(); 
 const api = require('./routes/api.js'); 
 const PORT = process.env.PORT
+const sequelize = require('./config/db_config.js'); 
 // configuration: static files, json() and urlencoded()
 config(app,express); 
 app.use('/user',api)
