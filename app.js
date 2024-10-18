@@ -1,6 +1,7 @@
 //Require
 require('dotenv').config()
 require('module-alias/register')
+const cors = require('cors')
 const path = require('path')
 const express = require('express')
 const config = require('./src/config/config.js')
