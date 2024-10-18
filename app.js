@@ -7,6 +7,7 @@ const express = require('express')
 const config = require('./src/config/config.js')
 const app = express()
 const userRouter = require('./src/routes/user.router.js')
+const authorUser = require('./src/routes/author.router.js')
 const { log } = require('console')
 const PORT = process.env.PORT
 // const sequelize = require('./src/config/db_config.js')
@@ -18,6 +19,7 @@ app.use(cors({ credentials: true, origin: true }))
 
 //middleware & router
 app.use('/api/users', userRouter)
+app.use('/api/', authorUser)
 
 app.listen(PORT || 3001, () => {
   console.log(`server is running on ${PORT}`)
