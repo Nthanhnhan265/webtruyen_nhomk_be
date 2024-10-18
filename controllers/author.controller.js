@@ -4,6 +4,8 @@ const authorService = require('../services/author.service');
 const createAuthor = async (req, res) => {
     try {
         const { author_name, description, slug } = req.body;
+        console.log("check create", req);
+
         const newAuthor = await authorService.createAuthor({ author_name, description, slug });
         res.status(201).json({ message: 'Author created successfully', author: newAuthor });
     } catch (error) {
@@ -23,8 +25,12 @@ const getAllAuthors = async (req, res) => {
 
 // Lấy chi tiết một tác giả
 const getAuthorById = async (req, res) => {
+    console.log("check get one");
+
     try {
         const author = await authorService.getAuthorById(req.params.id);
+        console.log(req);
+
         if (!author) return res.status(404).json({ message: 'Author not found' });
         res.status(200).json(author);
     } catch (error) {
