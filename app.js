@@ -12,6 +12,7 @@ const usermodel = require('./src/models/user.model.js')
 
 // configuration: static files, json() and urlencoded()
 config(app, express)
+app.use(cors({ credentials: true, origin: true }))
 
 //middleware & router
 app.use('/api/users', userRouter)
