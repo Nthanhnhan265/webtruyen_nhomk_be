@@ -1,6 +1,7 @@
 const User = require('@models/user.model')
 const createError = require('http-errors')
 const message = require('@root/message')
+const { where, or } = require('sequelize')
 // ==========================
 // User CRUD Functions
 // ==========================
@@ -35,7 +36,7 @@ async function createUser(user) {
  * Lấy danh sách tất cả người dùng.
  * @returns {Promise<Array>} - Trả về danh sách người dùng.
  */
-async function getAllUsers() {
+async function getAllUsers(sortBy = 'id', order = 'ASC') {
   return await User.findAll({
     attributes: [
       'id',
@@ -46,7 +47,7 @@ async function getAllUsers() {
       'status',
       'created_at',
     ],
-    order: ['id'],
+    order: [[sortBy, order]],
   })
 }
 
@@ -76,8 +77,45 @@ async function getUserByID(id) {
  * @param {Object} updatedData - Đối tượng chứa dữ liệu cập nhật.
  * @returns {Promise<Object>} - Trả về đối tượng người dùng đã được cập nhật.
  */
-async function updateUser(id, updatedData) {
-  // Logic để cập nhật người dùng
+async function updateUser(id, updateData) {
+  try {
+    const currentUser = await User.findByPk(id)
+    if (!currentUser) {
+      return {
+        error: createError(404, message.user.notFound),
+      }
+    }
+    const isChanged = Object.keys(updateData).some(
+      (key) => updateData[key] !== currentUser[key],
+    )
+    if (!isChanged) {
+      return {
+        message: message.generalErrors.NoUpdate,
+      }
+    }
+    const [affectedCount] = await User.update(updateData, { where: { id } })
+
+    if (affectedCount === 0) {
+      return {
+        message: message.generalErrors.NoUpdate,
+      }
+    }
+    return await User.findByPk(id)
+  } catch (error) {
+    if (error.name === 'SequelizeValidationError') {
+      throw createError(400, error.errors.map((err) => err.message).join(', '))
+    } else if (error.name === 'SequelizeUniqueConstraintError') {
+      const uqField = error.errors[0].path
+      if (uqField === 'email') {
+        throw createError(409, message.user.emailExisted)
+      } else if (uqField === 'username') {
+        throw createError(409, message.user.usernameExisted)
+      }
+    } else {
+      console.log(error)
+      throw createError(500, message.user.updateFailed)
+    }
+  }
 }
 
 // DELETE USER
@@ -86,8 +124,25 @@ async function updateUser(id, updatedData) {
  * @param {number} id - ID của người dùng cần xóa.
  * @returns {Promise<void>} - Không trả về giá trị.
  */
-async function deleteUser(id) {
-  // Logic để xóa người dùng
+async function deleteUserById(id) {
+  try {
+    const result = await User.destroy({
+      where: { id },
+    })
+    // Kiểm tra xem có bản ghi nào bị xóa không
+    if (!result) {
+      return {
+        error: createError(404, message.user.notFound),
+      }
+    }
+    return result // Có thể trả về thông tin nào đó nếu cần
+  } catch (error) {
+    // Kiểm tra lỗi khác và tạo ngoại lệ phù hợp
+    if (error.name === 'SequelizeDatabaseError') {
+      throw createError(400, 'Có lỗi với dữ liệu đầu vào') // Lỗi dữ liệu đầu vào
+    }
+    throw createError(500, error.message)
+  }
 }
 
 module.exports = {
@@ -95,5 +150,5 @@ module.exports = {
   getAllUsers,
   getUserByID,
   updateUser,
-  deleteUser,
+  deleteUserById,
 }

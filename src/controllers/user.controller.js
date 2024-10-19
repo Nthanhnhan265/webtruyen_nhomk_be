@@ -1,8 +1,10 @@
 const createHttpError = require('http-errors')
 const {
+  createUser,
   getAllUsers,
   getUserByID,
-  createUser,
+  updateUser,
+  deleteUserById,
 } = require('@services/user.service')
 const message = require('@root/message')
 
@@ -49,7 +51,6 @@ async function handleCreateUser(req, res, next) {
       links: [],
     })
   } catch (error) {
-    // console.log(error)
     next(error)
   }
 }
@@ -62,13 +63,38 @@ async function handleCreateUser(req, res, next) {
  * @param {Function} next - Hàm gọi tiếp theo trong middleware.
  * @returns {Promise<void>} - Không trả về giá trị.
  */
-async function handleGetUser(req, res, next) {
-  let data = (data = await getAllUsers())
-  return res.status(200).json({
-    success: true,
-    message: message.user.fetchSucess,
-    data: data,
-  })
+async function handleGetUsers(req, res, next) {
+  try {
+    // Các trường hợp sắp xếp hợp lệ
+    const validSortFields = ['id', 'username', 'email', 'createdAt']
+    // Các thứ tự hợp lệ
+    const validOrderValues = ['ASC', 'DESC']
+    const sortBy = req.query.sortBy || 'id'
+    const order = req.query.order || 'ASC'
+
+    // Kiểm tra xem sortBy có hợp lệ không
+    if (!validSortFields.includes(sortBy)) {
+      const err = new Error(message.generalErrors.invalidDataQuery)
+      err.status = 400
+      throw err
+    }
+    // Kiểm tra xem order có hợp lệ không
+    if (!validOrderValues.includes(order.toUpperCase())) {
+      const err = new Error(message.generalErrors.invalidDataQuery)
+      err.status = 400
+      throw err
+    }
+    let data = await getAllUsers(sortBy, order)
+    return res.status(200).json({
+      success: true,
+      message: message.user.fetchSucess,
+      data: data,
+      links: [],
+    })
+  } catch (error) {
+    console.log(error.message)
+    next(error)
+  }
 }
 
 /**
@@ -79,24 +105,91 @@ async function handleGetUser(req, res, next) {
  * @returns {Promise<void>} - Không trả về giá trị.
  */
 async function handleGetUserByID(req, res, next) {
-  const id = req.params.id
-  let data = await getUserByID(id)
-
-  // Kiểm tra xem người dùng có tồn tại không
-  if (!data) {
-    next(createHttpError(404, message.user.notFound))
+  try {
+    const id = req.params.id
+    let data = await getUserByID(id)
+    // Kiểm tra xem người dùng có tồn tại không
+    if (!data) {
+      next(createHttpError(404, message.user.notFound))
+    }
+    return res.status(200).json({
+      success: true,
+      message: message.user.fetchSucess,
+      data: data,
+      links: [],
+    })
+  } catch (error) {
+    next(error)
   }
+}
 
-  return res.status(200).json({
-    success: true,
-    message: message.user.fetchSucess,
-    data: data,
-    links: [],
-  })
+/**
+ * Xử lý yêu cầu lấy thông tin chi tiết của người dùng theo ID.
+ * @param {Object} req - Đối tượng yêu cầu.
+ * @param {Object} res - Đối tượng phản hồi.
+ * @param {Function} next - Hàm gọi tiếp theo trong middleware.
+ * @returns {Promise<void>} - Không trả về giá trị.
+ */
+async function handleUpdateUserByID(req, res, next) {
+  try {
+    const id = req.params.id
+    const newdata = req.body
+    const result = await updateUser(id, newdata)
+    if (result.error) {
+      next(result.error)
+    }
+    if (result.message) {
+      console.log(result.message)
+      return res.status(200).json({
+        success: true,
+        status: 200,
+        message: result.message,
+        data: null,
+        links: [],
+      })
+    }
+    return res.status(200).json({
+      success: true,
+      status: 200,
+      message: message.user.updateSuccess,
+      data: result,
+      links: [],
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+/**
+ * Xử lý yêu cầu xóa người dùng theo ID.
+ * @param {Object} req - Đối tượng yêu cầu.
+ * @param {Object} res - Đối tượng phản hồi.
+ * @param {Function} next - Hàm gọi tiếp theo trong middleware.
+ * @returns {Promise<void>} - Không trả về giá trị.
+ */
+async function handleDeleteUser(req, res, next) {
+  const id = req.params.id
+  try {
+    const result = await deleteUserById(id)
+    if (result.error) {
+      return next(result.error) // Gọi middleware xử lý lỗi với lỗi 404
+    }
+    return res.status(200).json({
+      success: true,
+      status: 200,
+      message: message.user.deleteSuccess,
+      data: [],
+      links: [],
+    })
+  } catch (error) {
+    return next(error)
+  }
 }
 
 module.exports = {
-  handleGetUser,
+  handleGetUsers,
   handleGetUserByID,
   handleCreateUser,
+  handleDeleteUser,
+  handleUpdateUserByID,
 }
