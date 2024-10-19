@@ -6,9 +6,21 @@ const createAuthor = async (authorData) => {
 };
 
 // Lấy tất cả tác giả
-const getAllAuthors = async () => {
-    return await Author.findAll();
+const getAllAuthors = async (sortOrder) => {
+    try {
+        const authors = await Author.findAll({
+            order: [
+                // ['author_name', sortOrder === 'desc' ? 'DESC' : 'ASC'], // Sort by author_name
+                ['author_name', sortOrder === 'desc' ? 'ASC' : 'DESC'], // Sort by author_name
+            ],
+        });
+        return authors;
+    } catch (error) {
+        console.error('Error fetching authors:', error);
+        throw error; // Handle the error appropriately
+    }
 };
+
 
 // Lấy tác giả theo ID
 const getAuthorById = async (id) => {
