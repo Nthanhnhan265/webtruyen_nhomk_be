@@ -7,9 +7,18 @@ module.exports = {
 
     usernameExisted: 'Tên người dùng đã tồn tại',
     emailExisted: 'Email đã tồn tại',
+
+    updateSuccess: 'Cập nhật người dùng thành công',
+    updateFailed: 'Cập nhật người dùng không thành công',
+
+    deleteSuccess: 'Xóa người dùng thành công',
+    deleteFailed: 'Xóa người dùng thất bại',
   },
   generalErrors: {
     notFound: 'Không tìm thấy tài nguyên',
     serverError: 'Có lỗi xảy ra',
+    dataInvalid: 'Dữ liệu không hợp lệ',
+    NoUpdate: 'Không có thông tin nào được cập nhật',
+    invalidDataQuery: 'Dữ liệu truy vấn không hợp lệ',
   },
 }
