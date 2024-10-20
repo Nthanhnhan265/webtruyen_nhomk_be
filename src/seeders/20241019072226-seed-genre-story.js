@@ -8,8 +8,8 @@ module.exports = {
         {
           genre_id: 1,
           story_id: 1,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          created_at: new Date(),
+          updated_at: new Date(),
         },
         // Thêm các mối quan hệ giữa genre và story khác tương tự...
       ],

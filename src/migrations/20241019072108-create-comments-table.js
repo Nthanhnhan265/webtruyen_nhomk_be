@@ -1,31 +1,41 @@
 'use strict'
+
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  async up(queryInterface, Sequelize) {
     await queryInterface.createTable('comments', {
       user_id: {
         type: Sequelize.INTEGER,
-        references: { model: 'users', key: 'id' },
+        allowNull: false,
       },
       chapter_id: {
         type: Sequelize.INTEGER,
-        references: { model: 'chapters', key: 'id' },
+        allowNull: false,
       },
       content: {
         type: Sequelize.TEXT,
+        allowNull: true,
       },
       created_at: {
         type: Sequelize.DATE,
-        defaultValue: Sequelize.fn('NOW'),
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       updated_at: {
         type: Sequelize.DATE,
-        defaultValue: Sequelize.fn('NOW'),
-        onUpdate: Sequelize.fn('NOW'),
+        defaultValue: Sequelize.literal(
+          'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+        ),
       },
-      primaryKey: ['user_id', 'chapter_id'],
+    })
+
+    // Thêm ràng buộc khóa chính sau khi tạo bảng
+    await queryInterface.addConstraint('comments', {
+      fields: ['user_id', 'chapter_id'],
+      type: 'primary key',
+      name: 'pk_comment', // Tên khóa chính
     })
   },
-  down: async (queryInterface, Sequelize) => {
+
+  async down(queryInterface) {
     await queryInterface.dropTable('comments')
   },
 }

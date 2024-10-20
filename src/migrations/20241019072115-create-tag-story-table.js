@@ -1,22 +1,31 @@
 'use strict'
+
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  async up(queryInterface, Sequelize) {
     await queryInterface.createTable('tag_story', {
       tag_id: {
         type: Sequelize.INTEGER,
-        references: { model: 'tags', key: 'id' },
+        allowNull: false,
       },
       story_id: {
         type: Sequelize.INTEGER,
-        references: { model: 'stories', key: 'id' },
+        allowNull: false,
       },
       description: {
         type: Sequelize.TEXT,
+        allowNull: true,
       },
-      primaryKey: ['tag_id', 'story_id'],
+    })
+
+    // Thêm ràng buộc khóa chính sau khi tạo bảng
+    await queryInterface.addConstraint('tag_story', {
+      fields: ['tag_id', 'story_id'],
+      type: 'primary key',
+      name: 'pk_tag_story', // Tên khóa chính
     })
   },
-  down: async (queryInterface, Sequelize) => {
+
+  async down(queryInterface) {
     await queryInterface.dropTable('tag_story')
   },
 }

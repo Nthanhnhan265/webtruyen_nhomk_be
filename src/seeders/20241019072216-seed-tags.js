@@ -8,8 +8,6 @@ module.exports = {
         {
           tag_name: 'Epic',
           tag_slug: 'epic',
-          createdAt: new Date(),
-          updatedAt: new Date(),
         },
         // Thêm các thẻ khác tương tự...
       ],

@@ -8,7 +8,7 @@ module.exports = {
         {
           user_id: 1,
           story_id: 1,
-          createdAt: new Date(),
+          created_at: new Date(),
         },
         // Thêm các mục yêu thích khác tương tự...
       ],

@@ -15,8 +15,8 @@ module.exports = {
           cover: 'cover1.jpg',
           keywords: 'keyword1, keyword2',
           slug: 'story-one',
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          created_at: new Date(),
+          updated_at: new Date(),
         },
         // Thêm các câu chuyện khác tương tự...
       ],

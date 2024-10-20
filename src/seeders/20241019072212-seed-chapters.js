@@ -13,8 +13,8 @@ module.exports = {
           views: 50,
           status: true,
           chapter_order: 1,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          created_at: new Date(),
+          updated_at: new Date(),
         },
         // Thêm các chương khác tương tự...
       ],

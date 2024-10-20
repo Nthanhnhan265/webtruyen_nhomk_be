@@ -1,34 +1,45 @@
 'use strict'
+
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  async up(queryInterface, Sequelize) {
     await queryInterface.createTable('reviews', {
       user_id: {
         type: Sequelize.INTEGER,
-        references: { model: 'users', key: 'id' },
+        allowNull: false,
       },
       story_id: {
         type: Sequelize.INTEGER,
-        references: { model: 'stories', key: 'id' },
+        allowNull: false,
       },
       star: {
         type: Sequelize.INTEGER,
-      },
-      comment: {
-        type: Sequelize.TEXT,
+        allowNull: true,
       },
       created_at: {
         type: Sequelize.DATE,
-        defaultValue: Sequelize.fn('NOW'),
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       updated_at: {
         type: Sequelize.DATE,
-        defaultValue: Sequelize.fn('NOW'),
-        onUpdate: Sequelize.fn('NOW'),
+        defaultValue: Sequelize.literal(
+          'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+        ),
       },
-      primaryKey: ['user_id', 'story_id'],
+      comment: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
+    })
+
+    // Thêm ràng buộc khóa chính sau khi tạo bảng
+    await queryInterface.addConstraint('reviews', {
+      fields: ['user_id', 'story_id'],
+      type: 'primary key',
+      name: 'pk_review', // Tên khóa chính
     })
   },
-  down: async (queryInterface, Sequelize) => {
+
+  async down(queryInterface) {
     await queryInterface.dropTable('reviews')
   },
 }

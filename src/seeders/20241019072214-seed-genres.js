@@ -9,8 +9,6 @@ module.exports = {
           genre_name: 'Action',
           description: 'Action genre description',
           slug: 'action',
-          createdAt: new Date(),
-          updatedAt: new Date(),
         },
         // Thêm các thể loại khác tương tự...
       ],

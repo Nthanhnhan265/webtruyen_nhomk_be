@@ -1,21 +1,26 @@
 'use strict'
+
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  async up(queryInterface, Sequelize) {
     await queryInterface.createTable('tags', {
       id: {
         type: Sequelize.INTEGER,
-        autoIncrement: true,
+        allowNull: false,
         primaryKey: true,
+        autoIncrement: true,
       },
       tag_name: {
         type: Sequelize.STRING(255),
+        allowNull: true,
       },
       tag_slug: {
         type: Sequelize.STRING(255),
+        allowNull: true,
       },
     })
   },
-  down: async (queryInterface, Sequelize) => {
+
+  async down(queryInterface) {
     await queryInterface.dropTable('tags')
   },
 }

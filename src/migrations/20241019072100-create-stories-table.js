@@ -1,24 +1,30 @@
+// migrations/20241019000003-create-story.js
 'use strict'
+
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  async up(queryInterface, Sequelize) {
     await queryInterface.createTable('stories', {
       id: {
         type: Sequelize.INTEGER,
-        autoIncrement: true,
+        allowNull: false,
         primaryKey: true,
+        autoIncrement: true,
       },
       status: {
         type: Sequelize.INTEGER,
+        allowNull: true,
       },
       author_id: {
         type: Sequelize.INTEGER,
-        references: { model: 'authors', key: 'id' },
+        allowNull: true,
       },
       description: {
         type: Sequelize.TEXT,
+        allowNull: true,
       },
       story_name: {
         type: Sequelize.STRING(255),
+        allowNull: true,
       },
       total_chapters: {
         type: Sequelize.INTEGER,
@@ -30,25 +36,30 @@ module.exports = {
       },
       cover: {
         type: Sequelize.STRING(255),
+        allowNull: true,
       },
       keywords: {
         type: Sequelize.TEXT,
+        allowNull: true,
+      },
+      created_at: {
+        type: Sequelize.DATE, // Thay đổi từ TIMESTAMP sang DATE
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+      updated_at: {
+        type: Sequelize.DATE, // Thay đổi từ TIMESTAMP sang DATE
+        defaultValue: Sequelize.literal(
+          'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+        ),
       },
       slug: {
         type: Sequelize.STRING(255),
-      },
-      created_at: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.fn('NOW'),
-      },
-      updated_at: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.fn('NOW'),
-        onUpdate: Sequelize.fn('NOW'),
+        allowNull: true,
       },
     })
   },
-  down: async (queryInterface, Sequelize) => {
+
+  async down(queryInterface) {
     await queryInterface.dropTable('stories')
   },
 }
