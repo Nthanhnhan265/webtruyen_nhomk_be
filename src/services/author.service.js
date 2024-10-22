@@ -7,44 +7,44 @@ const createAuthor = async (authorData) => {
 };
 
 
+
 const getAllAuthors = async (author_name, description, sortOrder, page, limit) => {
-    console.log("check author_name", author_name);
-    console.log("check description", description);
-    console.log("check sort", sortOrder);
-    console.log("check page", page);
-    console.log("check limit", limit);
-
     try {
-        const whereConditions = {};
+        const whereConditions = [];
 
+        // Construct where conditions if author_name or description are provided
         if (author_name) {
-            whereConditions.author_name = {
-                [Op.like]: `%${author_name}%`
-            };
+            whereConditions.push({
+                author_name: {
+                    [Op.like]: `%${author_name}%`
+                }
+            });
         }
 
         if (description) {
-            whereConditions.description = {
-                [Op.like]: `%${description}%`
-            };
+            whereConditions.push({
+                description: {
+                    [Op.like]: `%${description}%`
+                }
+            });
         }
+
         console.log(whereConditions);
 
         const authors = await Author.findAll({
-            where: {
-                [Op.or]: whereConditions,// Use Op.or to search for either condition
-            },
+            where: whereConditions.length > 0 ? { [Op.or]: whereConditions } : {}, // Use Op.or if conditions are present
             order: [
                 ['author_name', sortOrder === 'desc' ? 'DESC' : 'ASC'],
             ],
-            offset: (page - 1) * limit, // Tính toán offset cho phân trang
-            limit: limit, // Giới hạn số lượng hàng
+            offset: (page - 1) * limit, // Calculate offset for pagination
+            limit: limit, // Limit the number of rows returned
         });
 
-        return authors;
+        // Return an empty array if no authors are found
+        return authors.length > 0 ? authors : [];
     } catch (error) {
         console.error('Error fetching authors:', error);
-        throw error;
+        throw error; // Rethrow error to be handled upstream if needed
     }
 };
 
