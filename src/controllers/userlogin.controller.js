@@ -4,7 +4,11 @@ const jwt = require('jsonwebtoken'); // Thêm jsonwebtoken để tạo token
 
 // Đăng ký
 exports.register = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, confirmPassword} = req.body;
+
+  if (password !== confirmPassword) {
+    return res.status(400).json({ error: 'Password and confirm password do not match' });
+  }
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
