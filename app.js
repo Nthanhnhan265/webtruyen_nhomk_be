@@ -26,7 +26,7 @@ app.use(cors({ credentials: true, origin: true }))
 app.use('/api/users', userRouter)
 app.use('/api/', authorUser)
 app.use('/api/story/', story)
-app.use('/api/userregister' , userlogin)
+app.use('/api/userlogin' , userlogin)
 
 //Middleware: error handler
 app.use((req, res, next) => {
