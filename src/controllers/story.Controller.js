@@ -1,9 +1,9 @@
-const Story = require("../models/story.model");
+const storyService = require("../services/stories.service");
 
 // Create a new story
 exports.createStory = async (req, res) => {
   try {
-    const story = await Story.create(req.body);
+    const story = await storyService.createStory(req.body);
     res.status(201).json(story);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -13,7 +13,7 @@ exports.createStory = async (req, res) => {
 // Get all stories
 exports.getStories = async (req, res) => {
   try {
-    const stories = await Story.findAll();
+    const stories = await storyService.getStories();
     res.status(200).json(stories);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -23,7 +23,7 @@ exports.getStories = async (req, res) => {
 // Get a story by ID
 exports.getStoryById = async (req, res) => {
   try {
-    const story = await Story.findByPk(req.params.id);
+    const story = await storyService.getStoryById(req.params.id);
     if (!story) return res.status(404).json({ error: "Story not found" });
     res.status(200).json(story);
   } catch (error) {
@@ -34,11 +34,12 @@ exports.getStoryById = async (req, res) => {
 // Update a story
 exports.updateStory = async (req, res) => {
   try {
-    const [updated] = await Story.update(req.body, {
-      where: { id: req.params.id },
-    });
-    if (!updated) return res.status(404).json({ error: "Story not found" });
-    const updatedStory = await Story.findByPk(req.params.id);
+    const updatedStory = await storyService.updateStory(
+      req.params.id,
+      req.body
+    );
+    if (!updatedStory)
+      return res.status(404).json({ error: "Story not found" });
     res.status(200).json(updatedStory);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -48,9 +49,7 @@ exports.updateStory = async (req, res) => {
 // Delete a story
 exports.deleteStory = async (req, res) => {
   try {
-    const deleted = await Story.destroy({
-      where: { id: req.params.id },
-    });
+    const deleted = await storyService.deleteStory(req.params.id);
     if (!deleted) return res.status(404).json({ error: "Story not found" });
     res.status(204).send();
   } catch (error) {

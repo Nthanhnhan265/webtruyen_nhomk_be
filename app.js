@@ -12,6 +12,7 @@ const app = express();
 const userRouter = require("./src/routes/user.router.js");
 const authorUser = require("./src/routes/author.router.js");
 const story = require("./src/routes/stories.js");
+const chapterRoutes = require("./src/routes/chapter.routes.js");
 const { log } = require("console");
 const PORT = process.env.PORT;
 // const sequelize = require('./src/config/db_config.js')
@@ -25,6 +26,7 @@ app.use(cors({ credentials: true, origin: true }));
 app.use("/api/users", userRouter);
 app.use("/api/", authorUser);
 app.use("/api/story/", story);
+app.use("/api", chapterRoutes);
 
 //Middleware: error handler
 app.use((req, res, next) => {
