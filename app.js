@@ -13,6 +13,7 @@ const userRouter = require('./src/routes/user.router.js')
 const authorUser = require('./src/routes/author.router.js')
 const story = require('./src/routes/stories.js')
 const register = require('./src/routes/register.router.js')
+const login = require('./src/routes/login.router.js')
 const { log } = require('console')
 const PORT = process.env.PORT
 // const sequelize = require('./src/config/db_config.js')
@@ -27,6 +28,7 @@ app.use('/api/users', userRouter)
 app.use('/api/', authorUser)
 app.use('/api/story/', story)
 app.use('/api/register' , register)
+app.use('/api/login' , login)
 
 //Middleware: error handler
 app.use((req, res, next) => {

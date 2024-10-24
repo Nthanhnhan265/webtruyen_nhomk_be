@@ -63,7 +63,46 @@ async function registerUser(userData) {
     }
   }
   
+//   // ==========================
+// // User Login Service
+// // ==========================
 
+// /**
+//  * User login function.
+//  * @param {Object} loginData - User login data (email, password).
+//  * @returns {Promise<Object>} - Returns user info or an error.
+//  */
+// async function loginUser(loginData) {
+//   const { email, password } = loginData;
+
+//   // Check if the user exists
+//   const user = await User.findOne({ where: { email } });
+//   if (!user) {
+//     throw createError(401, 'Invalid email or password');
+//   }
+
+//   // Compare password with the hashed password
+//   const isMatch = await bcrypt.compare(password, user.password);
+//   if (!isMatch) {
+//     throw createError(401, 'Invalid email or password');
+//   }
+
+//   // Create JWT token
+//   const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
+//     expiresIn: '1h', // Token expires in 1 hour
+//   });
+
+//   return {
+//     success: true,
+//     message: 'Login successful!',
+//     data: {
+//       userId: user.id,
+//       username: user.username,
+//       email: user.email,
+//       token,
+//     },
+//   };
+// }
 module.exports = {
-  registerUser,
+  registerUser
 };
