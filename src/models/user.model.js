@@ -1,5 +1,7 @@
 const { Sequelize, DataTypes } = require('sequelize')
 const sequelize = require('@config/db_config.js')
+const bcrypt = require('bcrypt')
+const SALT_ROUNDS = 10
 const User = sequelize.define(
   'User',
   {
@@ -51,8 +53,17 @@ const User = sequelize.define(
     },
   },
   {
+    hooks: {
+      // Hash password before saving a new user
+      beforeCreate: async (user) => {
+        const salt = await bcrypt.genSalt(SALT_ROUNDS)
+        user.password = await bcrypt.hash(user.password, salt)
+      },
+    },
     // Other model options go here
   },
 )
-
+User.prototype.isRightPassword = async function (password) {
+  return bcrypt.compare(password, this.password)
+}
 module.exports = User

@@ -1,7 +1,8 @@
 const User = require('@models/user.model')
 const createError = require('http-errors')
 const message = require('@root/message')
-const { where, or } = require('sequelize')
+const { where, or, Op } = require('sequelize')
+
 // ==========================
 // User CRUD Functions
 // ==========================
@@ -36,8 +37,15 @@ async function createUser(user) {
  * Lấy danh sách tất cả người dùng.
  * @returns {Promise<Array>} - Trả về danh sách người dùng.
  */
-async function getAllUsers(sortBy = 'id', order = 'ASC') {
-  return await User.findAll({
+async function getUsers(
+  sortBy = 'id',
+  order = 'ASC',
+  page = 1,
+  limit = 10,
+  offset = 1,
+) {
+  const total = await User.count()
+  const data = await User.findAll({
     attributes: [
       'id',
       'avatar',
@@ -48,7 +56,73 @@ async function getAllUsers(sortBy = 'id', order = 'ASC') {
       'created_at',
     ],
     order: [[sortBy, order]],
+    limit: limit,
+    offset: offset,
   })
+  const pagination = {
+    total: total,
+    page: page,
+    limit: limit,
+    totalPages: Math.ceil(total / limit),
+  }
+  return { data, pagination }
+}
+
+/**
+ * Tìm kiếm người dùng theo từ khóa
+ * @param {string} keyword - Từ khóa tìm kiếm
+ * @param {string} [sortBy='id'] - Trường sắp xếp
+ * @param {string} [order='ASC'] - Thứ tự sắp xếp
+ * @param {number} [page=1] - Số trang
+ * @param {number} [limit=10] - Số lượng bản ghi trên mỗi trang
+ * @returns {Promise<{data: Array, pagination: Object}>} - Dữ liệu người dùng và thông tin phân trang
+ */
+async function searchUsers(
+  keyword,
+  sortBy = 'id',
+  order = 'ASC',
+  page = 1,
+  limit = 10,
+  offset = 1,
+) {
+  const total = await User.count({
+    where: {
+      [Op.or]: [
+        { username: { [Op.like]: `%${keyword}%` } },
+        { email: { [Op.like]: `%${keyword}%` } },
+      ],
+    },
+  })
+
+  const data = await User.findAll({
+    attributes: [
+      'id',
+      'avatar',
+      'username',
+      'email',
+      'role_id',
+      'status',
+      'created_at',
+    ],
+    where: {
+      [Op.or]: [
+        { username: { [Op.like]: `%${keyword}%` } },
+        { email: { [Op.like]: `%${keyword}%` } },
+      ],
+    },
+    order: [[sortBy, order]],
+    limit: limit,
+    offset: offset,
+  })
+
+  const pagination = {
+    total: total,
+    page: page,
+    limit: limit,
+    totalPages: Math.ceil(total / limit),
+  }
+
+  return { data, pagination }
 }
 
 /**
@@ -147,8 +221,9 @@ async function deleteUserById(id) {
 
 module.exports = {
   createUser,
-  getAllUsers,
+  getUsers,
   getUserByID,
   updateUser,
   deleteUserById,
+  searchUsers,
 }

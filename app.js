@@ -11,7 +11,9 @@ const config = require('./src/config/sys.config.js')
 const app = express()
 const userRouter = require('./src/routes/user.router.js')
 const authorUser = require('./src/routes/author.router.js')
+const authRouter = require('./src/routes/auth.router.js')
 const story = require('./src/routes/stories.js')
+
 const { log } = require('console')
 const PORT = process.env.PORT
 // const sequelize = require('./src/config/db_config.js')
@@ -25,6 +27,7 @@ app.use(cors({ credentials: true, origin: true }))
 app.use('/api/users', userRouter)
 app.use('/api/', authorUser)
 app.use('/api/story/', story)
+app.use('/api/', authRouter)
 
 //Middleware: error handler
 app.use((req, res, next) => {
@@ -33,6 +36,7 @@ app.use((req, res, next) => {
 
 // Middleware
 app.use((err, req, res, next) => {
+  console.log(err)
   res.status(err.status || 500).json({
     success: false,
     status: err.status || 500,

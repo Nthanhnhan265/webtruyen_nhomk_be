@@ -5,6 +5,7 @@ const {
   handleGetUserByID,
   handleCreateUser,
   handleDeleteUser,
+  handleSearchUsers,
   handleUpdateUserByID: handleUpdateUser,
 } = require('@controllers/user.controller')
 
@@ -21,6 +22,8 @@ router.post('/', handleCreateUser)
 // GET /users - Lấy danh sách tất cả người dùng
 router.get('/', handleGetUsers)
 
+// GET /users/search
+router.get('/search', handleSearchUsers)
 // GET /users/:id - Lấy thông tin chi tiết của một người dùng dựa trên ID
 router.get('/:id', handleGetUserByID)
 
