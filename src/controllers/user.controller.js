@@ -1,12 +1,14 @@
 const createHttpError = require('http-errors')
 const {
   createUser,
-  getAllUsers,
+  getUsers,
   getUserByID,
   updateUser,
   deleteUserById,
+  searchUsers,
 } = require('@services/user.service')
 const message = require('@root/message')
+const { userValidate } = require('@helper/validation')
 
 // ==========================
 // User Handler Functions
@@ -31,6 +33,11 @@ async function handleCreateUser(req, res, next) {
   } = req.body
 
   //xác thực đầu vào
+  const { error } = userValidate(req.body)
+
+  if (error) {
+    return next(error)
+  }
 
   //tạo người dùng mới
   try {
@@ -54,10 +61,25 @@ async function handleCreateUser(req, res, next) {
     next(error)
   }
 }
-
+/**
+ * Xử lý yêu cầu phân trang
+ * @param {Object} req - Đối tượng yêu cầu.
+ *
+ */
+function getPagination(req) {
+  try {
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 10
+    const offset = (page - 1) * limit
+    return { page, limit, offset }
+  } catch (error) {
+    throw createHttpError(404, message.generalErrors.invalidDataQuery)
+  }
+}
 // READ USER
 /**
- * Xử lý yêu cầu lấy danh sách tất cả người dùng.
+ * Xử lý yêu cầu lấy danh sách tất cả người dùng. lấy theo trang
+ * khi người dùng không điền thì mặc định lấy trang 1 và 10 records
  * @param {Object} req - Đối tượng yêu cầu.
  * @param {Object} res - Đối tượng phản hồi.
  * @param {Function} next - Hàm gọi tiếp theo trong middleware.
@@ -65,13 +87,24 @@ async function handleCreateUser(req, res, next) {
  */
 async function handleGetUsers(req, res, next) {
   try {
+    //============= Khai báo biến, lấy thông tin req =============//
+    // Lấy các thông tin về phân trang
+    const { page, limit, offset } = getPagination(req)
     // Các trường hợp sắp xếp hợp lệ
-    const validSortFields = ['id', 'username', 'email', 'createdAt']
+    const validSortFields = [
+      'id',
+      'username',
+      'email',
+      'status',
+      'role_id',
+      'createdAt',
+    ]
     // Các thứ tự hợp lệ
     const validOrderValues = ['ASC', 'DESC']
     const sortBy = req.query.sortBy || 'id'
-    const order = req.query.order || 'ASC'
+    const order = req.query.order || 'DESC'
 
+    //============= Kiểm tra dữ liệu có hợp lệ không ============//
     // Kiểm tra xem sortBy có hợp lệ không
     if (!validSortFields.includes(sortBy)) {
       const err = new Error(message.generalErrors.invalidDataQuery)
@@ -84,11 +117,20 @@ async function handleGetUsers(req, res, next) {
       err.status = 400
       throw err
     }
-    let data = await getAllUsers(sortBy, order)
+
+    //============== Trả về dữ liệu =============================//
+    let { data, pagination } = await getUsers(
+      sortBy,
+      order,
+      page,
+      limit,
+      offset,
+    )
     return res.status(200).json({
       success: true,
       message: message.user.fetchSucess,
       data: data,
+      pagination: pagination,
       links: [],
     })
   } catch (error) {
@@ -123,6 +165,33 @@ async function handleGetUserByID(req, res, next) {
   }
 }
 
+async function handleSearchUsers(req, res, next) {
+  try {
+    const keyword = req.query.keyword || ''
+    const sortBy = req.query.sortBy || 'id'
+    const order = req.query.order || 'DESC'
+    const { page, limit, offset } = getPagination(req)
+    const { data, pagination } = await searchUsers(
+      keyword,
+      sortBy,
+      order,
+      page,
+      limit,
+      offset,
+    )
+
+    return res.status(200).json({
+      success: true,
+      message: message.generalErrors.findSuccess,
+      data: data,
+      pagination: pagination,
+    })
+  } catch (error) {
+    console.error(error.message)
+    next(error)
+  }
+}
+
 /**
  * Xử lý yêu cầu lấy thông tin chi tiết của người dùng theo ID.
  * @param {Object} req - Đối tượng yêu cầu.
@@ -141,7 +210,7 @@ async function handleUpdateUserByID(req, res, next) {
     if (result.message) {
       console.log(result.message)
       return res.status(200).json({
-        success: true,
+        success: false,
         status: 200,
         message: result.message,
         data: null,
@@ -192,4 +261,5 @@ module.exports = {
   handleCreateUser,
   handleDeleteUser,
   handleUpdateUserByID,
+  handleSearchUsers,
 }
