@@ -1,29 +1,30 @@
 const { Sequelize, DataTypes } = require('sequelize')
 const sequelize = require('@config/db_config.js')
 
-const Role = sequelize.define(
-  'Role',
+const Tag = sequelize.define(
+  'Tag',
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    role_name: {
+    tag_name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    description: {
+    tag_slug: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
+      unique: true,
     },
   },
   {
-    tableName: 'role',
+    tableName: 'tags',
     timestamps: true,
     createdAt: 'created_at',
     updatedAt: 'updated_at',
   },
 )
 
-module.exports = Role
+module.exports = Tag
