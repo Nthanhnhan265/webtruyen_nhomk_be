@@ -42,6 +42,17 @@ exports.getChapterById = async (req, res) => {
   }
 };
 
+// Get a chapter by ID
+exports.getChapterBySlug = async (req, res) => {
+  try {
+    const chapter = await chapterService.getChapterBySlug(req.params.chapter);
+    if (!chapter) return res.status(404).json({ error: "Chapter not found" });
+    res.status(200).json(chapter);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // Update a chapter
 exports.updateChapter = async (req, res) => {
   try {
