@@ -1,50 +1,46 @@
-const bcrypt = require('bcryptjs'); // Để so sánh mật khẩu đã được băm
-const jwt = require('jsonwebtoken'); // Để tạo token cho người dùng
-const User = require('../models/user.model'); // Import model User
-const createError = require('http-errors');
-const { JWT_SECRET } = process.env; // Sử dụng biến môi trường chứa JWT secret
+// services/user.service.js
+const User = require('../models/user.model');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-// ==========================
-// Dịch vụ Đăng Nhập Người Dùng
-// ==========================
+const { JWT_SECRET } = process.env;
 
 /**
- * Hàm đăng nhập người dùng.
- * @param {Object} loginData - Dữ liệu đăng nhập của người dùng (username, password).
- * @returns {Promise<Object>} - Trả về thông tin người dùng hoặc lỗi.
+ * Xử lý logic đăng nhập người dùng
+ * @param {string} username - Tên đăng nhập
+ * @param {string} password - Mật khẩu
+ * @returns {Object} - Kết quả đăng nhập (thành công hoặc thông báo lỗi)
  */
-async function loginUser(loginData) {
-  const { username, password } = loginData; // Sửa để nhận username thay vì email
-
-  // Kiểm tra xem người dùng có tồn tại không
-  const user = await User.findOne({ where: { username } }); // Tìm người dùng theo username
+async function loginUser(username, password) {
+  // Tìm người dùng theo username
+  const user = await User.findOne({ where: { username } });
+  
   if (!user) {
-    throw createError(401, 'Tên người dùng hoặc mật khẩu không hợp lệ');
+    // Trả về lỗi nếu người dùng không tồn tại
+    return { success: false, message: 'Tên đăng nhập không tồn tại' };
   }
 
-  // So sánh mật khẩu với mật khẩu đã được băm
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    throw createError(401, 'Tên người dùng hoặc mật khẩu không hợp lệ');
+  // Kiểm tra mật khẩu
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
+    // Trả về lỗi nếu mật khẩu không chính xác
+    return { success: false, message: 'Mật khẩu không chính xác' };
   }
 
-  // Tạo token JWT
-  const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { // Sửa payload trong token
-    expiresIn: '1h', // Token hết hạn sau 1 giờ
-  });
+  // Tạo JWT token
+  const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
 
+  // Trả về thông tin đăng nhập thành công
   return {
     success: true,
-    message: 'Đăng nhập thành công!',
+    message: 'Đăng nhập thành công',
     data: {
       userId: user.id,
-      username: user.username, // Sử dụng username
+      username: user.username,
       email: user.email,
       token,
     },
   };
 }
 
-module.exports = {
-  loginUser,
-};
+module.exports = { loginUser };

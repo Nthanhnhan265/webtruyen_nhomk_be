@@ -1,5 +1,5 @@
 const createHttpError = require('http-errors');
-const { registerUser,loginUser } = require('@services/userregister.service');  // Sử dụng đúng import
+const { registerUser } = require('@services/userregister.service'); // Sử dụng đúng import
 const message = require('@root/message');
 
 // ==========================
@@ -15,22 +15,21 @@ const message = require('@root/message');
  */
 async function handleRegisterUser(req, res, next) {
   const { username, email, password, confirmPassword } = req.body;
-  console.log('Registering user with data:', { username, email, password, confirmPassword }); 
-
-  // Kiểm tra nếu password và confirmPassword không khớp
-  if (password !== confirmPassword) {
-    return next(createHttpError(400, 'Password and confirm password do not match'));
-  }
+  console.log('Registering user with data:', { username, email, password, confirmPassword });
 
   try {
     // Gọi service registerUser để xử lý việc đăng ký người dùng
-    const result = await registerUser({ username, email, password, confirmPassword });  // Gọi trực tiếp registerUser
-  
+    const result = await registerUser({ username, email, password, confirmPassword });
+
+    // Xử lý kết quả từ service
     if (!result.success) {
-      // Nếu không thành công, trả về lỗi
-      return next(createHttpError(400, result.message));
+      // Trả về lỗi tương ứng nếu đăng ký không thành công
+      return res.status(result.success ? 200 : 400).json({
+        success: false,
+        message: result.message,
+      });
     }
-  
+
     // Thành công, trả về thông tin người dùng
     return res.status(201).json({
       success: true,
@@ -42,42 +41,16 @@ async function handleRegisterUser(req, res, next) {
   } catch (error) {
     // Log thông tin lỗi để debug
     console.error('Error in handleRegisterUser:', error);
+
+    // Xử lý các lỗi từ service
+    if (error.status === 400 || error.status === 409) {
+      return next(createHttpError(error.status, error.message)); // Lỗi từ service
+    }
+
+    // Lỗi khác
     return next(createHttpError(500, 'Error registering user', { details: error.message }));
   }
 }
-
-// // ==========================
-// // User Handler Functions
-// // ==========================
-
-// // LOGIN USER
-// /**
-//  * Handle login request for users.
-//  * @param {Object} req - Request object.
-//  * @param {Object} res - Response object.
-//  * @param {Function} next - Next middleware function.
-//  */
-// async function handleLoginUser(req, res, next) {
-//   const { email, password } = req.body;
-//   console.log('Logging in user with data:', { email, password });
-
-//   try {
-//     // Call service to handle user login
-//     const result = await loginUser({ email, password });
-
-//     // Successful login, return user info
-//     return res.status(200).json({
-//       success: true,
-//       status: 200,
-//       message: result.message,
-//       data: result.data,
-//     });
-//   } catch (error) {
-//     // Log error information for debugging
-//     console.error('Error in handleLoginUser:', error);
-//     return next(createHttpError(500, 'Error logging in user', { details: error.message }));
-//   }
-// }
 
 module.exports = {
   handleRegisterUser,
