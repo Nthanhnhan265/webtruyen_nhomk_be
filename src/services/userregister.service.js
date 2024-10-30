@@ -32,15 +32,15 @@ async function registerUser(userData) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
   
-    // Tạo người dùng mới với role_id là 2, status là 1 và avatar mặc định
+    // Tạo người dùng mới
     try {
       const newUser = await User.create({
         username,
         email,
         password: hashedPassword,
-        role_id: 2,  // Thiết lập role_id là 2
-        status: 1,    // Thiết lập status là 1
-        avatar: 'default_avatar.png', // Hoặc tên avatar mặc định khác nếu có
+        role_id: 2,
+        status: 1,
+        avatar: 'default_avatar.png',
       });
   
       // Tạo JWT token

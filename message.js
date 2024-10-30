@@ -21,4 +21,7 @@ module.exports = {
     NoUpdate: 'Không có thông tin nào được cập nhật',
     invalidDataQuery: 'Dữ liệu truy vấn không hợp lệ',
   },
+  author: {
+    
+  }
 }

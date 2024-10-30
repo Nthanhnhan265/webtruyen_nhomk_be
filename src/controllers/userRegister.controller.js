@@ -46,39 +46,39 @@ async function handleRegisterUser(req, res, next) {
   }
 }
 
-// ==========================
-// User Handler Functions
-// ==========================
+// // ==========================
+// // User Handler Functions
+// // ==========================
 
-// LOGIN USER
-/**
- * Handle login request for users.
- * @param {Object} req - Request object.
- * @param {Object} res - Response object.
- * @param {Function} next - Next middleware function.
- */
-async function handleLoginUser(req, res, next) {
-  const { email, password } = req.body;
-  console.log('Logging in user with data:', { email, password });
+// // LOGIN USER
+// /**
+//  * Handle login request for users.
+//  * @param {Object} req - Request object.
+//  * @param {Object} res - Response object.
+//  * @param {Function} next - Next middleware function.
+//  */
+// async function handleLoginUser(req, res, next) {
+//   const { email, password } = req.body;
+//   console.log('Logging in user with data:', { email, password });
 
-  try {
-    // Call service to handle user login
-    const result = await loginUser({ email, password });
+//   try {
+//     // Call service to handle user login
+//     const result = await loginUser({ email, password });
 
-    // Successful login, return user info
-    return res.status(200).json({
-      success: true,
-      status: 200,
-      message: result.message,
-      data: result.data,
-    });
-  } catch (error) {
-    // Log error information for debugging
-    console.error('Error in handleLoginUser:', error);
-    return next(createHttpError(500, 'Error logging in user', { details: error.message }));
-  }
-}
+//     // Successful login, return user info
+//     return res.status(200).json({
+//       success: true,
+//       status: 200,
+//       message: result.message,
+//       data: result.data,
+//     });
+//   } catch (error) {
+//     // Log error information for debugging
+//     console.error('Error in handleLoginUser:', error);
+//     return next(createHttpError(500, 'Error logging in user', { details: error.message }));
+//   }
+// }
 
 module.exports = {
-  handleRegisterUser,handleLoginUser
+  handleRegisterUser,
 };
