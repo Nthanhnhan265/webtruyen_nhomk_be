@@ -17,6 +17,22 @@ const { JWT_SECRET } = process.env; // Sử dụng biến môi trường chứa 
 async function registerUser(userData) {
   const { username, email, password, confirmPassword } = userData;
 
+  if (username.length > 50) {
+    return { success: false, message: "Tên đăng nhập không được quá 50 ký tự." };
+  }
+  if (password.length > 50) {
+    return { success: false, message: "Mật khẩu nhập không được quá 50 ký tự." }
+  }
+
+  // Kiểm tra yêu cầu độ mạnh của mật khẩu
+  const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+  if (!password || !passwordRegex.test(password)) {
+    return {
+      success: false,
+      message: "Mật khẩu không hợp lệ",
+    };
+  }
+
   // Kiểm tra nếu người dùng đã tồn tại với username
   const existingUsernameUser = await User.findOne({ where: { username } });
   if (existingUsernameUser) {
@@ -31,9 +47,8 @@ async function registerUser(userData) {
 
   // Kiểm tra nếu password và confirmPassword không khớp
   if (password !== confirmPassword) {
-    return { success: false, message: message.auth.passwordIncorrect }; // Không ném lỗi, mà trả về thông tin
+    return { success: false, message: "Mật khẩu không khớp." }; // Trả về thông tin không ném lỗi
   }
-
 
   // Mã hóa mật khẩu trước khi lưu vào database
   const salt = await bcrypt.genSalt(10);

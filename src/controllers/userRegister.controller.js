@@ -15,8 +15,7 @@ const message = require('@root/message');
  */
 async function handleRegisterUser(req, res, next) {
   const { username, email, password, confirmPassword } = req.body;
-  console.log('Registering user with data:', { username, email, password, confirmPassword });
-
+  
   try {
     // Gọi service registerUser để xử lý việc đăng ký người dùng
     const result = await registerUser({ username, email, password, confirmPassword });

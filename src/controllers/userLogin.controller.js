@@ -1,56 +1,29 @@
 const createHttpError = require('http-errors');
-const User = require('../models/user.model'); // Import model User
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const { loginUser } = require('@services/userlogin.service');
 
 const { JWT_SECRET } = process.env; // Lấy JWT secret từ biến môi trường
 
 // ==========================
 // Xử lý Đăng Nhập
 // ==========================
-
 async function handleLoginUser(req, res, next) {
   const { username, password } = req.body;
 
   try {
-    // Tìm người dùng theo username
-    const user = await User.findOne({ where: { username } });
+    // Gọi service loginUser để xử lý đăng nhập
+    const result = await loginUser(username, password);
 
-    // Kiểm tra nếu người dùng không tồn tại
-    if (!user) {
-      return res.status(404).json({
+    // Kiểm tra kết quả từ service và phản hồi
+    if (!result.success) {
+      // Trả về lỗi nếu đăng nhập không thành công
+      return res.status(400).json({
         success: false,
-        message: 'Tên đăng nhập không tồn tại',
+        message: result.message,
       });
     }
-
-    // Kiểm tra mật khẩu
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({
-        success: false,
-        message: 'Mật khẩu không chính xác',
-      });
-    }
-
-    // Tạo token nếu đăng nhập thành công
-    const token = jwt.sign(
-      { id: user.id, username: user.username },
-      JWT_SECRET,
-      { expiresIn: '1h' }
-    );
 
     // Trả về kết quả đăng nhập thành công
-    return res.status(200).json({
-      success: true,
-      message: 'Đăng nhập thành công',
-      data: {
-        userId: user.id,
-        username: user.username,
-        email: user.email,
-        token,
-      },
-    });
+    return res.status(200).json(result);
   } catch (error) {
     console.error(error);
     return next(createHttpError(500, 'Lỗi khi đăng nhập'));
