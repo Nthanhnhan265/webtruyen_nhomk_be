@@ -15,11 +15,15 @@ const createAuthor = async (req, res) => {
 
 // Lấy danh sách tất cả tác giả
 const getAllAuthors = async (req, res) => {
+    console.log("check param", req.query);
+
     try {
-        const authors = await authorService.getAllAuthors();
+        const { author_name, description, sort, page, limit = 10 } = req.query; // Mặc định trang đầu tiên và giới hạn 4 hàng
+
+        const authors = await authorService.getAllAuthors(author_name, description, sort, page, limit);
         res.status(200).json(authors);
     } catch (error) {
-        res.status(400).json({ message: 'Error fetching authors', error });
+        res.status(500).json({ message: 'Error retrieving authors', error });
     }
 };
 

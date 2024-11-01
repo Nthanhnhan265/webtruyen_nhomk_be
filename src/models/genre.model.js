@@ -1,15 +1,15 @@
 const { Sequelize, DataTypes } = require('sequelize')
 const sequelize = require('@config/db_config.js')
 
-const Role = sequelize.define(
-  'Role',
+const Genre = sequelize.define(
+  'Genre',
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    role_name: {
+    genre_name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -17,13 +17,18 @@ const Role = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    slug: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
   },
   {
-    tableName: 'role',
+    tableName: 'genres',
     timestamps: true,
     createdAt: 'created_at',
     updatedAt: 'updated_at',
   },
 )
 
-module.exports = Role
+module.exports = Genre

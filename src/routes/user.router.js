@@ -1,9 +1,12 @@
 const express = require('express')
 const userModel = require('@models/user.model')
 const {
-  handleGetUser,
+  handleGetUsers,
   handleGetUserByID,
   handleCreateUser,
+  handleDeleteUser,
+  handleSearchUsers,
+  handleUpdateUserByID: handleUpdateUser,
 } = require('@controllers/user.controller')
 
 const router = express.Router()
@@ -17,17 +20,20 @@ router.post('/', handleCreateUser)
 //===================
 
 // GET /users - Lấy danh sách tất cả người dùng
-router.get('/', handleGetUser)
+router.get('/', handleGetUsers)
 
+// GET /users/search
+router.get('/search', handleSearchUsers)
 // GET /users/:id - Lấy thông tin chi tiết của một người dùng dựa trên ID
 router.get('/:id', handleGetUserByID)
 
 //===================
 //User Update API Endpoints
 //===================
-
-router.get('/login', (req, res) => {
-  res.send('<h1>login form</h1>')
-})
+router.patch('/:id', handleUpdateUser)
+//===================
+//User Delete API Endpoints
+//===================
+router.delete('/:id', handleDeleteUser)
 
 module.exports = router

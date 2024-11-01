@@ -19,6 +19,9 @@ exports.getChapters = async (limit, offset, storyId) => {
 exports.getChapterById = async (id) => {
   return await Chapter.findByPk(id);
 };
+exports.getChapterBySlug = async (slug) => {
+  return await Chapter.findOne({ where: { slug: slug } });
+};
 
 exports.updateChapter = async (id, chapterData) => {
   const [updated] = await Chapter.update(chapterData, {
