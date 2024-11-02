@@ -24,6 +24,7 @@ module.exports = {
       'Mật khẩu phải bao gồm chữ thường, in hoa, số và ký tự đặc biệt (!@#$%^&*).',
     passwordsNotMatch: 'Mật khẩu không khớp.',
     passwordRepeatLength: 'Vui lòng nhập mật khẩu hợp lệ (1-255 ký tự).',
+    passwordsDoNotMatch: 'Mật khẩu không khớp',
     coverImageRequired: 'Vui lòng chọn ảnh bìa cho tài khoản.',
     coverImageFormat: 'Vui lòng chọn định dạng hợp lệ.',
     coverImageSize:
@@ -41,6 +42,9 @@ module.exports = {
     emailNotFound: 'Email không tồn tại',
     passwordRequired: 'Vui lòng nhập mật khẩu',
     unauthorized: 'Email hoặc mật khẩu không đúng',
+    invalidToken: 'Token không hợp lệ',
+    expiredToken: 'Token đã hết hạn',
+    missedToken: 'Yêu cầu refresh token',
   },
   generalErrors: {
     findSuccess: 'Tìm kiếm thành công',

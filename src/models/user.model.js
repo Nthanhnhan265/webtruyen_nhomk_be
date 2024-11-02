@@ -66,4 +66,11 @@ const User = sequelize.define(
 User.prototype.isRightPassword = async function (password) {
   return bcrypt.compare(password, this.password)
 }
+User.associate = function (models) {
+  User.belongsTo(models.Role, {
+    foreignKey: 'role_id',
+    constraints: false,
+  })
+}
+
 module.exports = User

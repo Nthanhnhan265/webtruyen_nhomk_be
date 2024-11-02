@@ -25,5 +25,10 @@ const Role = sequelize.define(
     updatedAt: 'updated_at',
   },
 )
-
+Role.associate = function (models) {
+  Role.hasMany(models.User, {
+    foreignKey: 'role_id',
+    constraints: false,
+  })
+}
 module.exports = Role

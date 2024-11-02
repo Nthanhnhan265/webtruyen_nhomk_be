@@ -1,4 +1,5 @@
 const User = require('@models/user.model')
+const Role = require('@models/role.model')
 const createError = require('http-errors')
 const message = require('@root/message')
 const { where, or, Op } = require('sequelize')
@@ -55,10 +56,17 @@ async function getUsers(
       'status',
       'created_at',
     ],
+    include: [
+      {
+        model: Role,
+        attributes: ['role_name'],
+      },
+    ],
     order: [[sortBy, order]],
     limit: limit,
     offset: offset,
   })
+
   const pagination = {
     total: total,
     page: page,

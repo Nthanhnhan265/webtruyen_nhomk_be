@@ -9,11 +9,11 @@ const {
 } = require('@services/user.service')
 const message = require('@root/message')
 const { userValidate } = require('@helper/validation')
-
-// ==========================
-// User Handler Functions
-// ==========================
-// CREATE USER
+const upload = require('../middlewares/upload.middleware')
+// ================================================
+//              User Handler Functions
+// ================================================
+//   CREATE USER
 /**
  * Xử lý yêu cầu tạo một người dùng mới.
  * @param {Object} req - Đối tượng yêu cầu.
@@ -21,19 +21,24 @@ const { userValidate } = require('@helper/validation')
  * @param {Function} next - Hàm gọi tiếp theo trong middleware.
  */
 async function handleCreateUser(req, res, next) {
+  //lấy tên file được gửi lên
+  const uploadedFile = req.file
+  const avatar = uploadedFile ? uploadedFile.filename : null
+
   //lấy dữ liệu từ form
-  const {
-    username,
-    email,
-    password,
-    confirmPassword,
-    role_id,
-    status,
-    avatar,
-  } = req.body
+  const { username, email, password, confirmPassword, role_id, status } =
+    req.body
 
   //xác thực đầu vào
-  const { error } = userValidate(req.body)
+  const { error } = userValidate({
+    username: username,
+    email: email,
+    password: password,
+    confirmPassword: confirmPassword,
+    role_id: role_id,
+    status: status,
+    avatar: avatar,
+  })
 
   if (error) {
     return next(error)
@@ -154,6 +159,7 @@ async function handleGetUserByID(req, res, next) {
     if (!data) {
       next(createHttpError(404, message.user.notFound))
     }
+
     return res.status(200).json({
       success: true,
       message: message.user.fetchSucess,
@@ -201,9 +207,35 @@ async function handleSearchUsers(req, res, next) {
  */
 async function handleUpdateUserByID(req, res, next) {
   try {
+    //lấy tên file được gửi lên
     const id = req.params.id
-    const newdata = req.body
-    const result = await updateUser(id, newdata)
+    const { username, email, role_id, status, avatar } = req.body
+    const uploadedFile = req.file
+    const newAvatar = uploadedFile ? uploadedFile.filename : avatar
+    console.log(uploadedFile)
+    console.log(newAvatar)
+    //xác thực đầu vào
+    const { error } = userValidate(
+      {
+        username: username,
+        email: email,
+        role_id: role_id,
+        status: status,
+        avatar: newAvatar,
+      },
+      true,
+    )
+
+    if (error) {
+      return next(error)
+    }
+    const result = await updateUser(id, {
+      username: username,
+      email: email,
+      role_id: role_id,
+      status: status,
+      avatar: newAvatar,
+    })
     if (result.error) {
       next(result.error)
     }
