@@ -33,17 +33,28 @@ const getAllAuthors = async (
       })
     }
 
-    console.log(whereConditions)
+    console.log('Where Conditions:', whereConditions)
 
+    // Fetch authors with pagination
     const authors = await Author.findAll({
-      where: whereConditions.length > 0 ? { [Op.or]: whereConditions } : {}, // Use Op.or if conditions are present
+      where: whereConditions.length > 0 ? { [Op.or]: whereConditions } : {},
       order: [['author_name', sortOrder === 'desc' ? 'DESC' : 'ASC']],
-      offset: (page - 1) * limit, // Calculate offset for pagination
-      limit: limit, // Limit the number of rows returned
+      offset: (page - 1) * limit,
+      limit: limit,
     })
 
-    // Return an empty array if no authors are found
-    return authors.length > 0 ? authors : []
+    // Count total authors that match the criteria
+    const totalCount = await Author.count({
+      where: whereConditions.length > 0 ? { [Op.or]: whereConditions } : {},
+    })
+
+    // Return authors and total count
+    return {
+      authors: authors.length > 0 ? authors : [],
+      totalCount: totalCount,
+      totalPages: Math.ceil(totalCount / limit), // Calculate total pages
+      currentPage: page,
+    }
   } catch (error) {
     console.error('Error fetching authors:', error)
     throw error // Rethrow error to be handled upstream if needed
