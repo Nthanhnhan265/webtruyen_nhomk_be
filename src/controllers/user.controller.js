@@ -131,6 +131,7 @@ async function handleGetUsers(req, res, next) {
       limit,
       offset,
     )
+    console.log(data)
     return res.status(200).json({
       success: true,
       message: message.user.fetchSucess,
