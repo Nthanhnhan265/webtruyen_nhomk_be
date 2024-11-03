@@ -24,9 +24,9 @@ app.use(cors({ credentials: true, origin: true }))
 // Uncomment if needed: app.use(verifyAccessToken)
 app.use('/api/auth', authRouter)
 app.use('/api/users', userRouter)
-app.use('/api/', verifyAccessToken, authorUser)
-app.use('/api/story/', verifyAccessToken, storyRouter)
-app.use('/api/chapter', verifyAccessToken, chapterRouter) // Ensure proper route
+app.use('/api/', authorUser)
+app.use('/api/story/', storyRouter)
+app.use('/api/chapter', chapterRouter) // Ensure proper route
 
 // Middleware: error handler for 404
 app.use((req, res, next) => {
