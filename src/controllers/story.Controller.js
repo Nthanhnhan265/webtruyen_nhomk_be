@@ -2,6 +2,8 @@ const storyService = require("../services/stories.service");
 
 // Tạo một câu chuyện mới
 exports.createStory = async (req, res) => {
+  console.log("check create storie", req.body);
+
   try {
     // Gọi hàm tạo câu chuyện từ storyService với dữ liệu từ req.body
     const story = await storyService.createStory(req.body);
@@ -15,7 +17,7 @@ exports.createStory = async (req, res) => {
 exports.getStories = async (req, res) => {
   try {
     // Lấy các tham số truy vấn từ request
-    const { author_storie, description, sort, page = 1, limit = 5 } = req.query;
+    const { author_storie, description, sort, page = 1, limit = 10 } = req.query;
     console.log("check param", req.query);
 
 

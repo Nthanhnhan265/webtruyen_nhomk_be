@@ -4,14 +4,18 @@ exports.createChapter = async (chapterData) => {
   return await Chapter.create(chapterData);
 };
 
-exports.getChapters = async (limit, offset) => {
+exports.getChapters = async (limit, offset, storyId) => {
+  console.log("service storyId ", storyId);
   console.log("service limit ", limit);
   console.log("service offset ", offset);
+
   return await Chapter.findAndCountAll({
+    where: { story_id: storyId },
     limit,
     offset,
   });
 };
+
 exports.getChapterById = async (id) => {
   return await Chapter.findByPk(id);
 };
