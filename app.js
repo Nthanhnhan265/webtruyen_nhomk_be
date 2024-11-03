@@ -1,56 +1,50 @@
 // Require modules
-require('dotenv').config();
-require('module-alias/register');
+require('dotenv').config()
+require('module-alias/register')
 
-const createError = require('http-errors');
-const message = require('@root/message.js');
-const cors = require('cors');
-const path = require('path');
-const express = require('express');
-const config = require('./src/config/sys.config.js'); // Chọn config phù hợp
-const app = express();
+const createError = require('http-errors')
+const message = require('@root/message.js')
+const cors = require('cors')
+const express = require('express')
+const config = require('./src/config/sys.config.js') // Configuration setup
+const app = express()
 
 // Import routers
-const userRouter = require('./src/routes/user.router.js');
-const authorUser = require('./src/routes/author.router.js');
-const story = require('./src/routes/stories.js');
-const chapterRoutes = require('./src/routes/chapter.routes.js'); // Nếu cần thêm
-const authRouter = require('./src/routes/auth.router.js'); // Nếu cần thêm
+const userRouter = require('./src/routes/user.router.js')
+const authorUser = require('./src/routes/author.router.js')
+const storyRouter = require('./src/routes/stories.js')
+const chapterRouter = require('./src/routes/chapter.router.js') // Fixed name to chapter.router.js
+const authRouter = require('./src/routes/auth.router.js')
 
-// Logger and PORT setup
-const { log } = require('console');
-const PORT = process.env.PORT;
-
-// const sequelize = require('./src/config/db_config.js')
-// const usermodel = require('./src/models/user.model.js')
-
-// configuration: static files, json() and urlencoded()
+// Configuration: static files, JSON parsing, and urlencoded
 config(app, express)
 app.use(cors({ credentials: true, origin: true }))
 
-//middleware & router
+// Middleware & router
+// Uncomment if needed: app.use(verifyAccessToken)
+app.use('/api/auth', authRouter)
 app.use('/api/users', userRouter)
-app.use('/api/', authorUser)
-app.use('/api/story/', story)
-app.use('/api/', authRouter)
-app.use("/api", chapterRoutes);
+app.use('/api/', verifyAccessToken, authorUser)
+app.use('/api/story/', verifyAccessToken, storyRouter)
+app.use('/api/chapter', verifyAccessToken, chapterRouter) // Ensure proper route
 
-
-//Middleware: error handler
+// Middleware: error handler for 404
 app.use((req, res, next) => {
   next(createError(404, message.generalErrors.notFound))
 })
 
-// Middleware
+// Middleware: generic error handler
 app.use((err, req, res, next) => {
   console.log(err)
-  res.status(err.status || 500).json({
+  res.status(err.statusCode || 500).json({
     success: false,
-    status: err.status || 500,
+    status: err.statusCode || 500,
     message: err.message || message.generalErrors.serverError,
   })
 })
 
-app.listen(PORT || 3001, () => {
-  console.log(`server is running on ${PORT}`)
+// Start server
+const PORT = process.env.PORT || 3001
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`)
 })

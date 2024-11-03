@@ -1,4 +1,4 @@
-const User = require('@models/user.model.js')
+const { User } = require('@models/')
 const createHttpError = require('http-errors')
 const message = require('@root/message.js')
 

@@ -1,5 +1,4 @@
 const express = require('express')
-const userModel = require('@models/user.model')
 const {
   handleGetUsers,
   handleGetUserByID,
@@ -8,12 +7,12 @@ const {
   handleSearchUsers,
   handleUpdateUserByID: handleUpdateUser,
 } = require('@controllers/user.controller')
-
+const { uploadSingleFile } = require('../middlewares/upload.middleware')
 const router = express.Router()
 //===================
 //User Create API Endpoints
 //===================
-router.post('/', handleCreateUser)
+router.post('/', uploadSingleFile('avatar'), handleCreateUser)
 
 //===================
 //User Read API Endpoints
@@ -30,7 +29,7 @@ router.get('/:id', handleGetUserByID)
 //===================
 //User Update API Endpoints
 //===================
-router.patch('/:id', handleUpdateUser)
+router.patch('/:id', uploadSingleFile('avatar'), handleUpdateUser)
 //===================
 //User Delete API Endpoints
 //===================

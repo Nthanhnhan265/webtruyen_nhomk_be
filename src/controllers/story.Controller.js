@@ -1,4 +1,4 @@
-const storyService = require("../services/stories.service");
+const { Story } = require('../models')
 
 // Tạo một câu chuyện mới
 exports.createStory = async (req, res) => {
@@ -12,7 +12,7 @@ exports.createStory = async (req, res) => {
     // Xử lý lỗi và trả về thông báo lỗi nếu có
     res.status(400).json({ error: error.message });
   }
-};
+}
 
 exports.getStories = async (req, res) => {
   try {
@@ -30,7 +30,7 @@ exports.getStories = async (req, res) => {
     // Xử lý lỗi và trả về thông báo lỗi nếu có
     res.status(500).json({ error: error.message });
   }
-};
+}
 
 
 // Lấy một câu chuyện theo ID
@@ -44,7 +44,7 @@ exports.getStoryById = async (req, res) => {
     // Xử lý lỗi và trả về thông báo lỗi nếu có
     res.status(500).json({ error: error.message });
   }
-};
+}
 
 // Cập nhật một câu chuyện
 exports.updateStory = async (req, res) => {
@@ -57,7 +57,7 @@ exports.updateStory = async (req, res) => {
     // Xử lý lỗi và trả về thông báo lỗi nếu có
     res.status(400).json({ error: error.message });
   }
-};
+}
 
 // Xóa một câu chuyện
 exports.deleteStory = async (req, res) => {
@@ -70,4 +70,4 @@ exports.deleteStory = async (req, res) => {
     // Xử lý lỗi và trả về thông báo lỗi nếu có
     res.status(500).json({ error: error.message });
   }
-};
+}
