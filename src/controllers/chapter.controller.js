@@ -115,7 +115,7 @@ async function handleGetChapterByID(req, res, next) {
 }
 
 // UPDATE CHAPTER BY ID
-async function handleUpdateChapterByID(req, res, next) {
+async function handleUpdateChapter(req, res, next) {
   try {
     const id = req.params.id
     const {
@@ -212,6 +212,6 @@ module.exports = {
   handleGetChapterByID,
   handleCreateChapter,
   handleDeleteChapter,
-  handleUpdateChapterByID,
+  handleUpdateChapter,
   handleGetChapterBySlug,
 }

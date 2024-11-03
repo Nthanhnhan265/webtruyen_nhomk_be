@@ -54,7 +54,7 @@ const getAllAuthors = async (
       totalCount: totalCount,
       totalPages: Math.ceil(totalCount / limit), // Calculate total pages
       currentPage: page,
-    }
+    } 
   } catch (error) {
     console.error('Error fetching authors:', error)
     throw error // Rethrow error to be handled upstream if needed

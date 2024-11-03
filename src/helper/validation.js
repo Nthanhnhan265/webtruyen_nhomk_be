@@ -33,7 +33,7 @@ const userValidate = (data, isEdit = false) => {
       'string.empty': message.user.passwordRequired,
       'string.pattern.base': message.user.passwordStrength,
     })
-    joiObjectj.confirmPassword = Joi.string()
+    joiObject.confirmPassword = Joi.string()
       .valid(Joi.ref('password'))
       .required()
       .messages({
