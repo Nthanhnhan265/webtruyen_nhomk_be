@@ -24,6 +24,7 @@ module.exports = {
       'Mật khẩu phải bao gồm chữ thường, in hoa, số và ký tự đặc biệt (!@#$%^&*).',
     passwordsNotMatch: 'Mật khẩu không khớp.',
     passwordRepeatLength: 'Vui lòng nhập mật khẩu hợp lệ (1-255 ký tự).',
+    passwordsDoNotMatch: 'Mật khẩu không khớp',
     coverImageRequired: 'Vui lòng chọn ảnh bìa cho tài khoản.',
     coverImageFormat: 'Vui lòng chọn định dạng hợp lệ.',
     coverImageSize:
@@ -41,6 +42,26 @@ module.exports = {
     emailNotFound: 'Email không tồn tại',
     passwordRequired: 'Vui lòng nhập mật khẩu',
     unauthorized: 'Email hoặc mật khẩu không đúng',
+    invalidToken: 'Token không hợp lệ',
+    expiredToken: 'Token đã hết hạn',
+    missedToken: 'Yêu cầu refresh token',
+  },
+  chapter: {
+    createFailed: 'Tạo chương thất bại',
+    createSuccess: 'Tạo chương thành công',
+    notFound: 'Không tìm thấy chương',
+    fetchSuccess: 'Lấy dữ liệu chương thành công',
+
+    updateSuccess: 'Cập nhật chương thành công',
+    updateFailed: 'Cập nhật chương không thành công',
+
+    deleteSuccess: 'Xóa chương thành công',
+    deleteFailed: 'Xóa chương thất bại',
+
+    chapterNameRequired: 'Vui lòng nhập tên chương hợp lệ.',
+    contentRequired: 'Nội dung chương không được để trống.',
+    slugRequired: 'Slug chương không được để trống.',
+    chapterOrderRequired: 'Thứ tự chương không được để trống.',
   },
   generalErrors: {
     findSuccess: 'Tìm kiếm thành công',

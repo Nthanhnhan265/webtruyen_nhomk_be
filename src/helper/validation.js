@@ -2,27 +2,21 @@
 
 const Joi = require('joi')
 const message = require('@root/message.js')
-/* 
-    userValidate: validate user's data 
-*/
-
-const userValidate = (data) => {
-  const userSchema = Joi.object({
+/** USER'S VALIDATION FUNCTION
+ * Kiểm tra tạo người dùng và chỉnh sửa ngườid dùng
+ * @param {Object} data
+ * @param {Boolean} isEdit
+ * @returns
+ */
+const userValidate = (data, isEdit = false) => {
+  const joiObject = {
     username: Joi.string().min(1).max(255).required().messages({
       'string.empty': message.user.usernameRequired,
       'string.pattern.base': message.user.usernameSpecialChars,
     }),
     email: Joi.string().email().required().max(255).messages({
-      'string.email': message.user.emailRequired,
+      'string.empty': message.user.emailRequired,
       'string.max': message.user.emailLength,
-    }),
-    password: Joi.string().min(1).max(255).required().messages({
-      'string.empty': message.user.passwordRequired,
-      'string.pattern.base': message.user.passwordStrength,
-    }),
-    confirmPassword: Joi.string().min(1).max(255).required().messages({
-      'string.empty': message.user.passwordRequired,
-      'string.pattern.base': message.user.passwordStrength,
     }),
     avatar: Joi.string().required().messages({
       'string.empty': message.user.coverImageRequired,
@@ -33,9 +27,30 @@ const userValidate = (data) => {
     status: Joi.boolean().required().messages({
       'boolean.base': message.user.statusNotFound,
     }),
-  }).optional()
+  }
+  if (!isEdit) {
+    joiObject.password = Joi.string().min(1).max(255).messages({
+      'string.empty': message.user.passwordRequired,
+      'string.pattern.base': message.user.passwordStrength,
+    })
+    joiObjectj.confirmPassword = Joi.string()
+      .valid(Joi.ref('password'))
+      .required()
+      .messages({
+        'string.empty': message.user.passwordRequired,
+        'string.pattern.base': message.user.passwordStrength,
+        'any.only': message.user.passwordsDoNotMatch,
+      })
+  }
+  const userSchema = Joi.object(joiObject).optional()
   return userSchema.validate(data)
 }
+
+/** USER'S LOGIN VALIDATION
+ * Kiểm tra thông tin đăng nhập
+ * @param {Object} data
+ * @returns
+ */
 const loginValidate = (data) => {
   const rule = Joi.object({
     email: Joi.string().required().messages({

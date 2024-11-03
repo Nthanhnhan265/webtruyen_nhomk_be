@@ -1,8 +1,9 @@
-const User = require('@models/user.model')
+const { Role, User } = require('@models')
+const path = require('path')
 const createError = require('http-errors')
 const message = require('@root/message')
 const { where, or, Op } = require('sequelize')
-
+const fs = require('fs')
 // ==========================
 // User CRUD Functions
 // ==========================
@@ -55,10 +56,17 @@ async function getUsers(
       'status',
       'created_at',
     ],
+    include: [
+      {
+        model: Role,
+        attributes: ['id', 'role_name', 'description'],
+      },
+    ],
     order: [[sortBy, order]],
     limit: limit,
     offset: offset,
   })
+
   const pagination = {
     total: total,
     page: page,
@@ -110,6 +118,12 @@ async function searchUsers(
         { email: { [Op.like]: `%${keyword}%` } },
       ],
     },
+    include: [
+      {
+        model: Role,
+        attributes: ['id', 'role_name', 'description'],
+      },
+    ],
     order: [[sortBy, order]],
     limit: limit,
     offset: offset,
@@ -174,7 +188,23 @@ async function updateUser(id, updateData) {
         message: message.generalErrors.NoUpdate,
       }
     }
-    return await User.findByPk(id)
+    return await User.findByPk(id, {
+      attributes: [
+        'id',
+        'avatar',
+        'username',
+        'email',
+        'role_id',
+        'status',
+        'created_at',
+      ],
+      include: [
+        {
+          model: Role,
+          attributes: ['id', 'role_name', 'description'],
+        },
+      ],
+    })
   } catch (error) {
     if (error.name === 'SequelizeValidationError') {
       throw createError(400, error.errors.map((err) => err.message).join(', '))
@@ -200,24 +230,36 @@ async function updateUser(id, updateData) {
  */
 async function deleteUserById(id) {
   try {
-    const result = await User.destroy({
-      where: { id },
-    })
-    // Kiểm tra xem có bản ghi nào bị xóa không
-    if (!result) {
+    const user = await User.findByPk(id)
+    if (!user) {
       return {
         error: createError(404, message.user.notFound),
       }
     }
-    return result // Có thể trả về thông tin nào đó nếu cần
+    const avatarPath = user.avatar
+    await user.destroy()
+    if (avatarPath) {
+      const fullPath = path.join(__dirname, '../uploads/images/', avatarPath)
+      console.log(fullPath)
+      fs.unlink(fullPath, (err) => {
+        if (err) {
+          console.error('Failed to delete avatar:', err)
+        } else {
+          console.log('Avatar deleted successfully')
+        }
+      })
+    }
+    return { success: true, message: 'User deleted successfully' }
   } catch (error) {
     // Kiểm tra lỗi khác và tạo ngoại lệ phù hợp
     if (error.name === 'SequelizeDatabaseError') {
       throw createError(400, 'Có lỗi với dữ liệu đầu vào') // Lỗi dữ liệu đầu vào
     }
-    throw createError(500, error.message)
+    throw createError(500, error.message) // Lỗi máy chủ
   }
 }
+
+module.exports = { deleteUserById }
 
 module.exports = {
   createUser,
