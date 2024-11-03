@@ -1,0 +1,204 @@
+const createHttpError = require('http-errors')
+const {
+  createChapter,
+  getChapters,
+  getChapterByID,
+  updateChapter,
+  deleteChapterByID,
+  getChapterBySlug,
+} = require('@services/chapter.service')
+const message = require('@root/message')
+const { chapterValidate } = require('@helper/validation')
+
+// ================================================
+//              Chapter Handler Functions
+// ================================================
+
+// CREATE CHAPTER
+async function handleCreateChapter(req, res, next) {
+  const {
+    chapter_name,
+    content,
+    story_id,
+    slug,
+    views,
+    status,
+    chapter_order,
+  } = req.body
+
+  const { error } = chapterValidate({
+    chapter_name,
+    content,
+    story_id,
+    slug,
+    views,
+    status,
+    chapter_order,
+  })
+
+  if (error) {
+    return next(error)
+  }
+
+  try {
+    const newChapter = await createChapter({
+      chapter_name,
+      content,
+      story_id,
+      slug,
+      views,
+      status,
+      chapter_order,
+    })
+
+    return res.status(201).json({
+      success: true,
+      status: 201,
+      message: message.chapter.createSuccess,
+      data: newChapter,
+      links: [],
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// READ CHAPTERS
+async function handleGetChapters(req, res, next) {
+  try {
+    const { data, pagination } = await getChapters()
+
+    return res.status(200).json({
+      success: true,
+      message: message.chapter.fetchSuccess,
+      data: data,
+      pagination: pagination,
+      links: [],
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// GET CHAPTER BY ID
+async function handleGetChapterByID(req, res, next) {
+  try {
+    const id = req.params.id
+    const chapter = await getChapterByID(id)
+
+    if (!chapter) {
+      return next(createHttpError(404, message.chapter.notFound))
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: message.chapter.fetchSuccess,
+      data: chapter,
+      links: [],
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// UPDATE CHAPTER BY ID
+async function handleUpdateChapterByID(req, res, next) {
+  try {
+    const id = req.params.id
+    const {
+      chapter_name,
+      content,
+      story_id,
+      slug,
+      views,
+      status,
+      chapter_order,
+    } = req.body
+
+    const { error } = chapterValidate(
+      {
+        chapter_name,
+        content,
+        story_id,
+        slug,
+        views,
+        status,
+        chapter_order,
+      },
+      true,
+    ) // true to indicate that it's an update
+
+    if (error) {
+      return next(error)
+    }
+
+    const updatedChapter = await updateChapter(id, {
+      chapter_name,
+      content,
+      story_id,
+      slug,
+      views,
+      status,
+      chapter_order,
+    })
+
+    return res.status(200).json({
+      success: true,
+      message: message.chapter.updateSuccess,
+      data: updatedChapter,
+      links: [],
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// DELETE CHAPTER
+async function handleDeleteChapter(req, res, next) {
+  const id = req.params.id
+  try {
+    const result = await deleteChapterByID(id)
+    if (result.error) {
+      return next(result.error)
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: message.chapter.deleteSuccess,
+      data: [],
+      links: [],
+    })
+  } catch (error) {
+    return next(error)
+  }
+}
+
+// GET CHAPTER BY SLUG
+async function handleGetChapterBySlug(req, res, next) {
+  try {
+    const slug = req.params.slug
+    const chapter = await getChapterBySlug(slug)
+
+    if (!chapter) {
+      return next(createHttpError(404, message.chapter.notFound))
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: message.chapter.fetchSuccess,
+      data: chapter,
+      links: [],
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+module.exports = {
+  handleGetChapters,
+  handleGetChapterByID,
+  handleCreateChapter,
+  handleDeleteChapter,
+  handleUpdateChapterByID,
+  handleGetChapterBySlug,
+}

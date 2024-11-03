@@ -12,6 +12,7 @@ const app = express()
 const userRouter = require('./src/routes/user.router.js')
 const authorUser = require('./src/routes/author.router.js')
 const authRouter = require('./src/routes/auth.router.js')
+const chapterRouter = require('./src/routes/chapter.router.js')
 const story = require('./src/routes/stories.js')
 const { verifyAccessToken } = require('./src/middlewares/auth.midleware.js')
 const PORT = process.env.PORT
@@ -28,7 +29,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/users', userRouter)
 app.use('/api/', verifyAccessToken, authorUser)
 app.use('/api/story/', verifyAccessToken, story)
-
+app.use('/api/chapter')
 //Middleware: error handler
 app.use((req, res, next) => {
   next(createError(404, message.generalErrors.notFound))

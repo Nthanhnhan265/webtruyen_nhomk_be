@@ -46,6 +46,23 @@ module.exports = {
     expiredToken: 'Token đã hết hạn',
     missedToken: 'Yêu cầu refresh token',
   },
+  chapter: {
+    createFailed: 'Tạo chương thất bại',
+    createSuccess: 'Tạo chương thành công',
+    notFound: 'Không tìm thấy chương',
+    fetchSuccess: 'Lấy dữ liệu chương thành công',
+
+    updateSuccess: 'Cập nhật chương thành công',
+    updateFailed: 'Cập nhật chương không thành công',
+
+    deleteSuccess: 'Xóa chương thành công',
+    deleteFailed: 'Xóa chương thất bại',
+
+    chapterNameRequired: 'Vui lòng nhập tên chương hợp lệ.',
+    contentRequired: 'Nội dung chương không được để trống.',
+    slugRequired: 'Slug chương không được để trống.',
+    chapterOrderRequired: 'Thứ tự chương không được để trống.',
+  },
   generalErrors: {
     findSuccess: 'Tìm kiếm thành công',
     notFound: 'Không tìm thấy tài nguyên',
