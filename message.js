@@ -71,4 +71,42 @@ module.exports = {
     NoUpdate: 'Không có thông tin nào được cập nhật',
     invalidDataQuery: 'Dữ liệu truy vấn không hợp lệ',
   },
+  author: {
+    createFailed: 'Tạo tác giả thất bại',
+    createSuccess: 'Tạo tác giả thành công',
+    notFound: 'Không tìm thấy tác giả',
+    fetchSuccess: 'Lấy dữ liệu tác giả thành công',
+    error: "Lỗi khi lấy danh sách tác giả:",
+    updateSuccess: 'Cập nhật tác giả thành công',
+    updateFailed: 'Cập nhật tác giả không thành công',
+    noChanges: 'Không có thay đổi nào được thực hiện.',
+
+    deleteSuccess: 'Xóa tác giả thành công',
+    deleteFailed: 'Xóa tác giả thất bại',
+
+    author_nameRequired: 'Tham số author_name không hợp lệ: phải là một chuỗi',
+    descriptionRequired: 'Tham số description không hợp lệ: phải là một chuỗi',
+    sortOrderRequired: 'Tham số sort không hợp lệ: phải là "ASC" hoặc "DESC".',
+    limitRequired: 'Tham số limit không hợp lệ: phải là một số nguyên dương  và không được để trống .',
+    pageRequired: 'Tham số page không hợp lệ: phải là một số nguyên dương và không được để trống . ',
+  },
+  story: {
+    createFailed: 'Tạo câu truyện thất bại',
+    createSuccess: 'Tạo câu truyện thành công',
+    notFound: 'Không tìm thấy câu truyện',
+    fetchSuccess: 'Lấy dữ liệu câu truyện thành công',
+    error: "Lỗi khi lấy danh sách câu truyện:",
+    updateSuccess: 'Cập nhật câu truyện thành công',
+    updateFailed: 'Cập nhật câu truyện không thành công',
+
+    deleteSuccess: 'Xóa câu truyện thành công',
+    deleteFailed: 'Xóa câu truyện thất bại',
+    noChanges: 'Không có thay đổi nào được thực hiện.',
+
+    story_nameRequired: 'Tham số story_name không hợp lệ: phải là một chuỗi',
+    descriptionRequired: 'Tham số description không hợp lệ: phải là một chuỗi',
+    sortOrderRequired: 'Tham số sort không hợp lệ: phải là "ASC" hoặc "DESC".',
+    limitRequired: 'Tham số limit không hợp lệ: phải là một số nguyên dương  và không được để trống .',
+    pageRequired: 'Tham số page không hợp lệ: phải là một số nguyên dương và không được để trống . ',
+  }
 }
