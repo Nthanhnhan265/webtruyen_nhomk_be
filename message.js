@@ -37,7 +37,6 @@ module.exports = {
     sizeError: 'Vui lòng chọn ảnh có kích thước hợp lệ (tối đa 5MB).',
     uploadFail: 'Tải lên ảnh bìa thất bại, vui lòng thử lại sau.',
   },
- 
 
   chapter: {
     createFailed: 'Tạo chương thất bại',
@@ -106,7 +105,7 @@ module.exports = {
     createSuccess: 'Tạo tác giả thành công',
     notFound: 'Không tìm thấy tác giả',
     fetchSuccess: 'Lấy dữ liệu tác giả thành công',
-    error: "Lỗi khi lấy danh sách tác giả:",
+    error: 'Lỗi khi lấy danh sách tác giả:',
     updateSuccess: 'Cập nhật tác giả thành công',
     updateFailed: 'Cập nhật tác giả không thành công',
     noChanges: 'Không có thay đổi nào được thực hiện.',
@@ -117,15 +116,17 @@ module.exports = {
     author_nameRequired: 'Tham số author_name không hợp lệ: phải là một chuỗi',
     descriptionRequired: 'Tham số description không hợp lệ: phải là một chuỗi',
     sortOrderRequired: 'Tham số sort không hợp lệ: phải là "ASC" hoặc "DESC".',
-    limitRequired: 'Tham số limit không hợp lệ: phải là một số nguyên dương  và không được để trống .',
-    pageRequired: 'Tham số page không hợp lệ: phải là một số nguyên dương và không được để trống . ',
+    limitRequired:
+      'Tham số limit không hợp lệ: phải là một số nguyên dương  và không được để trống .',
+    pageRequired:
+      'Tham số page không hợp lệ: phải là một số nguyên dương và không được để trống . ',
   },
   story: {
     createFailed: 'Tạo câu truyện thất bại',
     createSuccess: 'Tạo câu truyện thành công',
     notFound: 'Không tìm thấy câu truyện',
     fetchSuccess: 'Lấy dữ liệu câu truyện thành công',
-    error: "Lỗi khi lấy danh sách câu truyện:",
+    error: 'Lỗi khi lấy danh sách câu truyện:',
     updateSuccess: 'Cập nhật câu truyện thành công',
     updateFailed: 'Cập nhật câu truyện không thành công',
 
@@ -136,21 +137,23 @@ module.exports = {
     story_nameRequired: 'Tham số story_name không hợp lệ: phải là một chuỗi',
     descriptionRequired: 'Tham số description không hợp lệ: phải là một chuỗi',
     sortOrderRequired: 'Tham số sort không hợp lệ: phải là "ASC" hoặc "DESC".',
-    limitRequired: 'Tham số limit không hợp lệ: phải là một số nguyên dương  và không được để trống .',
-    pageRequired: 'Tham số page không hợp lệ: phải là một số nguyên dương và không được để trống . ',
+    limitRequired:
+      'Tham số limit không hợp lệ: phải là một số nguyên dương  và không được để trống .',
+    pageRequired:
+      'Tham số page không hợp lệ: phải là một số nguyên dương và không được để trống . ',
 
-  auth: {
-    createSusses: 'Đăng ký thành công',
-    nameError: 'Tên đăng nhập không hợp lệ',
-    nameInvalid: 'Tên đăng nhập không tồn tại',
-    passwordIncorrect: 'Mật khẩu không đúng',
-    registrationfailed: 'Đăng ký thất bại, vui lòng thử lại.',
-    passwordNotMatch: 'Mật khẩu không khớp.',
-    emailExists: 'Email đã tồn tại',  
-    nameExists: 'Tên đăng nhập đã tồn tại',
+    auth: {
+      createSusses: 'Đăng ký thành công',
+      nameError: 'Tên đăng nhập không hợp lệ',
+      nameInvalid: 'Tên đăng nhập không tồn tại',
+      passwordIncorrect: 'Mật khẩu không đúng',
+      registrationfailed: 'Đăng ký thất bại, vui lòng thử lại.',
+      passwordNotMatch: 'Mật khẩu không khớp.',
+      emailExists: 'Email đã tồn tại',
+      nameExists: 'Tên đăng nhập đã tồn tại',
+    },
   },
- 
-}  
+}
 //   auth: {
 //     emailRequired: 'Vui lòng nhập email',
 //     emailNotFound: 'Email không tồn tại',
