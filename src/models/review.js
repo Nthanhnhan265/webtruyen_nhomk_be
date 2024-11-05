@@ -7,29 +7,26 @@ module.exports = (sequelize, DataTypes) => {
       // Định nghĩa quan hệ ở đây nếu cần
       Review.belongsTo(models.User, {
         foreignKey: 'user_id',
-        as: 'user', // Tùy chọn này có thể điều chỉnh tùy theo yêu cầu
+        constraints: false,
       })
       Review.belongsTo(models.Story, {
         foreignKey: 'story_id',
-        as: 'story', // Tùy chọn này có thể điều chỉnh tùy theo yêu cầu
+        constraints: false,
       })
     }
   }
 
   Review.init(
     {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
       user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        primaryKey: true,
       },
       story_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        primaryKey: true,
       },
       star: {
         type: DataTypes.INTEGER,

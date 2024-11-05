@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       // Định nghĩa quan hệ ở đây nếu cần
       Chapter.belongsTo(models.Story, {
         foreignKey: 'story_id',
-        as: 'story', // Tùy chọn này có thể điều chỉnh tùy theo yêu cầu
+        constraints: false,
       })
     }
   }
@@ -47,7 +47,12 @@ module.exports = (sequelize, DataTypes) => {
       chapter_order: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        unique: true,
       },
+      published_at: { 
+        type: DataTypes.DATE, 
+        allowNull: true,
+      }
     },
     {
       sequelize,

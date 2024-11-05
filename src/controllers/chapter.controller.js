@@ -1,7 +1,6 @@
 const createHttpError = require('http-errors')
 const {
   createChapter,
-  getChapters,
   getChapterByID,
   updateChapter,
   deleteChapterByID,
@@ -26,15 +25,7 @@ async function handleCreateChapter(req, res, next) {
     chapter_order,
   } = req.body
 
-  const { error } = chapterValidate({
-    chapter_name,
-    content,
-    story_id,
-    slug,
-    views,
-    status,
-    chapter_order,
-  })
+  const { error } = chapterValidate(req.body)
 
   if (error) {
     return next(error)
@@ -64,21 +55,6 @@ async function handleCreateChapter(req, res, next) {
 }
 
 // READ CHAPTERS
-async function handleGetChapters(req, res, next) {
-  try {
-    const { data, pagination } = await getChapters()
-
-    return res.status(200).json({
-      success: true,
-      message: message.chapter.fetchSuccess,
-      data: data,
-      pagination: pagination,
-      links: [],
-    })
-  } catch (error) {
-    next(error)
-  }
-}
 
 // GET CHAPTER BY ID
 async function handleGetChapterByID(req, res, next) {
@@ -92,6 +68,7 @@ async function handleGetChapterByID(req, res, next) {
 
     return res.status(200).json({
       success: true,
+      status: 200,
       message: message.chapter.fetchSuccess,
       data: chapter,
       links: [],
@@ -144,6 +121,7 @@ async function handleUpdateChapter(req, res, next) {
 
     return res.status(200).json({
       success: true,
+      status: 200,
       message: message.chapter.updateSuccess,
       data: updatedChapter,
       links: [],
@@ -165,6 +143,7 @@ async function handleDeleteChapter(req, res, next) {
     return res.status(200).json({
       success: true,
       message: message.chapter.deleteSuccess,
+      status: 200,
       data: [],
       links: [],
     })
@@ -173,32 +152,9 @@ async function handleDeleteChapter(req, res, next) {
   }
 }
 
-// GET CHAPTER BY SLUG
-async function handleGetChapterBySlug(req, res, next) {
-  try {
-    const slug = req.params.slug
-    const chapter = await getChapterBySlug(slug)
-
-    if (!chapter) {
-      return next(createHttpError(404, message.chapter.notFound))
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: message.chapter.fetchSuccess,
-      data: chapter,
-      links: [],
-    })
-  } catch (error) {
-    next(error)
-  }
-}
-
 module.exports = {
-  handleGetChapters,
   handleGetChapterByID,
   handleCreateChapter,
   handleDeleteChapter,
   handleUpdateChapter,
-  handleGetChapterBySlug,
 }

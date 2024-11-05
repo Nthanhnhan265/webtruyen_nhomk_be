@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       })
       Story.hasMany(models.Chapter, {
         foreignKey: 'story_id',
-        as: 'chapters', // Tùy chọn này có thể điều chỉnh tùy theo yêu cầu
+        constraints: false,
       })
       Story.belongsToMany(models.Genre, {
         through: models.StoryGenre,
