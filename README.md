@@ -43,3 +43,13 @@ sau khi clone source về chạy:
   +controller/user.controller.js
   +routes/user.route.js
   +app.js
+- File được upload vào thư mục src/uploads sẽ KHÔNG được đẩy lên github
+
+## tham khảo
+
+- Joi: thư viện validate đầu vào (https://joi.dev/api/?v=17.13.3)
+- http-errors (https://github.com/jshttp/http-errors)
+- module-alias (https://github.com/ilearnio/module-alias)
+- sequelize (https://sequelize.org/docs/v6/)
+- sequelize-cli
+- multer: thư viện upload file

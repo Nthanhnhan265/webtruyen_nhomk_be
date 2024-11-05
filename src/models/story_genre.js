@@ -2,75 +2,75 @@
 const { Model } = require('sequelize')
 
 module.exports = (sequelize, DataTypes) => {
-  class FavoriteStory extends Model {
+  class StoryGenre extends Model {
     static associate(models) {
       // Định nghĩa quan hệ ở đây nếu cần
-      FavoriteStory.belongsTo(models.User, {
-        foreignKey: 'user_id',
-        as: 'user', // Tùy chọn này có thể điều chỉnh tùy theo yêu cầu
-      })
-      FavoriteStory.belongsTo(models.Story, {
+      StoryGenre.belongsTo(models.Story, {
         foreignKey: 'story_id',
         as: 'story', // Tùy chọn này có thể điều chỉnh tùy theo yêu cầu
+      })
+      StoryGenre.belongsTo(models.Genre, {
+        foreignKey: 'genre_id',
+        as: 'genre', // Tùy chọn này có thể điều chỉnh tùy theo yêu cầu
       })
     }
   }
 
-  FavoriteStory.init(
+  StoryGenre.init(
     {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      user_id: {
+      story_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      story_id: {
+      genre_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
     },
     {
       sequelize,
-      modelName: 'FavoriteStory',
-      tableName: 'favorite_stories',
+      modelName: 'StoryGenre',
+      tableName: 'story_genres',
       timestamps: true,
       createdAt: 'created_at',
       updatedAt: 'updated_at',
     },
   )
 
-  return FavoriteStory
+  return StoryGenre
 }
 
 // const { Sequelize, DataTypes } = require('sequelize')
 // const sequelize = require('@config/db_config.js')
 
-// const FavoriteStory = sequelize.define(
-//   'FavoriteStory',
+// const StoryGenre = sequelize.define(
+//   'StoryGenre',
 //   {
 //     id: {
 //       type: DataTypes.INTEGER,
 //       primaryKey: true,
 //       autoIncrement: true,
 //     },
-//     user_id: {
+//     story_id: {
 //       type: DataTypes.INTEGER,
 //       allowNull: false,
 //     },
-//     story_id: {
+//     genre_id: {
 //       type: DataTypes.INTEGER,
 //       allowNull: false,
 //     },
 //   },
 //   {
-//     tableName: 'favorite_stories',
+//     tableName: 'story_genres',
 //     timestamps: true,
 //     createdAt: 'created_at',
 //     updatedAt: 'updated_at',
 //   },
 // )
 
-// module.exports = FavoriteStory
+// module.exports = StoryGenre

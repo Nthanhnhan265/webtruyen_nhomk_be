@@ -24,7 +24,8 @@ module.exports = {
       },
       slug: {
         type: Sequelize.STRING(255),
-        allowNull: true,
+        allowNull: false,
+        unique: true,
       },
       views: {
         type: Sequelize.INTEGER,
@@ -51,6 +52,7 @@ module.exports = {
       chapter_order: {
         type: Sequelize.INTEGER,
         allowNull: true,
+        unique: true,
       },
     })
   },

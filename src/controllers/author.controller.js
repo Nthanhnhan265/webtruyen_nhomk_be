@@ -15,16 +15,21 @@ const createAuthor = async (req, res) => {
 
 // Lấy danh sách tất cả tác giả
 const getAllAuthors = async (req, res) => {
+    console.log("kiểm tra tham số", req.query);
+
     try {
-        const { sort } = req.query; // Get the sort query parameter
-        console.log(sort);
-        // Call the getAllAuthors function from authorService
-        const authors = await authorService.getAllAuthors(sort); // Pass sortOption to service
-        res.status(200).json(authors);
+        const { author_name, description, sort, page, limit = 10 } = req.query; // Mặc định trang đầu tiên và giới hạn 10 hàng
+
+        const { authors, totalCount } = await authorService.getAllAuthors(author_name, description, sort, page, limit);
+        const totalPages = Math.ceil(totalCount / limit); // Tính số trang
+
+        res.status(200).json({ authors, totalCount, totalPages });
     } catch (error) {
-        res.status(500).json({ message: 'Error retrieving authors', error });
+        res.status(500).json({ message: 'Lỗi khi lấy danh sách tác giả', error });
     }
 };
+
+
 // Lấy chi tiết một tác giả
 const getAuthorById = async (req, res) => {
     console.log("check get one");
