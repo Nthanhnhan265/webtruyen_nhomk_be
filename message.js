@@ -109,4 +109,14 @@ module.exports = {
     NoUpdate: 'Không có thông tin nào được cập nhật',
     invalidDataQuery: 'Dữ liệu truy vấn không hợp lệ',
   },
+  auth: {
+    createSusses: 'Đăng ký thành công',
+    nameError: 'Tên đăng nhập không hợp lệ',
+    nameInvalid: 'Tên đăng nhập không tồn tại',
+    passwordIncorrect: 'Mật khẩu không đúng',
+    registrationfailed: 'Đăng ký thất bại, vui lòng thử lại.',
+    passwordNotMatch: 'Mật khẩu không khớp.',
+    emailExists: 'Email đã tồn tại',
+    nameExists: 'Tên đăng nhập đã tồn tại',
+  }
 }
