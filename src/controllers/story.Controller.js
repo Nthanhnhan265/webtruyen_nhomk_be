@@ -1,6 +1,11 @@
 const message = require('../../message');
 const storyService = require('../services/stories.service');
-
+const message = require('@root/message.js')
+const {
+  getChaptersByStoryId,
+  getChapterBySlug,
+} = require('../services/chapter.service')
+const createHttpError = require('http-errors')
 // Tạo một câu chuyện mới
 exports.createStory = async (req, res) => {
   console.log("check create storie", req.body);
@@ -49,17 +54,17 @@ exports.getStories = async (req, res) => {
   }
 }
 
-
 // Lấy một câu chuyện theo ID
 exports.getStoryById = async (req, res) => {
   try {
     // Gọi hàm lấy câu chuyện theo ID từ storyService
-    const story = await storyService.getStoryById(req.params.id);
-    if (!story) return res.status(404).json({ error: "Không tìm thấy câu chuyện" });
-    res.status(200).json(story); // Trả về câu chuyện với mã trạng thái 200 (OK)
+    const story = await storyService.getStoryById(req.params.id)
+    if (!story)
+      return res.status(404).json({ error: 'Không tìm thấy câu chuyện' })
+    res.status(200).json(story) // Trả về câu chuyện với mã trạng thái 200 (OK)
   } catch (error) {
     // Xử lý lỗi và trả về thông báo lỗi nếu có
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message })
   }
 }
 
@@ -67,12 +72,13 @@ exports.getStoryById = async (req, res) => {
 exports.updateStory = async (req, res) => {
   try {
     // Gọi hàm cập nhật câu chuyện từ storyService với ID và dữ liệu cập nhật từ req.body
-    const updatedStory = await storyService.updateStory(req.params.id, req.body);
-    if (!updatedStory) return res.status(404).json({ error: "Không tìm thấy câu chuyện" });
-    res.status(200).json(updatedStory); // Trả về câu chuyện đã cập nhật với mã trạng thái 200 (OK)
+    const updatedStory = await storyService.updateStory(req.params.id, req.body)
+    if (!updatedStory)
+      return res.status(404).json({ error: 'Không tìm thấy câu chuyện' })
+    res.status(200).json(updatedStory) // Trả về câu chuyện đã cập nhật với mã trạng thái 200 (OK)
   } catch (error) {
     // Xử lý lỗi và trả về thông báo lỗi nếu có
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ error: error.message })
   }
 }
 
@@ -92,5 +98,63 @@ exports.deleteStory = async (req, res) => {
       message: message.story.deleteFailed,
       error: error.message
     });
+  }
+}
+// lấy chương truyện bằng vào story_id
+exports.getChaptersByStory = async function handleGetChapters(req, res, next) {
+  try {
+    const { story_id } = req.params // Lấy story_id từ params
+    const { data, pagination } = await getChaptersByStoryId(story_id)
+
+    // if (!data.length) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     status: 404,
+    //     message: message.chapter.storyNotFound,
+    //     links: []
+    //   })
+    // }
+
+    return res.status(200).json({
+      success: true,
+      status: 200, 
+      message: message.chapter.fetchSuccess,
+      data: data,
+      pagination: pagination,
+      links: [],
+    })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({
+      success: false,
+      message: message.chapter.fetchChaptersFailed,
+      error: error.message,
+    })
+
+  }
+}
+
+// GET CHAPTER BY SLUG: slug-truyen/slug-chuong
+exports.getChapterBySlug = async function GetChapterBySlug(req, res, next) {
+  try {
+    const { slugStory, slugChapter } = req.params
+    const chapter = await getChapterBySlug(slugChapter)
+
+    if (!chapter) {
+      return next(createHttpError(404, message.chapter.notFound))
+    }
+    if (chapter.Story.slug !== slugStory) {
+      return next(createHttpError(404, message.chapter.notFound))
+    }
+
+    return res.status(200).json({
+      success: true,
+      status: 200,
+      message: message.chapter.fetchSuccess,
+      data: chapter,
+      links: [],
+    })
+  } catch (error) {
+    next(error)
   }
 }
