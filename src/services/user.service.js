@@ -118,7 +118,7 @@ async function searchUsers(
         { email: { [Op.like]: `%${keyword}%` } },
       ],
     },
-    include: [
+      include: [
       {
         model: Role,
         attributes: ['id', 'role_name', 'description'],

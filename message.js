@@ -46,23 +46,61 @@ module.exports = {
     expiredToken: 'Token đã hết hạn',
     missedToken: 'Yêu cầu refresh token',
   },
+
   chapter: {
     createFailed: 'Tạo chương thất bại',
     createSuccess: 'Tạo chương thành công',
     notFound: 'Không tìm thấy chương',
     fetchSuccess: 'Lấy dữ liệu chương thành công',
 
+    editNotFound: 'Chương truyện không tồn tại.',
+    chapterNameRequired: 'Tên chương không được để trống.',
+    chapterNameSpecialChars: 'Tên chương chỉ bao gồm chữ, số.',
+    chapterNameLength: 'Tên chương không được vượt quá 255 ký tự.',
+    contentRequired: 'Nội dung không được để trống.',
+    chapterOrderRequired: 'Số chương không được để trống.',
+    chapterOrderInvalid: 'Số chương phải là số nguyên dương.',
+    statusRequired: 'Bạn cần chọn trạng thái cho chương.',
+    statusInvalid: 'Trạng thái đã chọn không tồn tại.',
+    slugRequired: 'Slug không được để trống.',
+    slugLength: 'Slug không được vượt quá 255 ký tự.',
+    slugInvalid: 'Slug không được chứa khoảng trắng hoặc ký tự đặc biệt.',
+    storyNotFound: 'Truyện không hợp lệ',
+    storyInvalid: 'Truyện không hợp lệ',
     updateSuccess: 'Cập nhật chương thành công',
-    updateFailed: 'Cập nhật chương không thành công',
-
+    updateFailed: 'Cập nhật chương thất bại, Không tìm thấy chương truyện.',
     deleteSuccess: 'Xóa chương thành công',
     deleteFailed: 'Xóa chương thất bại',
-
-    chapterNameRequired: 'Vui lòng nhập tên chương hợp lệ.',
-    contentRequired: 'Nội dung chương không được để trống.',
-    slugRequired: 'Slug chương không được để trống.',
-    chapterOrderRequired: 'Thứ tự chương không được để trống.',
+    cancelConfirmation: 'Bạn có muốn Hủy quá trình này không?',
   },
+
+  review: {
+    createFailed: 'Tạo đánh giá thất bại',
+    createSuccess: 'Tạo đánh giá thành công',
+    fetchSuccess: 'Lấy đánh giá thành công',
+    updateSuccess: 'Cập nhật đánh giá thành công',
+    updateFailed: 'Cập nhật đánh giá thất bại',
+    deleteSuccess: 'Xóa đánh giá thành công',
+    deleteFailed: 'Xóa đánh giá thất bại',
+    notFound: 'Không tìm thấy đánh giá',
+
+    // Thông báo lỗi cho các trường review
+    userIdRequired: 'Vui lòng cung cấp ID người dùng.',
+    userIdInvalid: 'ID người dùng không hợp lệ.',
+    userIdNotExist: 'ID người dùng không tồn tại.',
+    userIdNoPermission:
+      'Bạn không có quyền thực hiện thao tác này với ID người dùng.',
+    storyNotFound: 'Không tìm thấy truyện',
+    storyIdRequired: 'Vui lòng cung cấp ID truyện.',
+    storyIdNotExist: 'Truyện không tồn tại.',
+    storyIdInvalid: 'ID truyện không hợp lệ.',
+    starRequired: 'Vui lòng cung cấp số sao.',
+    starRange: 'Số sao phải từ 1 đến 10.',
+    starInvalid: 'Số sao phải là số nguyên dương',
+    commentLength: 'Nội dung bình luận không được vượt quá 255 ký tự.',
+    reviewNotFound: 'Đánh giá không tồn tại.',
+  },
+
   generalErrors: {
     findSuccess: 'Tìm kiếm thành công',
     notFound: 'Không tìm thấy tài nguyên',

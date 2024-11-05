@@ -1,5 +1,5 @@
 // services/chapter.service.js
-const { Chapter } = require('@models')
+const { Chapter, Story } = require('@models')
 const createError = require('http-errors')
 const message = require('@root/message')
 const { Op } = require('sequelize')
@@ -20,6 +20,8 @@ async function createChapter(chapter) {
   } catch (error) {
     if (error.name === 'SequelizeValidationError') {
       throw createError(400, error.errors.map((err) => err.message).join(', '))
+    } else if (error.name === 'SequelizeUniqueConstraintError') {
+      throw createError(409, error.errors.map((err) => err.message).join(', '))
     } else {
       throw createError(500, message.chapter.createFailed)
     }
@@ -28,7 +30,7 @@ async function createChapter(chapter) {
 
 // READ CHAPTERS
 /**
- * Lấy danh sách tất cả chương truyện.
+ * Lấy danh sách tất cả chương truyện 
  * @returns {Promise<Array>} - Trả về danh sách chương truyện.
  */
 async function getChapters(
@@ -38,8 +40,52 @@ async function getChapters(
   limit = 10,
   offset = 0,
 ) {
-  const total = await Chapter.count()
+  const total = await Chapter.count({
+   
+  })
   const data = await Chapter.findAll({
+    where: {
+      status,
+    },
+    order: [[sortBy, order]],
+    limit: limit,
+    offset: offset,
+  })
+
+  const pagination = {
+    total: total,
+    page: page,
+    limit: limit,
+    totalPages: Math.ceil(total / limit),
+  }
+  return { data, pagination }
+}
+// Lấy danh sách tất cả chương truyện theo story_id 
+//nếu truyền vào all=true, không thì mặc định sẽ lấy tất cả truyện đã đăng (status=true)
+async function getChaptersByStoryId(
+  story_id,
+  getAll=false, 
+  sortBy = 'chapter_order',
+  order = 'ASC',
+  page = 1,
+  limit = 10,
+) {
+  const whereStatement = getAll ? {} : { status: true }
+  whereStatement.story_id = story_id
+  console.log(whereStatement)
+  const offset = (page - 1) * limit // Tính offset dựa trên trang
+  const total = await Chapter.count({ where: whereStatement }) // Đếm số chương theo story_id
+  const data = await Chapter.findAll({
+    where: whereStatement, // Lọc theo story_id và đã
+    attributes: [
+      'id',
+      'chapter_name',
+      'views',
+      'slug',
+      'published_at',
+      'chapter_order',
+      'status',
+    ],
     order: [[sortBy, order]],
     limit: limit,
     offset: offset,
@@ -117,7 +163,24 @@ async function getChapterByID(id) {
  * @returns {Promise<Object|null>} - Trả về đối tượng chương hoặc null nếu không tìm thấy.
  */
 async function getChapterBySlug(slug) {
-  const chapter = await Chapter.findOne({ where: { slug } })
+  const chapter = await Chapter.findOne({
+    where: { slug },
+    include: [
+      {
+        model: Story,
+        attributes: ['id', 'story_name', 'slug'],
+      },
+    ],
+    attributes: [
+      'id',
+      'chapter_name',
+      'content',
+      'slug',
+      'views',
+      'chapter_order',
+      'published_at',
+    ],
+  })
   if (!chapter) {
     throw createError(404, message.chapter.notFound)
   }
@@ -175,6 +238,7 @@ async function deleteChapterById(id) {
 module.exports = {
   createChapter,
   getChapters,
+  getChaptersByStoryId,
   getChapterByID,
   getChapterBySlug,
   updateChapter,

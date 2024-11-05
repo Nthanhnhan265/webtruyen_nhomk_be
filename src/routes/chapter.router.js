@@ -2,8 +2,6 @@
 const express = require('express')
 const {
   handleCreateChapter,
-  handleGetChapters,
-  handleGetChapterBySlug,
   handleUpdateChapter,
   handleDeleteChapter,
 } = require('@controllers/chapter.controller')
@@ -20,10 +18,10 @@ router.post('/', handleCreateChapter)
 //===================
 
 // GET /stories/:story_id/chapters - Lấy danh sách tất cả các chương của một truyện
-router.get('/:story_id/chapters', handleGetChapters)
+// router.get('/:story_id/chapters', handleGetChapters)
 
-// GET /chapters/:slug - Lấy thông tin chi tiết của một chương theo slug
-router.get('/:slug', handleGetChapterBySlug)
+// GET /chapters/:slug -  người dùng nhập slug-truyen/slug-chuong để xem một chương cụ thể
+// router.get('/:slug', handleGetChapterBySlug)
 
 //===================
 // Chapter Update API Endpoint
