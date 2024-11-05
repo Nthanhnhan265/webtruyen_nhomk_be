@@ -1,9 +1,9 @@
 // services/user.service.js
-const User = require('../models/user.model');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const { User } = require('../models/')
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
-const { JWT_SECRET } = process.env;
+const { JWT_SECRET } = process.env
 
 /**
  * Xử lý logic đăng nhập người dùng
@@ -13,22 +13,24 @@ const { JWT_SECRET } = process.env;
  */
 async function loginUser(username, password) {
   // Tìm người dùng theo username
-  const user = await User.findOne({ where: { username } });
-  
+  const user = await User.findOne({ where: { username } })
+
   if (!user) {
     // Trả về lỗi nếu người dùng không tồn tại
-    return { success: false, message: 'Tên đăng nhập không tồn tại' };
+    return { success: false, message: 'Tên đăng nhập không tồn tại' }
   }
 
   // Kiểm tra mật khẩu
-  const isPasswordValid = await bcrypt.compare(password, user.password);
+  const isPasswordValid = await bcrypt.compare(password, user.password)
   if (!isPasswordValid) {
     // Trả về lỗi nếu mật khẩu không chính xác
-    return { success: false, message: 'Mật khẩu không chính xác' };
+    return { success: false, message: 'Mật khẩu không chính xác' }
   }
 
   // Tạo JWT token
-  const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+  const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, {
+    expiresIn: '1h',
+  })
 
   // Trả về thông tin đăng nhập thành công
   return {
@@ -40,7 +42,7 @@ async function loginUser(username, password) {
       email: user.email,
       token,
     },
-  };
+  }
 }
 
-module.exports = { loginUser };
+module.exports = { loginUser }
