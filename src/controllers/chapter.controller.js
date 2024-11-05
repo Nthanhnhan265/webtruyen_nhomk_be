@@ -32,6 +32,19 @@ async function handleCreateChapter(req, res, next) {
   }
 
   try {
+    const page = parseInt(req.query.page) || 1; // Default page is 1 if not specified
+    const limit = parseInt(req.query.limit) || 10; // Default limit is 10 if not specified
+    const offset = (page - 1) * limit; // Calculate the starting point
+    const storyId = req.query.storyId; // Get the story_id from the query
+
+    const { count, rows } = await chapterService.getChapters(limit, offset, storyId);
+
+    res.status(200).json({
+      total: count, // Total number of records
+      page, // Current page
+      totalPages: Math.ceil(count / limit), // Total number of pages
+      chapters: rows, // Chapter data for the current page
+    });
     const newChapter = await createChapter({
       chapter_name,
       content,

@@ -1,17 +1,20 @@
-const express = require('express')
-const router = express.Router()
-const storiesController = require('../controllers/story.Controller')
+const express = require("express");
+const router = express.Router();
+const storiesController = require("../controllers/story.Controller");
+const { uploadSingleFile } = require('../middlewares/upload.middleware')
 
-router.post('/create', storiesController.createStory)
-router.get('/', storiesController.getStories)
-router.get('/:id', storiesController.getStoryById)
-router.put('/update/:id', storiesController.updateStory)
-router.delete('/delete/:id', storiesController.deleteStory)
+// Routes for managing stories
+router.post("/create", uploadSingleFile("cover"), storiesController.createStory);
+router.get("/", storiesController.getStories);
+router.get("/:id", storiesController.getStoryById);
+router.put("/update/:id", uploadSingleFile("cover"), storiesController.updateStory);
+router.delete("/delete/:id", storiesController.deleteStory);
 
-// GET /stories/:story_id/chapters - Lấy danh sách tất cả các chương của một truyện bằng id cua truyen
-router.get('/:story_id/chapters', storiesController.getChaptersByStory)
+// New route to fetch chapters for a specific story by story_id
+router.get("/:story_id/chapters", storiesController.getChaptersByStory);
 
-// GET stories/:slug-truyen/:slug-chuong -  người dùng nhập slug-truyen/slug-chuong để xem một chương cụ thể
-// router.get('/:slugStory/:slugChapter', storiesController.getChapterBySlug)
+// (Optional/Commented) Route to fetch a specific chapter using slugs for story and chapter
+// router.get("/:slugStory/:slugChapter", storiesController.getChapterBySlug);
 
-module.exports = router
+module.exports = router;
+
