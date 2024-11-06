@@ -1,5 +1,5 @@
 // services/user.service.js
-const User = require('../models/');
+const {User} = require('../models/');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
