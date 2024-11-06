@@ -6,6 +6,12 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // Định nghĩa quan hệ ở đây nếu cần
       // Ví dụ: Genre.hasMany(models.Story, { foreignKey: 'genre_id', as: 'stories' });
+      Genre.belongsToMany(models.Story, {
+        through: models.StoryGenre,
+        foreignKey: 'genre_id',
+        otherKey: 'story_id',
+        as: 'stories',
+      });
     }
   }
 
@@ -34,9 +40,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: 'Genre',
       tableName: 'genres',
-      timestamps: true,
-      createdAt: 'created_at',
-      updatedAt: 'updated_at',
+      timestamps: false
     },
   )
 
