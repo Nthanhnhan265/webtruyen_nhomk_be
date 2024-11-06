@@ -143,7 +143,7 @@ module.exports = {
       'Tham số limit không hợp lệ: phải là một số nguyên dương  và không được để trống .',
     pageRequired:
       'Tham số page không hợp lệ: phải là một số nguyên dương và không được để trống . ',
-
+  },
     auth: {
       createSusses: 'Đăng ký thành công',
       nameError: 'Tên đăng nhập không hợp lệ',
@@ -154,8 +154,7 @@ module.exports = {
       emailExists: 'Email đã tồn tại',
       nameExists: 'Tên đăng nhập đã tồn tại',
     },
-  },
-}
+  }
 //   auth: {
 //     emailRequired: 'Vui lòng nhập email',
 //     emailNotFound: 'Email không tồn tại',
