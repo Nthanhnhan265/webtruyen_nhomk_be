@@ -14,7 +14,7 @@ router.delete("/delete/:id", storiesController.deleteStory);
 router.get("/:story_id/chapters", storiesController.getChaptersByStory);
 
 // (Optional/Commented) Route to fetch a specific chapter using slugs for story and chapter
-// router.get("/:slugStory/:slugChapter", storiesController.getChapterBySlug);
+router.get("/:slugStory/:slugChapter", storiesController.getChapterBySlug);
 
 module.exports = router;
 
