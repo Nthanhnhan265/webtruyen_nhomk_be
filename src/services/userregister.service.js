@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs'); // Để mã hóa mật khẩu
 const jwt = require('jsonwebtoken'); // Để tạo token cho user
-const User = require('../models/user.model'); // Import model User
+const User = require('../models/'); // Import model User
 const createError = require('http-errors');
 const message = require('@root/message');
 const { JWT_SECRET } = process.env; // Sử dụng biến môi trường chứa JWT secret
