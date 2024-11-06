@@ -7,14 +7,25 @@ const {
 const createHttpError = require("http-errors");
 // Tạo một câu chuyện mới
 exports.createStory = async (req, res) => {
-  console.log("check create storie", req.body);
-  const uploadedFile = req.file;
-  const avatar = uploadedFile ? uploadedFile.filename : null;
+ 
+//   console.log("check create storie", req.body);
+//   const uploadedFile = req.file;
+//   const avatar = uploadedFile ? uploadedFile.filename : null;
+//   try {
+//     // Gọi hàm tạo câu chuyện từ storyService với dữ liệu từ req.body
+//     const story = await storyService.createStory(req.body);
+ 
+  console.log('check create storie', req.body)
+  const { status, author_id, description, story_name, total_chapters, views, keywords, slug } = req.body;
+  const uploadedFile = req.file
+  const cover = uploadedFile ? uploadedFile.filename : null
   try {
     // Gọi hàm tạo câu chuyện từ storyService với dữ liệu từ req.body
-    const story = await storyService.createStory(req.body);
+    const story = await storyService.createStory({ status, author_id, description, story_name, total_chapters, views, cover, keywords, slug })
+ 
     res.status(201).json({
       message: message.story.createSuccess,
+      success: true,
       story: story,
     }); // Trả về câu chuyện đã tạo với mã trạng thái 201 (Created)
   } catch (error) {
@@ -22,6 +33,7 @@ exports.createStory = async (req, res) => {
     res
       .status(400)
       .json({ message: message.story.deleteFailed, error: error.message });
+ 
   }
 };
 
@@ -153,15 +165,35 @@ exports.getStoryById = async (req, res) => {
 // storyService.js
 // Cập nhật một câu chuyện
 exports.updateStory = async (req, res) => {
+  console.log("check du lieu cua update stories", req);
+
+  const { status, author_id, description, story_name, total_chapters, views, keywords, slug } = req.body;
+  const uploadedFile = req.file
+  const cover = uploadedFile ? uploadedFile.filename : null;
+  // const id = req.params.id;
   try {
     // Gọi hàm cập nhật câu chuyện từ storyService với ID và dữ liệu cập nhật từ req.body
-    const updatedStory = await storyService.updateStory(
-      req.params.id,
-      req.body
-    );
+ 
+//     const updatedStory = await storyService.updateStory(
+//       req.params.id,
+//       req.body
+//     );
+//     if (!updatedStory)
+//       return res.status(404).json({ error: "Không tìm thấy câu chuyện" });
+//     res.status(200).json(updatedStory); // Trả về câu chuyện đã cập nhật với mã trạng thái 200 (OK)
+ 
+    const updatedStory = await storyService.updateStory(req.params.id, { status, author_id, description, story_name, total_chapters, views, cover, keywords, slug })
     if (!updatedStory)
-      return res.status(404).json({ error: "Không tìm thấy câu chuyện" });
-    res.status(200).json(updatedStory); // Trả về câu chuyện đã cập nhật với mã trạng thái 200 (OK)
+      return res.status(404).json({ error: 'Không tìm thấy câu chuyện' })
+    res.status(200).json(
+
+      {
+        success: true,
+        updatedStory: updatedStory
+
+      }
+    ) // Trả về câu chuyện đã cập nhật với mã trạng thái 200 (OK)
+ 
   } catch (error) {
     // Xử lý lỗi và trả về thông báo lỗi nếu có
     res.status(400).json({ error: error.message });

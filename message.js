@@ -37,7 +37,9 @@ module.exports = {
     sizeError: 'Vui lòng chọn ảnh có kích thước hợp lệ (tối đa 5MB).',
     uploadFail: 'Tải lên ảnh bìa thất bại, vui lòng thử lại sau.',
   },
-
+  roles: {
+    invalid: 'Vai trò không hợp lệ',
+  },
   chapter: {
     createFailed: 'Tạo chương thất bại',
     createSuccess: 'Tạo chương thành công',

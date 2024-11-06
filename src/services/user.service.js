@@ -4,6 +4,7 @@ const createError = require('http-errors')
 const message = require('@root/message')
 const { where, or, Op } = require('sequelize')
 const fs = require('fs')
+const { error } = require('console')
 // ==========================
 // User CRUD Functions
 // ==========================
@@ -16,6 +17,10 @@ const fs = require('fs')
  */
 async function createUser(user) {
   try {
+    const roles = [1, 2]
+    if (updateData.role_id && !roles.includes(Number(updateData.role_id))) {
+      return createError(400, message.roles.invalid)
+    }
     return await User.create(user)
   } catch (error) {
     if (error.name === 'SequelizeValidationError') {
@@ -28,7 +33,7 @@ async function createUser(user) {
         throw createError(409, message.user.usernameExisted)
       }
     } else {
-      throw createError(500, message.user.createFailed)
+      throw createError(error.statusCode || 500, message.user.createFailed)
     }
   }
 }
@@ -118,7 +123,7 @@ async function searchUsers(
         { email: { [Op.like]: `%${keyword}%` } },
       ],
     },
-      include: [
+    include: [
       {
         model: Role,
         attributes: ['id', 'role_name', 'description'],
@@ -167,6 +172,10 @@ async function getUserByID(id) {
  */
 async function updateUser(id, updateData) {
   try {
+    const roles = [1, 2]
+    if (updateData.role_id && !roles.includes(Number(updateData.role_id))) {
+      throw createError(400, 'role tao lao')
+    }
     const currentUser = await User.findByPk(id)
     if (!currentUser) {
       return {

@@ -15,20 +15,7 @@ exports.createStory = async (storyData) => {
 };
 
 // Lấy tất cả các câu chuyện với xử lý lỗi
-
-exports.getAllStories = async (
-  story_name,
-  description,
-  sortOrder,
-  page,
-  limit
-) => {
-  console.log("check story_name:", story_name);
-  console.log("check description:", description);
-  console.log("check sortOrder:", sortOrder);
-  console.log("check page:", page);
-  console.log("check limit:", limit);
-
+exports.getAllStories = async (story_name, description, sortOrder, page, limit) => {
   try {
     // Kiểm tra các tham số
     if (story_name && typeof story_name !== "string") {
