@@ -16,12 +16,14 @@ const app = express()
 //======================================
 const userRouter = require('./src/routes/user.router.js')
 const authorRouter = require('./src/routes/author.router.js')
-const storyRouter = require('./src/routes/stories.js')
+const storyRouter = require('./src/routes/stories.router.js')
 const chapterRouter = require('./src/routes/chapter.router.js')
 const authRouter = require('./src/routes/auth.router.js')
 const reviewRouter = require('./src/routes/review.router.js')
 const register = require('./src/routes/register.router.js')
 const login = require('./src/routes/login.router.js')
+const genreStoriesRouter = require('./src/routes/genreStorie.router.js');
+const genreRouter = require('./src/routes/genre.router.js');
 
 //======================================
 //Configuration: static files, 
@@ -35,6 +37,7 @@ app.use(cors({ credentials: true, origin: true }))
 //=======================================
 //ROUTERS
 // Uncomment if needed: app.use(verifyAccessToken)
+app.use('/api/genres', genreRouter);
 app.use('/api/story/', storyRouter)
 app.use('/api/reviews', reviewRouter)
 app.use('/api/chapters', chapterRouter)
@@ -43,8 +46,9 @@ app.use('/api/users', userRouter)
 app.use('/api/authors', authorRouter)
 app.use('/api/stories', storyRouter)
 app.use('/api/reviews', reviewRouter)
-app.use('/api/register' , register)
-app.use('/api/login' , login)
+app.use('/api/register', register)
+app.use('/api/login', login)
+app.use('/api/story-genre', genreStoriesRouter);
 
 //MIDDLEWARE
 // Middleware: error handler for 404
