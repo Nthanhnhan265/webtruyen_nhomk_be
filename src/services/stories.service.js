@@ -114,6 +114,7 @@ exports.getAllStories = async (
     throw createError(message.story.error, error.message);
   }
 };
+// v
 exports.getAllStorieView = async (
   story_name,
   description,
@@ -208,6 +209,7 @@ exports.getAllStorieView = async (
   }
 };
 // storyService.js
+// v
 exports.getStoryBySlug = async (slug) => {
   try {
     console.log(slug);
@@ -235,6 +237,7 @@ exports.getStoryBySlug = async (slug) => {
   }
 };
 
+// v
 exports.getAllStorieNew = async (
   story_name,
   description,

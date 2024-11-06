@@ -57,6 +57,7 @@ exports.getStories = async (req, res) => {
     });
   }
 };
+// v
 exports.getAllStorieView = async (req, res) => {
   try {
     // Lấy các tham số truy vấn từ request
@@ -89,6 +90,7 @@ exports.getAllStorieView = async (req, res) => {
     });
   }
 };
+// v
 exports.getAllStorieNew = async (req, res) => {
   try {
     // Lấy các tham số truy vấn từ request
