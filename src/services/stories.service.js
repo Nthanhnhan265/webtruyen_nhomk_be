@@ -1,7 +1,7 @@
-const { Story } = require('../models');
-const { Op } = require('sequelize'); // Import toán tử Op từ Sequelize
-const message = require('../../message');
-const createError = require('http-errors')
+const { Story } = require("../models");
+const { Op } = require("sequelize"); // Import toán tử Op từ Sequelize
+const message = require("../../message");
+const createError = require("http-errors");
 
 // Tạo một câu chuyện mới với xử lý lỗi
 exports.createStory = async (storyData) => {
@@ -15,20 +15,18 @@ exports.createStory = async (storyData) => {
 };
 
 // Lấy tất cả các câu chuyện với xử lý lỗi
-
 exports.getAllStories = async (story_name, description, sortOrder, page, limit) => {
-
   try {
     // Kiểm tra các tham số
-    if (story_name && typeof story_name !== 'string') {
+    if (story_name && typeof story_name !== "string") {
       throw this.createError(message.story.story_nameRequired);
     }
 
-    if (description && typeof description !== 'string') {
+    if (description && typeof description !== "string") {
       throw createError(message.story.descriptionRequired);
     }
 
-    const validSortOrders = ['ASC', 'DESC'];
+    const validSortOrders = ["ASC", "DESC"];
     if (sortOrder && !validSortOrders.includes(sortOrder.toUpperCase())) {
       throw createError(message.story.sortOrderRequired);
     }
@@ -49,16 +47,16 @@ exports.getAllStories = async (story_name, description, sortOrder, page, limit) 
     if (story_name) {
       whereConditions.push({
         story_name: {
-          [Op.like]: `%${story_name}%`
-        }
+          [Op.like]: `%${story_name}%`,
+        },
       });
     }
 
     if (description) {
       whereConditions.push({
         description: {
-          [Op.like]: `%${description}%`
-        }
+          [Op.like]: `%${description}%`,
+        },
       });
     }
 
@@ -67,20 +65,20 @@ exports.getAllStories = async (story_name, description, sortOrder, page, limit) 
     // Lấy danh sách câu chuyện với phân trang
     const stories = await Story.findAll({
       where: whereConditions.length > 0 ? { [Op.or]: whereConditions } : {},
-      order: [['story_name', sortOrder ? sortOrder.toUpperCase() : 'ASC']], // Mặc định là ASC nếu không có sortOrder
+      order: [["story_name", sortOrder ? sortOrder.toUpperCase() : "ASC"]], // Mặc định là ASC nếu không có sortOrder
       offset: (pageInt - 1) * limitInt,
       limit: limitInt,
       attributes: [
-        'id',
-        'status',
-        'author_id',
-        'description',
-        'story_name',
-        'total_chapters',
-        'views',
-        'cover',
-        'keywords',
-        'slug',
+        "id",
+        "status",
+        "author_id",
+        "description",
+        "story_name",
+        "total_chapters",
+        "views",
+        "cover",
+        "keywords",
+        "slug",
       ],
     });
 
@@ -94,7 +92,7 @@ exports.getAllStories = async (story_name, description, sortOrder, page, limit) 
       stories: stories.length > 0 ? stories : [],
       totalCount: totalCount,
       totalPages: Math.ceil(totalCount / limitInt), // Tính tổng số trang
-      currentPage: pageInt
+      currentPage: pageInt,
     };
 
     return result;
@@ -103,7 +101,225 @@ exports.getAllStories = async (story_name, description, sortOrder, page, limit) 
     throw createError(message.story.error, error.message);
   }
 };
+// v
+exports.getAllStorieView = async (
+  story_name,
+  description,
+  sortOrder,
+  page,
+  limit
+) => {
+  console.log("check story_name:", story_name);
+  console.log("check description:", description);
+  console.log("check sortOrder:", sortOrder);
+  console.log("check page:", page);
+  console.log("check limit:", limit);
 
+  try {
+    // Kiểm tra các tham số
+    if (story_name && typeof story_name !== "string") {
+      throw this.createError(message.story.story_nameRequired);
+    }
+
+    if (description && typeof description !== "string") {
+      throw createError(message.story.descriptionRequired);
+    }
+
+    const pageInt = parseInt(page);
+    if (isNaN(pageInt) || pageInt < 1) {
+      throw createError(message.story.pageRequired);
+    }
+
+    const limitInt = parseInt(limit);
+    if (isNaN(limitInt) || limitInt < 1) {
+      throw createError(message.story.limitRequired);
+    }
+
+    const whereConditions = [];
+
+    // Xây dựng điều kiện where nếu story_name hoặc description được cung cấp
+    if (story_name) {
+      whereConditions.push({
+        story_name: {
+          [Op.like]: `%${story_name}%`,
+        },
+      });
+    }
+
+    if (description) {
+      whereConditions.push({
+        description: {
+          [Op.like]: `%${description}%`,
+        },
+      });
+    }
+
+    console.log("Where Conditions:", whereConditions);
+
+    // Lấy danh sách câu chuyện với phân trang
+    const stories = await Story.findAll({
+      where: whereConditions.length > 0 ? { [Op.or]: whereConditions } : {},
+      order: [["views", "DESC"]], // Sắp xếp theo views giảm dần
+      offset: (pageInt - 1) * limitInt,
+      limit: limitInt,
+      attributes: [
+        "id",
+        "status",
+        "author_id",
+        "description",
+        "story_name",
+        "total_chapters",
+        "views",
+        "cover",
+        "keywords",
+        "slug",
+      ],
+    });
+
+    // Đếm tổng số câu chuyện phù hợp với tiêu chí
+    const totalCount = await Story.count({
+      where: whereConditions.length > 0 ? { [Op.or]: whereConditions } : {},
+    });
+
+    // Trả về danh sách câu chuyện, tổng số và số trang
+    const result = {
+      stories: stories.length > 0 ? stories : [],
+      totalCount: totalCount,
+      totalPages: Math.ceil(totalCount / limitInt), // Tính tổng số trang
+      currentPage: pageInt,
+    };
+
+    return result;
+  } catch (error) {
+    console.error(message.story.error, error);
+    throw createError(message.story.error, error.message);
+  }
+};
+// storyService.js
+// v
+exports.getStoryBySlug = async (slug) => {
+  try {
+    console.log(slug);
+    const story = await Story.findOne({
+      where: { slug }, // Tìm theo slug
+      attributes: [
+        "id",
+        "status",
+        "author_id",
+        "description",
+        "story_name",
+        "total_chapters",
+        "views",
+        "cover",
+        "keywords",
+        "slug",
+        "updated_at",
+      ],
+    });
+
+    return story;
+  } catch (error) {
+    console.error("Error fetching story by slug:", error);
+    throw error;
+  }
+};
+
+// v
+exports.getAllStorieNew = async (
+  story_name,
+  description,
+  sortOrder,
+  page,
+  limit
+) => {
+  console.log("HAM NEW");
+  console.log("check story_name:", story_name);
+  console.log("check description:", description);
+  console.log("check sortOrder:", sortOrder);
+  console.log("check page:", page);
+  console.log("check limit:", limit);
+
+  try {
+    // Kiểm tra các tham số
+    if (story_name && typeof story_name !== "string") {
+      throw createError(message.story.story_nameRequired);
+    }
+
+    if (description && typeof description !== "string") {
+      throw createError(message.story.descriptionRequired);
+    }
+
+    const pageInt = parseInt(page);
+    if (isNaN(pageInt) || pageInt < 1) {
+      throw createError(message.story.pageRequired);
+    }
+
+    const limitInt = parseInt(limit);
+    if (isNaN(limitInt) || limitInt < 1) {
+      throw createError(message.story.limitRequired);
+    }
+
+    const whereConditions = [];
+
+    // Xây dựng điều kiện where nếu story_name hoặc description được cung cấp
+    if (story_name) {
+      whereConditions.push({
+        story_name: {
+          [Op.like]: `%${story_name}%`,
+        },
+      });
+    }
+
+    if (description) {
+      whereConditions.push({
+        description: {
+          [Op.like]: `%${description}%`,
+        },
+      });
+    }
+
+    console.log("Where Conditions:", whereConditions);
+
+    // Lấy danh sách câu chuyện với phân trang
+    const stories = await Story.findAll({
+      where: whereConditions.length > 0 ? { [Op.or]: whereConditions } : {},
+      order: [["updated_at", "DESC"]], // Sắp xếp theo ngày cập nhật mới nhất
+      offset: (pageInt - 1) * limitInt,
+      limit: limitInt,
+      attributes: [
+        "id",
+        "status",
+        "author_id",
+        "description",
+        "story_name",
+        "total_chapters",
+        "views",
+        "cover",
+        "keywords",
+        "slug",
+        "updated_at", // Thêm updated_at để hiển thị ngày cập nhật
+      ],
+    });
+
+    // Đếm tổng số câu chuyện phù hợp với tiêu chí
+    const totalCount = await Story.count({
+      where: whereConditions.length > 0 ? { [Op.or]: whereConditions } : {},
+    });
+
+    // Trả về danh sách câu chuyện, tổng số và số trang
+    const result = {
+      stories: stories.length > 0 ? stories : [],
+      totalCount: totalCount,
+      totalPages: Math.ceil(totalCount / limitInt), // Tính tổng số trang
+      currentPage: pageInt,
+    };
+
+    return result;
+  } catch (error) {
+    console.error(message.story.error, error);
+    throw createError(message.story.error, error.message);
+  }
+};
 
 // Lấy một câu chuyện theo ID với xử lý lỗi khi ID không tồn tại
 exports.getStoryById = async (id) => {
@@ -170,8 +386,8 @@ exports.deleteStory = async (id) => {
   } catch (error) {
     // console.error(`Lỗi khi xóa câu chuyện với ID ${id}:`, error);
     // Nếu error không có thông tin message, trả về thông báo mặc định
-    const errorMessage = error.message || 'Không thể xóa câu chuyện. Vui lòng thử lại sau.';
+    const errorMessage =
+      error.message || "Không thể xóa câu chuyện. Vui lòng thử lại sau.";
     throw createError({ success: false, message: errorMessage }); // Trả về thông báo lỗi chi tiết
   }
 };
-

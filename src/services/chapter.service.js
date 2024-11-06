@@ -1,7 +1,7 @@
-const { Chapter, Story } = require('@models');
-const createError = require('http-errors');
-const message = require('@root/message');
-const { Op } = require('sequelize');
+const { Chapter, Story } = require("@models");
+const createError = require("http-errors");
+const message = require("@root/message");
+const { Op } = require("sequelize");
 
 // ==========================
 // Chapter CRUD Functions
@@ -17,8 +17,8 @@ async function createChapter(chapter) {
   try {
     return await Chapter.create(chapter);
   } catch (error) {
-    if (error.name === 'SequelizeValidationError') {
-      throw createError(400, error.errors.map((err) => err.message).join(', '));
+    if (error.name === "SequelizeValidationError") {
+      throw createError(400, error.errors.map((err) => err.message).join(", "));
     } else {
       throw createError(500, message.chapter.createFailed);
     }
@@ -34,7 +34,13 @@ async function createChapter(chapter) {
  * @param {number} [limit=10] - Số lượng bản ghi trên mỗi trang.
  * @returns {Promise<{data: Array, pagination: Object}>} - Dữ liệu chương và thông tin phân trang.
  */
-async function getChapters(sortBy = 'chapter_order', order = 'ASC', page = 1, limit = 10, offset = 0) {
+async function getChapters(
+  sortBy = "chapter_order",
+  order = "ASC",
+  page = 1,
+  limit = 10,
+  offset = 0
+) {
   const total = await Chapter.count();
   const data = await Chapter.findAll({
     order: [[sortBy, order]],
@@ -51,10 +57,44 @@ async function getChapters(sortBy = 'chapter_order', order = 'ASC', page = 1, li
 
   return { data, pagination };
 }
+// v
+async function getChaptersByStory1(story_id, page, limit) {
+  try {
+    // Tính toán offset cho phân trang
+    const offset = (page - 1) * limit;
 
-// Lấy danh sách tất cả chương truyện theo story_id 
+    // Lấy danh sách chương theo story_id, phân trang và sắp xếp theo chapter_order
+    const { rows, count } = await Chapter.findAndCountAll({
+      where: { story_id },
+      limit: limit,
+      offset: offset,
+      order: [["chapter_order", "ASC"]], // Sắp xếp theo chapter_order (hoặc bất kỳ thứ tự nào bạn muốn)
+    });
+
+    // Tính toán số trang
+    const totalPages = Math.ceil(count / limit);
+
+    return {
+      chapters: rows,
+      totalCount: count,
+      totalPages: totalPages,
+      currentPage: page,
+    };
+  } catch (error) {
+    throw new Error("Error fetching chapters: " + error.message);
+  }
+}
+
+// Lấy danh sách tất cả chương truyện theo story_id
 //nếu truyền vào all=true, không thì mặc định sẽ lấy tất cả truyện đã đăng (status=true)
-async function getChaptersByStoryId(story_id, getAll = false, sortBy = 'chapter_order', order = 'ASC', page = 1, limit = 10) {
+async function getChaptersByStoryId(
+  story_id,
+  getAll = false,
+  sortBy = "chapter_order",
+  order = "ASC",
+  page = 1,
+  limit = 10
+) {
   const whereStatement = getAll ? {} : { status: true };
   whereStatement.story_id = story_id;
   const offset = (page - 1) * limit; // Tính offset dựa trên trang
@@ -63,13 +103,13 @@ async function getChaptersByStoryId(story_id, getAll = false, sortBy = 'chapter_
   const data = await Chapter.findAll({
     where: whereStatement,
     attributes: [
-      'id',
-      'chapter_name',
-      'views',
-      'slug',
-      'published_at',
-      'chapter_order',
-      'status',
+      "id",
+      "chapter_name",
+      "views",
+      "slug",
+      "published_at",
+      "chapter_order",
+      "status",
     ],
     order: [[sortBy, order]],
     limit: limit,
@@ -96,7 +136,14 @@ async function getChaptersByStoryId(story_id, getAll = false, sortBy = 'chapter_
  * @param {number} [limit=10] - Số lượng bản ghi trên mỗi trang.
  * @returns {Promise<{data: Array, pagination: Object}>} - Dữ liệu chương và thông tin phân trang.
  */
-async function searchChapters(keyword, sortBy = 'chapter_order', order = 'ASC', page = 1, limit = 10, offset = 0) {
+async function searchChapters(
+  keyword,
+  sortBy = "chapter_order",
+  order = "ASC",
+  page = 1,
+  limit = 10,
+  offset = 0
+) {
   const total = await Chapter.count({
     where: {
       [Op.or]: [
@@ -150,17 +197,17 @@ async function getChapterBySlug(slug) {
     include: [
       {
         model: Story,
-        attributes: ['id', 'story_name', 'slug'],
+        attributes: ["id", "story_name", "slug"],
       },
     ],
     attributes: [
-      'id',
-      'chapter_name',
-      'content',
-      'slug',
-      'views',
-      'chapter_order',
-      'published_at',
+      "id",
+      "chapter_name",
+      "content",
+      "slug",
+      "views",
+      "chapter_order",
+      "published_at",
     ],
   });
 
@@ -183,7 +230,9 @@ async function updateChapter(id, updatedData) {
     if (!currentChapter) {
       throw createError(404, message.chapter.notFound);
     }
-    const [affectedCount] = await Chapter.update(updatedData, { where: { id } });
+    const [affectedCount] = await Chapter.update(updatedData, {
+      where: { id },
+    });
 
     if (affectedCount === 0) {
       throw createError(400, message.generalErrors.NoUpdate);
@@ -191,8 +240,8 @@ async function updateChapter(id, updatedData) {
 
     return await Chapter.findByPk(id);
   } catch (error) {
-    if (error.name === 'SequelizeValidationError') {
-      throw createError(400, error.errors.map((err) => err.message).join(', '));
+    if (error.name === "SequelizeValidationError") {
+      throw createError(400, error.errors.map((err) => err.message).join(", "));
     } else {
       throw createError(500, message.chapter.updateFailed);
     }
@@ -223,9 +272,9 @@ module.exports = {
   getChapters,
   getChaptersByStoryId,
   getChapterByID,
+  getChaptersByStory1,
   getChapterBySlug,
   updateChapter,
   deleteChapterById,
   searchChapters,
 };
-
