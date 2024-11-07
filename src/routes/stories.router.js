@@ -14,7 +14,7 @@ const storiesController = require('../controllers/story.Controller')
 // // v
 router.get('/getAllStorieView', storiesController.getAllStorieView)
 // // v
-// router.get("/getAllStorieNew", storiesController.getAllStorieNew);
+router.get('/getAllStorieNew', storiesController.getAllStorieNew)
 // router.get("/:id", storiesController.getStoryById);
 // // v
 router.get('/getStoryBySlug/:slug', storiesController.getStoryBySlug)

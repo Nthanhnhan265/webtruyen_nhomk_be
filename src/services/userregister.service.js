@@ -53,7 +53,7 @@ async function registerUser(userData) {
   // Mã hóa mật khẩu trước khi lưu vào database
   const salt = await bcrypt.genSalt(10)
   const hashedPassword = await bcrypt.hash(password, salt)
-
+  console.log(hashedPassword)
   // Tạo người dùng mới
   try {
     const newUser = await User.create({

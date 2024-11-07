@@ -71,7 +71,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: 'User',
       hooks: {
-        beforeCreate: User.hashPassword, // Sử dụng hook trước khi tạo
+        // beforeCreate: User.hashPassword, // Sử dụng hook trước khi tạo
       },
     },
   )
