@@ -8,7 +8,6 @@ const { error } = require('console')
 // ==========================
 // User CRUD Functions
 // ==========================
-
 // CREATE USER
 /**
  * Tạo một người dùng mới.
@@ -37,7 +36,6 @@ async function createUser(user) {
     }
   }
 }
-
 // READ USER
 /**
  * Lấy danh sách tất cả người dùng.
@@ -80,7 +78,6 @@ async function getUsers(
   }
   return { data, pagination }
 }
-
 /**
  * Tìm kiếm người dùng theo từ khóa
  * @param {string} keyword - Từ khóa tìm kiếm
@@ -143,7 +140,6 @@ async function searchUsers(
 
   return { data, pagination }
 }
-
 /**
  * Lấy thông tin chi tiết của một người dùng theo ID.
  * @param {number} id - ID của người dùng cần lấy thông tin.
@@ -162,7 +158,6 @@ async function getUserByID(id) {
     ],
   })
 }
-
 // UPDATE USER
 /**
  * Cập nhật thông tin người dùng.
@@ -230,7 +225,6 @@ async function updateUser(id, updateData) {
     }
   }
 }
-
 // DELETE USER
 /**
  * Xóa một người dùng theo ID.
@@ -267,9 +261,6 @@ async function deleteUserById(id) {
     throw createError(500, error.message) // Lỗi máy chủ
   }
 }
-
-module.exports = { deleteUserById }
-
 module.exports = {
   createUser,
   getUsers,
