@@ -21,11 +21,7 @@ async function loginUser(username, password) {
   }
 
   // Kiểm tra mật khẩu
-  const isPasswordValid = await bcrypt.compare(password, "$2a$10$8B5RiDPuPm8uLwlboHhCduZvqgOytQeRotv2pI.vsPMq76uPjojUS");
-  console.log('Mật khẩu đã mã hóa trong DB:', user.password); // In mật khẩu đã mã hóa từ DB
-  console.log('Mật khẩu nhập vào:', password); // In mật khẩu người dùng nhập vào
-  console.log('Kết quả so sánh mật khẩu:', isPasswordValid); // In kết quả so sánh mật khẩu
-
+  const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) {
     return { success: false, message: 'Mật khẩu không chính xác' };
   }

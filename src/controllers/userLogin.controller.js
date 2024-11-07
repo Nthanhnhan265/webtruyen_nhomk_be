@@ -1,8 +1,6 @@
 const createHttpError = require('http-errors');
 const { loginUser } = require('@services/userlogin.service');
 
-const { JWT_SECRET } = process.env; // Lấy JWT secret từ biến môi trường
-
 // ==========================
 // Xử lý Đăng Nhập
 // ==========================
