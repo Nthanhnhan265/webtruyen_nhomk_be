@@ -38,9 +38,6 @@ async function handleRegisterUser(req, res, next) {
       links: [],
     });
   } catch (error) {
-    // Log thông tin lỗi để debug
-    console.error('Error in handleRegisterUser:', error);
-
     // Xử lý các lỗi từ service
     if (error.status === 400 || error.status === 409) {
       return next(createHttpError(error.status, error.message)); // Lỗi từ service
