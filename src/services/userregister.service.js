@@ -1,8 +1,8 @@
-const bcrypt = require('bcryptjs'); // Để mã hóa mật khẩu
-const jwt = require('jsonwebtoken'); // Để tạo token cho user
-const {User} = require('../models/'); // Import model User
-const createError = require('http-errors');
-const message = require('@root/message');
+const bcrypt = require("bcryptjs"); // Để mã hóa mật khẩu
+const jwt = require("jsonwebtoken"); // Để tạo token cho user
+const { User } = require("../models/"); // Import model User
+const createError = require("http-errors");
+const message = require("@root/message");
 const { JWT_SECRET } = process.env; // Sử dụng biến môi trường chứa JWT secret
 
 // ==========================
@@ -18,14 +18,21 @@ async function registerUser(userData) {
   const { username, email, password, confirmPassword } = userData;
 
   if (username.length > 50) {
-    return { success: false, message: "Tên đăng nhập không được quá 50 ký tự." };
+    return {
+      success: false,
+      message: "Tên đăng nhập không được quá 50 ký tự.",
+    };
   }
   if (password.length > 50) {
-    return { success: false, message: "Mật khẩu nhập không được quá 50 ký tự." }
+    return {
+      success: false,
+      message: "Mật khẩu nhập không được quá 50 ký tự.",
+    };
   }
 
   // Kiểm tra yêu cầu độ mạnh của mật khẩu
-  const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+  const passwordRegex =
+    /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
   if (!password || !passwordRegex.test(password)) {
     return {
       success: false,
@@ -53,6 +60,7 @@ async function registerUser(userData) {
   // Mã hóa mật khẩu trước khi lưu vào database
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
+  console.log(hashedPassword);
 
   // Tạo người dùng mới
   try {
@@ -62,17 +70,21 @@ async function registerUser(userData) {
       password: hashedPassword,
       role_id: 2,
       status: 1,
-      avatar: 'default_avatar.png',
+      avatar: "default_avatar.png",
     });
 
     // Tạo JWT token
-    const token = jwt.sign({ id: newUser.id, email: newUser.email }, JWT_SECRET, {
-      expiresIn: '1h', // Token hết hạn sau 1 giờ
-    });
+    const token = jwt.sign(
+      { id: newUser.id, email: newUser.email },
+      JWT_SECRET,
+      {
+        expiresIn: "1h", // Token hết hạn sau 1 giờ
+      }
+    );
 
     return {
       success: true,
-      message: 'Đăng ký thành công!',
+      message: "Đăng ký thành công!",
       data: {
         userId: newUser.id,
         username: newUser.username,
