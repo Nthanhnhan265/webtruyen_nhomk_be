@@ -3,15 +3,27 @@ const authRouter = express.Router()
 const {
   handleLoginAdmin,
   handleRefreshToken,
+  handleLoginUser,
+  handleRegisterUser,
 } = require('@controllers/auth.controller.js')
+
 //=============== Authentication ===================//
 //=========================
-//sigin for admin, user
+//sign in for admin
 //=========================
-authRouter.post('/admin/login', handleLoginAdmin)
+authRouter.post('/login', handleLoginAdmin)
 
-//signup
+//=========================
+//sign in for user
+//=========================
+authRouter.post('/', handleLoginUser)
+
+//========================
+//sign up for user
+//========================
+authRouter.post('/', handleRegisterUser)
 
 //fresh token
 authRouter.post('/admin/refresh-token', handleRefreshToken)
+
 module.exports = authRouter
