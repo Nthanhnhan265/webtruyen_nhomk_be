@@ -2,7 +2,6 @@
 const { User } = require('../models/');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
 const { JWT_SECRET } = process.env;
 
 /**
@@ -25,7 +24,6 @@ async function loginUser(username, password) {
   if (!isPasswordValid) {
     return { success: false, message: 'Mật khẩu không chính xác' };
   }
-
 
   // Tạo JWT token
   const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });

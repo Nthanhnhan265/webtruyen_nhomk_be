@@ -119,4 +119,5 @@ module.exports = {
     emailExists: 'Email đã tồn tại',
     nameExists: 'Tên đăng nhập đã tồn tại',
   }
+  
 }

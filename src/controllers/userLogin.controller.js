@@ -1,5 +1,6 @@
-const createHttpError = require('http-errors');
 const { loginUser } = require('@services/userlogin.service');
+const jwt = require('jsonwebtoken');
+const createHttpError = require('http-errors');
 
 // ==========================
 // Xử lý Đăng Nhập
@@ -20,8 +21,25 @@ async function handleLoginUser(req, res, next) {
       });
     }
 
+    // Tạo token JWT trực tiếp thay vì gọi createToken
+    const token = jwt.sign(
+      { userId: result.data.userId, username: result.data.username },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    // Đặt cookie authToken nếu đăng nhập thành công
+    res.cookie('authToken', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 3600000, // 1 hour
+    });
+
     // Trả về kết quả đăng nhập thành công
-    return res.status(200).json(result);
+    return res.status(200).json({
+      success: true,
+      message: 'Đăng nhập thành công',
+    });
   } catch (error) {
     console.error(error);
     return next(createHttpError(500, 'Lỗi khi đăng nhập'));

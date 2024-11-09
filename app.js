@@ -9,6 +9,7 @@ const message = require('@root/message.js')
 const cors = require('cors')
 const express = require('express')
 const config = require('./src/config/sys.config.js')
+const cookieParser = require('cookie-parser');
 const app = express()
 
 //======================================
@@ -28,6 +29,7 @@ const login = require('./src/routes/login.router.js')
 //    JSON parsing, and urlencoded
 //======================================
 config(app, express)
+app.use(cookieParser());
 app.use(cors({ credentials: true, origin: true }))
 
 //=======================================
