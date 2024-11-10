@@ -62,7 +62,29 @@ const loginValidate = (data) => {
   })
   return rule.validate(data)
 }
+/** USER'S REGISTER VALIDATION
+ * Kiểm tra thông tin đăng nhập
+ * @param {Object} data
+ * @returns
+ */
+const registerValidate = (data) => {
+  const rule = Joi.object({
+    username: Joi.string().required().messages({
+      'any.required': message.auth.emailRequired,
+    }),
+    email: Joi.string().required().messages({
+      'any.required': message.auth.emailRequired,
+    }),
+    password: Joi.string().required().messages({
+      'any.required': message.auth.passwordRequired,
+    }),
+    confirmPassword: Joi.string().required().messages({
+      'any.required': message.auth.passwordRequired,
+    }),
+  })
 
+  return rule.validate(data)
+}
 /** CHAPTER'S VALIDATION FUNCTION
  * Kiểm tra tạo và chỉnh sửa chương truyện
  * @param {Object} data
@@ -161,5 +183,6 @@ module.exports = {
   userValidate,
   chapterValidate,
   loginValidate,
+  registerValidate,
   reviewValidate,
 }

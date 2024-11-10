@@ -15,6 +15,7 @@ const signAccessToken = (userId) => {
     }
     const secretKey = process.env.ACCESS_TOKEN_SECRET
     const option = {
+      //30 minutes
       expiresIn: '10s',
     }
     JWT.sign(payload, secretKey, option, (err, token) => {
@@ -25,7 +26,7 @@ const signAccessToken = (userId) => {
 }
 
 // GENERATE A REFRESH TOKEN
-/** Trả về 1 cho client 1 access token được ký bằng REFRESHj_TOKEN_SECRET
+/** Trả về 1 cho client 1 access token được ký bằng REFRESH_TOKEN_SECRET
  *  @param {number} userId - Id người dùng
  *  @returns {Promise}
  */
@@ -36,7 +37,7 @@ const signRefreshToken = (useId) => {
     }
     const secretKey = process.env.REFRESH_TOKEN_SECRET
     const option = {
-      expiresIn: '1h',
+      expiresIn: '14d',
     }
     JWT.sign(payload, secretKey, option, (err, token) => {
       if (err) reject(err)
@@ -46,7 +47,7 @@ const signRefreshToken = (useId) => {
 }
 
 // VERIFY A REFRESH TOKEN TO CREAT A NEW PAIR
-/** Xác minh tính chính
+/** Xác minh tính chính hợp lệ của refresh-token
  *  @param {number} userId - Id người dùng
  *  @returns {Promise}
  */
