@@ -17,7 +17,7 @@ const { error } = require('console')
 async function createUser(user) {
   try {
     const roles = [1, 2]
-    if (updateData.role_id && !roles.includes(Number(updateData.role_id))) {
+    if (user.role_id && !roles.includes(Number(user.role_id))) {
       return createError(400, message.roles.invalid)
     }
     return await User.create(user)

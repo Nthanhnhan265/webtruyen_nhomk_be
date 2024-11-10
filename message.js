@@ -160,5 +160,6 @@ module.exports = {
     invalidToken: 'Token không hợp lệ',
     expiredToken: 'Token đã hết hạn',
     missedToken: 'Yêu cầu token',
+    passwordRequired: 'Yêu cầu mật khẩu',
   },
 }
