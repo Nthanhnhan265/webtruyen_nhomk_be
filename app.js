@@ -1,49 +1,74 @@
-//Require
+//======================================
+//           Require modules
+//======================================
 require('dotenv').config()
 require('module-alias/register')
 
 const createError = require('http-errors')
 const message = require('@root/message.js')
 const cors = require('cors')
-const path = require('path')
 const express = require('express')
 const config = require('./src/config/sys.config.js')
+const db = require('@models')
+const { verifyAccessToken } = require('./src/middlewares/auth.midleware.js')
 const app = express()
-const userRouter = require('./src/routes/user.router.js')
-const authorUser = require('./src/routes/author.router.js')
+
+//======================================
+//            Import routers
+//======================================
+
 const authRouter = require('./src/routes/auth.router.js')
-const story = require('./src/routes/stories.js')
+const userRouter = require('./src/routes/user.router.js')
+const authorRouter = require('./src/routes/author.router.js')
+const storyRouter = require('./src/routes/stories.router.js')
+const chapterRouter = require('./src/routes/chapter.router.js')
+const reviewRouter = require('./src/routes/review.router.js')
+const genreStoriesRouter = require('./src/routes/genreStorie.router.js')
+const genreRouter = require('./src/routes/genre.router.js')
 
-const { log } = require('console')
-const PORT = process.env.PORT
-// const sequelize = require('./src/config/db_config.js')
-// const usermodel = require('./src/models/user.model.js')
-
-// configuration: static files, json() and urlencoded()
+//======================================
+//Configuration: static files,
+//    JSON parsing, and urlencoded
+//======================================
 config(app, express)
 app.use(cors({ credentials: true, origin: true }))
 
-//middleware & router
+//=======================================
+//        Middleware & router
+//=======================================
+//ROUTERS
+// Uncomment if needed: app.use(verifyAccessToken)
+app.use('/api/auth', authRouter)
+app.use(verifyAccessToken)
+app.use('/api/genres', genreRouter)
+app.use('/api/story/', storyRouter)
+app.use('/api/reviews', reviewRouter)
+app.use('/api/chapters', chapterRouter)
 app.use('/api/users', userRouter)
-app.use('/api/', authorUser)
-app.use('/api/story/', story)
-app.use('/api/', authRouter)
+app.use('/api/authors', authorRouter)
+app.use('/api/stories', storyRouter)
+app.use('/api/reviews', reviewRouter)
+app.use('/api/story-genre', genreStoriesRouter)
 
-//Middleware: error handler
+//MIDDLEWARE
+// Middleware: error handler for 404
 app.use((req, res, next) => {
   next(createError(404, message.generalErrors.notFound))
 })
 
-// Middleware
+// Middleware: generic error handler
 app.use((err, req, res, next) => {
   console.log(err)
-  res.status(err.status || 500).json({
+  res.status(err.statusCode || 500).json({
     success: false,
-    status: err.status || 500,
+    status: err.statusCode || 500,
     message: err.message || message.generalErrors.serverError,
   })
 })
-
-app.listen(PORT || 3001, () => {
-  console.log(`server is running on ${PORT}`)
+//======================================
+//           Start server
+//======================================
+const PORT = process.env.PORT || 3001
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`)
 })

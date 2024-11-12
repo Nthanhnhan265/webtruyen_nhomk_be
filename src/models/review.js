@@ -2,54 +2,59 @@
 const { Model } = require('sequelize')
 
 module.exports = (sequelize, DataTypes) => {
-  class FavoriteStory extends Model {
+  class Review extends Model {
     static associate(models) {
       // Định nghĩa quan hệ ở đây nếu cần
-      FavoriteStory.belongsTo(models.User, {
+      Review.belongsTo(models.User, {
         foreignKey: 'user_id',
-        as: 'user', // Tùy chọn này có thể điều chỉnh tùy theo yêu cầu
+        constraints: false,
       })
-      FavoriteStory.belongsTo(models.Story, {
+      Review.belongsTo(models.Story, {
         foreignKey: 'story_id',
-        as: 'story', // Tùy chọn này có thể điều chỉnh tùy theo yêu cầu
+        constraints: false,
       })
     }
   }
 
-  FavoriteStory.init(
+  Review.init(
     {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
       user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        primaryKey: true,
       },
       story_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        primaryKey: true,
+      },
+      star: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      comment: {
+        type: DataTypes.TEXT,
+        allowNull: true,
       },
     },
     {
       sequelize,
-      modelName: 'FavoriteStory',
-      tableName: 'favorite_stories',
+      modelName: 'Review',
+      tableName: 'reviews',
       timestamps: true,
       createdAt: 'created_at',
       updatedAt: 'updated_at',
     },
   )
 
-  return FavoriteStory
+  return Review
 }
 
 // const { Sequelize, DataTypes } = require('sequelize')
 // const sequelize = require('@config/db_config.js')
 
-// const FavoriteStory = sequelize.define(
-//   'FavoriteStory',
+// const Review = sequelize.define(
+//   'Review',
 //   {
 //     id: {
 //       type: DataTypes.INTEGER,
@@ -64,13 +69,21 @@ module.exports = (sequelize, DataTypes) => {
 //       type: DataTypes.INTEGER,
 //       allowNull: false,
 //     },
+//     star: {
+//       type: DataTypes.INTEGER,
+//       allowNull: false,
+//     },
+//     comment: {
+//       type: DataTypes.TEXT,
+//       allowNull: true,
+//     },
 //   },
 //   {
-//     tableName: 'favorite_stories',
+//     tableName: 'reviews',
 //     timestamps: true,
 //     createdAt: 'created_at',
 //     updatedAt: 'updated_at',
 //   },
 // )
 
-// module.exports = FavoriteStory
+// module.exports = Review

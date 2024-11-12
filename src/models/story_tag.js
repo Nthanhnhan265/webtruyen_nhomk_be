@@ -2,75 +2,75 @@
 const { Model } = require('sequelize')
 
 module.exports = (sequelize, DataTypes) => {
-  class FavoriteStory extends Model {
+  class StoryTag extends Model {
     static associate(models) {
       // Định nghĩa quan hệ ở đây nếu cần
-      FavoriteStory.belongsTo(models.User, {
-        foreignKey: 'user_id',
-        as: 'user', // Tùy chọn này có thể điều chỉnh tùy theo yêu cầu
-      })
-      FavoriteStory.belongsTo(models.Story, {
+      StoryTag.belongsTo(models.Story, {
         foreignKey: 'story_id',
         as: 'story', // Tùy chọn này có thể điều chỉnh tùy theo yêu cầu
+      })
+      StoryTag.belongsTo(models.Tag, {
+        foreignKey: 'tag_id',
+        as: 'tag', // Tùy chọn này có thể điều chỉnh tùy theo yêu cầu
       })
     }
   }
 
-  FavoriteStory.init(
+  StoryTag.init(
     {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      user_id: {
+      story_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      story_id: {
+      tag_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
     },
     {
       sequelize,
-      modelName: 'FavoriteStory',
-      tableName: 'favorite_stories',
+      modelName: 'StoryTag',
+      tableName: 'story_tags',
       timestamps: true,
       createdAt: 'created_at',
       updatedAt: 'updated_at',
     },
   )
 
-  return FavoriteStory
+  return StoryTag
 }
 
 // const { Sequelize, DataTypes } = require('sequelize')
 // const sequelize = require('@config/db_config.js')
 
-// const FavoriteStory = sequelize.define(
-//   'FavoriteStory',
+// const StoryTag = sequelize.define(
+//   'StoryTag',
 //   {
 //     id: {
 //       type: DataTypes.INTEGER,
 //       primaryKey: true,
 //       autoIncrement: true,
 //     },
-//     user_id: {
+//     story_id: {
 //       type: DataTypes.INTEGER,
 //       allowNull: false,
 //     },
-//     story_id: {
+//     tag_id: {
 //       type: DataTypes.INTEGER,
 //       allowNull: false,
 //     },
 //   },
 //   {
-//     tableName: 'favorite_stories',
+//     tableName: 'story_tags',
 //     timestamps: true,
 //     createdAt: 'created_at',
 //     updatedAt: 'updated_at',
 //   },
 // )
 
-// module.exports = FavoriteStory
+// module.exports = StoryTag

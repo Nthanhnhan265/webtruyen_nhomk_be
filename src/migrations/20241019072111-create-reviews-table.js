@@ -6,10 +6,12 @@ module.exports = {
       user_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        primaryKey:true, 
       },
       story_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        primaryKey:true, 
       },
       star: {
         type: Sequelize.INTEGER,
