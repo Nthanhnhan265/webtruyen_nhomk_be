@@ -8,6 +8,7 @@ const {
   handleUpdateReview,
   handleDeleteReview,
   handleGetReviewsByUserId,
+  handleSearchReviews,
 } = require('@controllers/review.controller')
 
 // Route để tạo một đánh giá mới
@@ -15,7 +16,7 @@ router.post('/', handleCreateReview)
 
 // Route để lấy tất cả đánh giá
 router.get('/', handleGetAllReviews)
-
+router.get('/search', handleSearchReviews)
 // Route để lấy đánh giá của một người dùng cụ thể
 router.get('/users/:user_id', handleGetReviewsByUserId)
 

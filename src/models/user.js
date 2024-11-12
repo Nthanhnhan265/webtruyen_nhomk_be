@@ -10,6 +10,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'role_id',
         constraints: false,
       })
+      User.hasMany(models.Review, {
+        foreignKey: 'user_id',
+        constraints: false,
+      })
     }
     // Phương thức kiểm tra mật khẩu
     async isRightPassword(password) {

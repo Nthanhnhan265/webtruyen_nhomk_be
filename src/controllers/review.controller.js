@@ -7,6 +7,7 @@ const {
   getReviewsByUserId,
   updateReview,
   deleteReview,
+  searchReviews,
 } = require('@services/review.service')
 const message = require('@root/message')
 const { reviewValidate } = require('@helper/validation')
@@ -49,7 +50,33 @@ async function handleCreateReview(req, res, next) {
  */
 async function handleGetAllReviews(req, res, next) {
   try {
-    const { data, pagination } = await getReviews()
+    const sortBy = req.query.sortBy || 'created_at'
+    const order = req.query.order || 'DESC'
+    const { data, pagination } = await getReviews(sortBy, order)
+    return res.status(200).json({
+      success: true,
+      status: 200,
+      message: message.review.fetchSuccess,
+      data,
+      pagination,
+      links: [],
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+/**
+ * Xử lý lấy tất cả đánh giá
+ * @param {Object} req - Yêu cầu HTTP
+ * @param {Object} res - Đối tượng phản hồi HTTP
+ * @param {Function} next - Hàm gọi tiếp theo
+ */
+async function handleSearchReviews(req, res, next) {
+  try {
+    const sortBy = req.query.sortBy || 'created_at'
+    const order = req.query.order || 'DESC'
+    const keyword = req.query.keyword || ''
+    const { data, pagination } = await searchReviews(keyword, sortBy, order)
     return res.status(200).json({
       success: true,
       status: 200,
@@ -166,4 +193,5 @@ module.exports = {
   handleUpdateReview,
   handleDeleteReview,
   handleGetReviewsByUserId,
+  handleSearchReviews,
 }
