@@ -1,19 +1,21 @@
 // routes/chapter.router.js
-const express = require("express");
+const express = require('express')
 const {
   handleCreateChapter,
   handleUpdateChapter,
   handleDeleteChapter,
-  getChaptersByStory,
-} = require("@controllers/chapter.controller");
+  getChaptersBySlug,
+  getChaptersByStoryAll,
+  HandelgetChaptersByStoryId,
+} = require('@controllers/chapter.controller')
 
-const router = express.Router();
+const router = express.Router()
+
 //===================
 // Chapter Create API Endpoint
 //===================
-router.post("/", handleCreateChapter);
-// v
-router.get("/chapterByStory", getChaptersByStory);
+router.post('/', handleCreateChapter)
+router.get("/chapterByStory", getChaptersByStoryAll);
 
 //===================
 // Chapter Read API Endpoints
@@ -23,16 +25,16 @@ router.get("/chapterByStory", getChaptersByStory);
 // router.get('/:story_id/chapters', handleGetChapters)
 
 // GET /chapters/:slug -  người dùng nhập slug-truyen/slug-chuong để xem một chương cụ thể
-// router.get('/:slug', handleGetChapterBySlug)
-
+router.get('/:slug', getChaptersBySlug)
+router.get('/getstory/:id', HandelgetChaptersByStoryId)
 //===================
 // Chapter Update API Endpoint
 //===================
-router.patch("/:id", handleUpdateChapter);
+router.patch('/:id', handleUpdateChapter)
 
 //===================
 // Chapter Delete API Endpoint
 //===================
-router.delete("/:id", handleDeleteChapter);
+router.delete('/:id', handleDeleteChapter)
 
-module.exports = router;
+module.exports = router
