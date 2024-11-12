@@ -25,6 +25,10 @@ module.exports = (sequelize, DataTypes) => {
         otherKey: 'tag_id',
         as: 'tags', // Tùy chọn này có thể điều chỉnh tùy theo yêu cầu
       })
+      Story.hasMany(models.Review, {
+        foreignKey: 'story_id',
+        constraints: false,
+      })
     }
   }
 
