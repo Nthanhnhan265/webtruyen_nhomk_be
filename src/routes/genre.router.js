@@ -5,6 +5,7 @@ const genreController = require('../controllers/genre.controller');
 
 // Route để lấy tất cả genres
 router.get('/', genreController.getAllGenresByName);
+router.get('/getAllgenres', genreController.getAllGenres);
 
 // Route để lấy một genre cụ thể theo ID
 router.get('/:id', genreController.getGenreById);

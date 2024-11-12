@@ -7,14 +7,14 @@ const {
 const createHttpError = require("http-errors");
 // Tạo một câu chuyện mới
 exports.createStory = async (req, res) => {
- 
-//   console.log("check create storie", req.body);
-//   const uploadedFile = req.file;
-//   const avatar = uploadedFile ? uploadedFile.filename : null;
-//   try {
-//     // Gọi hàm tạo câu chuyện từ storyService với dữ liệu từ req.body
-//     const story = await storyService.createStory(req.body);
- 
+
+  //   console.log("check create storie", req.body);
+  //   const uploadedFile = req.file;
+  //   const avatar = uploadedFile ? uploadedFile.filename : null;
+  //   try {
+  //     // Gọi hàm tạo câu chuyện từ storyService với dữ liệu từ req.body
+  //     const story = await storyService.createStory(req.body);
+
   console.log('check create storie', req.body)
   const { status, author_id, description, story_name, total_chapters, views, keywords, slug } = req.body;
   const uploadedFile = req.file
@@ -22,7 +22,7 @@ exports.createStory = async (req, res) => {
   try {
     // Gọi hàm tạo câu chuyện từ storyService với dữ liệu từ req.body
     const story = await storyService.createStory({ status, author_id, description, story_name, total_chapters, views, cover, keywords, slug })
- 
+
     res.status(201).json({
       message: message.story.createSuccess,
       success: true,
@@ -33,14 +33,14 @@ exports.createStory = async (req, res) => {
     res
       .status(400)
       .json({ message: message.story.deleteFailed, error: error.message });
- 
+
   }
 };
 
 exports.getStories = async (req, res) => {
   try {
     // Lấy các tham số truy vấn từ request
-    const { story_name, description, sort, page, limit = 10 } = req.query;
+    const { story_name, description, sortBy, sort, page, limit = 10 } = req.query;
     console.log("check param", req.query);
 
     // Gọi hàm getAllStories với các tham số để tìm kiếm, sắp xếp, và phân trang
@@ -48,6 +48,7 @@ exports.getStories = async (req, res) => {
       await storyService.getAllStories(
         story_name,
         description,
+        sortBy,
         sort,
         page,
         parseInt(limit)
@@ -144,7 +145,8 @@ exports.getStoryBySlug = async (req, res) => {
     const story = await storyService.getStoryBySlug(req.params.slug);
     if (!story)
       return res.status(404).json({ error: "Không tìm thấy câu chuyện" });
-    res.status(200).json(story); // Trả về câu chuyện với mã trạng thái 200 (OK)
+    res.status(200).json(
+      { success: true, message: "lay du lieu thanh cong", data: story }); // Trả về câu chuyện với mã trạng thái 200 (OK)
   } catch (error) {
     // Xử lý lỗi và trả về thông báo lỗi nếu có
     res.status(500).json({ error: error.message });
@@ -173,15 +175,15 @@ exports.updateStory = async (req, res) => {
   // const id = req.params.id;
   try {
     // Gọi hàm cập nhật câu chuyện từ storyService với ID và dữ liệu cập nhật từ req.body
- 
-//     const updatedStory = await storyService.updateStory(
-//       req.params.id,
-//       req.body
-//     );
-//     if (!updatedStory)
-//       return res.status(404).json({ error: "Không tìm thấy câu chuyện" });
-//     res.status(200).json(updatedStory); // Trả về câu chuyện đã cập nhật với mã trạng thái 200 (OK)
- 
+
+    //     const updatedStory = await storyService.updateStory(
+    //       req.params.id,
+    //       req.body
+    //     );
+    //     if (!updatedStory)
+    //       return res.status(404).json({ error: "Không tìm thấy câu chuyện" });
+    //     res.status(200).json(updatedStory); // Trả về câu chuyện đã cập nhật với mã trạng thái 200 (OK)
+
     const updatedStory = await storyService.updateStory(req.params.id, { status, author_id, description, story_name, total_chapters, views, cover, keywords, slug })
     if (!updatedStory)
       return res.status(404).json({ error: 'Không tìm thấy câu chuyện' })
@@ -193,7 +195,7 @@ exports.updateStory = async (req, res) => {
 
       }
     ) // Trả về câu chuyện đã cập nhật với mã trạng thái 200 (OK)
- 
+
   } catch (error) {
     // Xử lý lỗi và trả về thông báo lỗi nếu có
     res.status(400).json({ error: error.message });

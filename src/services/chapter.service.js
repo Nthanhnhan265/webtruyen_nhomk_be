@@ -58,12 +58,27 @@ async function getChapters(
   return { data, pagination };
 }
 // v
+
 async function getChaptersByStory1(story_id, page, limit) {
   try {
-    // Tính toán offset cho phân trang
+    // Nếu page là một chuỗi rỗng, lấy tất cả dữ liệu mà không phân trang
+    if (page === 0) {
+      const rows = await Chapter.findAll({
+        where: { story_id },
+        order: [["chapter_order", "ASC"]], // Sắp xếp theo chapter_order (hoặc bất kỳ thứ tự nào bạn muốn)
+      });
+
+      return {
+        chapters: rows,
+        totalCount: rows.length,
+        totalPages: 1, // Tổng số trang là 1 vì không phân trang
+        currentPage: 1, // Trang hiện tại là 1
+      };
+    }
+
+    // Nếu page không phải là chuỗi rỗng, thực hiện phân trang
     const offset = (page - 1) * limit;
 
-    // Lấy danh sách chương theo story_id, phân trang và sắp xếp theo chapter_order
     const { rows, count } = await Chapter.findAndCountAll({
       where: { story_id },
       limit: limit,
@@ -87,21 +102,12 @@ async function getChaptersByStory1(story_id, page, limit) {
 
 // Lấy danh sách tất cả chương truyện theo story_id
 //nếu truyền vào all=true, không thì mặc định sẽ lấy tất cả truyện đã đăng (status=true)
-async function getChaptersByStoryId(
-  story_id,
-  getAll = false,
-  sortBy = "chapter_order",
-  order = "ASC",
-  page = 1,
-  limit = 10
-) {
-  const whereStatement = getAll ? {} : { status: true };
-  whereStatement.story_id = story_id;
-  const offset = (page - 1) * limit; // Tính offset dựa trên trang
+async function getChaptersByStoryId(story_id) {
+  console.log("story chapter service", story_id);
 
-  const total = await Chapter.count({ where: whereStatement });
+  // Tìm kiếm một chương theo story_id
   const data = await Chapter.findAll({
-    where: whereStatement,
+    where: { story_id },  // Thay thế story_id bằng thuộc tính chính xác trong CSDL
     attributes: [
       "id",
       "chapter_name",
@@ -110,20 +116,10 @@ async function getChaptersByStoryId(
       "published_at",
       "chapter_order",
       "status",
-    ],
-    order: [[sortBy, order]],
-    limit: limit,
-    offset: offset,
+    ]
   });
 
-  const pagination = {
-    total: total,
-    page: page,
-    limit: limit,
-    totalPages: Math.ceil(total / limit),
-  };
-
-  return { data, pagination };
+  return { data };
 }
 
 // SEARCH CHAPTERS
@@ -205,6 +201,7 @@ async function getChapterBySlug(slug) {
       "chapter_name",
       "content",
       "slug",
+      "story_id",
       "views",
       "chapter_order",
       "published_at",
@@ -214,7 +211,7 @@ async function getChapterBySlug(slug) {
   if (!chapter) {
     throw createError(404, message.chapter.notFound);
   }
-  return chapter;
+  return { chapter };
 }
 
 // UPDATE CHAPTER

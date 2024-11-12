@@ -15,7 +15,7 @@ exports.createStory = async (storyData) => {
 };
 
 // Lấy tất cả các câu chuyện với xử lý lỗi
-exports.getAllStories = async (story_name, description, sortOrder, page, limit) => {
+exports.getAllStories = async (story_name, description, sortBy, sortOrder, page, limit) => {
   try {
     // Kiểm tra các tham số
     if (story_name && typeof story_name !== "string") {
@@ -40,9 +40,7 @@ exports.getAllStories = async (story_name, description, sortOrder, page, limit) 
     if (isNaN(limitInt) || limitInt < 1) {
       throw createError(message.story.limitRequired);
     }
-
     const whereConditions = [];
-
     // Xây dựng điều kiện where nếu story_name hoặc description được cung cấp
     if (story_name) {
       whereConditions.push({
@@ -65,7 +63,7 @@ exports.getAllStories = async (story_name, description, sortOrder, page, limit) 
     // Lấy danh sách câu chuyện với phân trang
     const stories = await Story.findAll({
       where: whereConditions.length > 0 ? { [Op.or]: whereConditions } : {},
-      order: [["story_name", sortOrder ? sortOrder.toUpperCase() : "ASC"]], // Mặc định là ASC nếu không có sortOrder
+      order: [[sortBy, sortOrder ? sortOrder.toUpperCase() : "ASC"]], // Mặc định là ASC nếu không có sortOrder
       offset: (pageInt - 1) * limitInt,
       limit: limitInt,
       attributes: [
