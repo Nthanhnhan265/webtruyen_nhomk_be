@@ -14,7 +14,7 @@ const { JWT_SECRET } = process.env
 async function loginUser(username, password) {
   // Tìm người dùng theo username
   const user = await User.findOne({ where: { username } })
-
+  const a = true
   if (!user) {
     // Trả về lỗi nếu người dùng không tồn tại
     return { success: false, message: 'Tên đăng nhập không tồn tại' }
