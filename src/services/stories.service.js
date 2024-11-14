@@ -99,6 +99,96 @@ exports.getAllStories = async (story_name, description, sortBy, sortOrder, page,
     throw createError(message.story.error, error.message);
   }
 };
+
+exports.searchStories = async (keyword, page, limit) => {
+  try {
+    console.log("Đang tìm kiếm câu chuyện với từ khóa:", page, limit);
+
+    // Kiểm tra từ khóa
+    if (!keyword || typeof keyword !== 'string') {
+      throw createError(400, "Từ khóa là bắt buộc và phải là một chuỗi.");
+    }
+
+    // Kiểm tra giá trị của page và limit
+    if (isNaN(page) || page <= 0) {
+      throw createError(400, "Số trang không hợp lệ. Vui lòng cung cấp số trang hợp lệ.");
+    }
+    limit = parseInt(limit, 10);
+
+    if (isNaN(limit) || limit <= 0) {
+      throw createError(400, "Giới hạn số lượng câu chuyện không hợp lệ. Vui lòng cung cấp một giới hạn hợp lệ.");
+    }
+
+    // Tách từ khóa thành các phần tử nhỏ hơn để tìm kiếm từng từ
+    const searchTerms = keyword.trim().split(/\s+/);
+
+    // Tạo mảng điều kiện tìm kiếm
+    const whereConditions = searchTerms.map(term => ({
+      [Op.or]: [
+        { description: { [Op.like]: `%${term}%` } },
+        { story_name: { [Op.like]: `%${term}%` } },
+        { keywords: { [Op.like]: `%${term}%` } }
+      ]
+    }));
+
+    // Tính toán offset và limit
+    const offset = (page - 1) * limit;
+
+    // Tìm kiếm các câu chuyện với điều kiện tìm kiếm và phân trang
+    const stories = await Story.findAll({
+      where: {
+        [Op.and]: whereConditions // Kết hợp tất cả các điều kiện tìm kiếm
+      },
+      offset: offset,
+      limit: limit,
+      attributes: [
+        "id",
+        "status",
+        "author_id",
+        "description",
+        "story_name",
+        "total_chapters",
+        "views",
+        "cover",
+        "keywords",
+        "slug"
+      ]
+    });
+
+    // Đếm tổng số câu chuyện phù hợp với tiêu chí
+    const totalCount = await Story.count({
+      where: {
+        [Op.and]: whereConditions
+      }
+    });
+
+    // Tính tổng số trang
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // Trả về kết quả tìm kiếm cùng thông tin phân trang
+    return {
+      success: true,
+      data: stories,
+      totalCount: totalCount,
+      totalPages: totalPages,
+      currentPage: page
+    };
+  } catch (error) {
+    // In ra lỗi chi tiết
+    console.error("Lỗi khi tìm kiếm câu chuyện:", error);
+
+    // Kiểm tra và ném lại lỗi cụ thể
+    if (error.isJoi) {
+      // Nếu lỗi là từ Joi validation, trả về lỗi chi tiết
+      throw createError(400, `Lỗi đầu vào: ${error.details.map(e => e.message).join(', ')}`);
+    }
+
+    // Lỗi khác
+    throw createError(500, `Lỗi hệ thống: Không thể tìm kiếm câu chuyện. Chi tiết lỗi: ${error.message}`);
+  }
+};
+
+
 // v
 exports.getAllStorieView = async (
   story_name,
