@@ -61,7 +61,7 @@ app.use((err, req, res, next) => {
   console.log(err)
   res.status(err.statusCode || 500).json({
     success: false,
-    status: err.statusCode || 500,
+    status: err.statusCode || err.status || 500,
     message: err.message || message.generalErrors.serverError,
   })
 })

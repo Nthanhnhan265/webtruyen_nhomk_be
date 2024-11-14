@@ -173,6 +173,7 @@ async function handleUpdateReview(req, res, next) {
  */
 async function handleDeleteReview(req, res, next) {
   const { user_id, story_id } = req.params
+  console.log('>>> controller get param: ', user_id, story_id)
   try {
     const deleted = await deleteReview(user_id, story_id)
     return res.status(200).json({

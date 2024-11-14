@@ -319,25 +319,29 @@ async function updateReview(user_id, story_id, updatedData) {
  */
 async function deleteReview(user_id, story_id) {
   try {
+    console.log(user_id, story_id)
     const review = await Review.findOne({ where: { user_id, story_id } })
     if (!review) {
       throw createError(404, message.review.notFound)
     }
+    // const storyExists = await Story.findByPk(id)
+    // if (!storyExists) {
+    //   throw createError(404, message.review.storyNotFound)
+    // }
 
-    const storyExists = await Story.findByPk(story_id)
-    if (!storyExists) {
-      throw createError(404, message.review.storyNotFound)
-    }
-
-    const userExists = await User.findByPk(user_id)
-    if (!userExists) {
-      throw createError(404, message.user.notFound)
-    }
+    // const userExists = await User.findByPk(user_id)
+    // if (!userExists) {
+    //   throw createError(404, message.user.notFound)
+    // }
 
     await review.destroy()
     return { success: true, message: message.review.deleteSuccess }
   } catch (error) {
-    throw createError(500, message.review.deleteFailed)
+    console.log(error)
+    throw createError(
+      error.status || error.statusCode || 500,
+      message.review.deleteFailed,
+    )
   }
 }
 

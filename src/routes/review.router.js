@@ -28,5 +28,5 @@ router.patch('/users/:user_id/stories/:story_id', handleUpdateReview)
 
 // Route để xóa đánh giá theo user_id và story_id
 router.delete('/users/:user_id/stories/:story_id', handleDeleteReview)
-
+// http://localhost:3000/api/users/12/stories/1
 module.exports = router
