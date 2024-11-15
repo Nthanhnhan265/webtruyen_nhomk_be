@@ -39,7 +39,7 @@ app.use(cors({ credentials: true, origin: true }))
 //ROUTERS
 // Uncomment if needed: app.use(verifyAccessToken)
 app.use('/api/auth', authRouter)
-app.use(verifyAccessToken)
+// app.use(verifyAccessToken)
 app.use('/api/genres', genreRouter)
 app.use('/api/story/', storyRouter)
 app.use('/api/reviews', reviewRouter)

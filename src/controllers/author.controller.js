@@ -92,11 +92,46 @@ const deleteAuthor = async (req, res) => {
     }
 };
 
+
+const getAuthorWithStories = async (req, res) => {
+  const { slug } = req.params;  // Lấy slug từ URL
+
+  try {
+    const author = await authorService.getAuthorWithStories(slug);
+
+    // Trả về dữ liệu của tác giả và các sách
+    res.status(200).json({
+      author: {
+        id: author.id,
+        author_name: author.author_name,
+        author_slug: author.slug,
+        description: author.description,
+        stories: author.stories.map(story => ({
+          story_id: story.id,
+          story_name: story.story_name,
+          story_slug: story.slug,
+          cover: story.cover,
+          total_chapters: story.total_chapters,
+          genres: story.genres.map(genre => ({
+            genre_name: genre.genre_name,
+            genre_slug: genre.slug
+          }))
+        }))
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+
 module.exports = {
     createAuthor,
     getAllAuthors,
     getAuthorById,
     updateAuthor,
     deleteAuthor,
-    getAllAuthorsName
+    getAllAuthorsName,
+    getAuthorWithStories
 };

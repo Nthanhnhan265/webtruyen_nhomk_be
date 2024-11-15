@@ -275,3 +275,17 @@ exports.getChapterBySlug = async function GetChapterBySlug(req, res, next) {
     next(error);
   }
 };
+exports.getStoriesByGenre = async (req, res) => {
+  const { slug } = req.params; // Lấy slug từ URL
+
+  try {
+    const stories = await storyService.getStoriesByGenreSlug(slug);
+    res.status(200).json({ stories });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+
+// module.exports = { getStoriesByGenre };

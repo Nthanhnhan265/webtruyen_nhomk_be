@@ -42,6 +42,11 @@ router.delete('/delete/:id', storiesController.deleteStory)
 router.get('/:story_id/chapters', storiesController.getChaptersByStory)
 
 // (Optional/Commented) Route to fetch a specific chapter using slugs for story and chapter
-router.get('/:slugStory/:slugChapter', storiesController.getChapterBySlug)
+// router.get('/:slugStory/:slugChapter', storiesController.getChapterBySlug)
+
+// Tài 
+// Định nghĩa route để lấy danh sách các stories theo genreSlug
+router.get('/genre/:slug', storiesController.getStoriesByGenre);
+
 
 module.exports = router

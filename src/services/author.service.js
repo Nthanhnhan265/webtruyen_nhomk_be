@@ -1,7 +1,8 @@
-const { Author } = require('../models');
+// const { Author } = require('../models');
 const { Op } = require('sequelize'); // Import toán tử Op từ Sequelize
 const createError = require('http-errors')
 const message = require('../../message');
+const { Author, Story, Genre } = require('../models');  // Import các model Sequelize
 
 // Tạo tác giả mới
 const createAuthor = async (authorData) => {
@@ -163,6 +164,41 @@ const deleteAuthor = async (id) => {
 };
 
 
+// Service để lấy thông tin tác giả và các sách của tác giả
+const getAuthorWithStories = async (slug) => {
+  try {
+    // Sử dụng Sequelize để truy vấn dữ liệu
+    const author = await Author.findOne({
+      where: { slug },
+      attributes: ['id', 'author_name', 'slug', 'description'],
+      include: [
+        {
+          model: Story,
+          as: 'stories',
+          attributes: ['id', 'story_name', 'slug', 'cover', 'total_chapters'],
+          include: [
+            {
+              model: Genre,
+              as: 'genres',
+              attributes: ['genre_name', 'slug']
+            }
+          ]
+        }
+      ]
+    });
+
+    // Nếu không tìm thấy tác giả, trả về null
+    if (!author) {
+      throw new Error('Author not found');
+    }
+
+    return author;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 
 module.exports = {
   createAuthor,
@@ -170,5 +206,6 @@ module.exports = {
   getAuthorById,
   updateAuthor,
   deleteAuthor,
-  getAllAuthorsName
+  getAllAuthorsName,
+  getAuthorWithStories
 };

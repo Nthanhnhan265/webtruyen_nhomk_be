@@ -1,4 +1,5 @@
-const { Story, Author } = require('../models')
+// const { Story, Author } = require('../models')
+const { Story, Genre, Author } = require('../models'); // Import các model
 const { Op } = require('sequelize') // Import toán tử Op từ Sequelize
 const message = require('../../message')
 const createError = require('http-errors')
@@ -403,4 +404,43 @@ exports.deleteStory = async (id) => {
       error.message || 'Không thể xóa câu chuyện. Vui lòng thử lại sau.'
     throw createError({ success: false, message: errorMessage }) // Trả về thông báo lỗi chi tiết
   }
+
 }
+
+
+exports.getStoriesByGenreSlug = async (slug) => {
+  try {
+    const stories = await Story.findAll({
+      attributes: [
+        'id', 
+        'story_name', 
+        'slug', 
+        'cover', 
+        'description', 
+        'total_chapters',
+        'author_id',
+      ],
+      include: [
+        {
+          model: Genre,
+          as: 'genres',  // Đặt alias cho quan hệ Genre
+          attributes: ['genre_name', 'slug'],
+          through: { attributes: [] }, // Loại bỏ cột của bảng join
+          where: { slug: slug },
+        },
+        {
+          model: Author,
+          as: 'author',  // Đặt alias cho quan hệ Author
+          attributes: ['author_name', 'slug'],
+        }
+      ]
+    });
+
+    return stories;
+  } catch (error) {
+    throw error; // Ném lỗi để controller có thể xử lý
+  }
+};
+
+
+// module. = { getStoriesByGenreSlug };
