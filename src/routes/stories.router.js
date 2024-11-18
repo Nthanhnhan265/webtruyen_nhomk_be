@@ -17,7 +17,7 @@ router.get('/getAllStorieView', storiesController.getAllStorieView)
 router.get('/getAllStorieNew', storiesController.getAllStorieNew)
 // router.get("/:id", storiesController.getStoryById);
 // // v
-router.get('/getStoryBySlug/:slug', storiesController.getStoryBySlug)
+// router.get('/getStoryBySlug/:slug', storiesController.getStoryBySlug)
 // router.put(
 //   "/update/:id",
 //   uploadSingleFile("cover"),

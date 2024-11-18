@@ -181,7 +181,78 @@ async function registerUser(user) {
   }
 }
 
+/** GET USER'S INFORMATION
+ * Lấy thông tin người dùng
+ * @param {number} id
+ * @returns
+ */
+async function getProfile(id) {
+  try {
+    const user = await User.findByPk(id, {
+      attributes: [
+        'id',
+        'username',
+        'email',
+        'role_id',
+        'createdAt',
+        'status',
+        'avatar',
+      ],
+    })
+    return user
+  } catch (error) {
+    if (error.name === 'SequelizeValidationError') {
+      throw createHttpError(
+        400,
+        error.errors.map((err) => err.message).join(', '),
+      )
+    } else if (error.name === 'SequelizeUniqueConstraintError') {
+      const uqField = error.errors[0].path
+      if (uqField === 'email') {
+        throw createHttpError(409, message.user.emailExisted)
+      } else if (uqField === 'username') {
+        throw createHttpError(409, message.user.usernameExisted)
+      }
+    } else {
+      throw createHttpError(error.statusCode || 500, message.user.createFailed)
+    }
+  }
+}
+
+/**
+ * Xác minh và cập nhật mật khẩu người dùng
+ * @param {string} userId - ID người dùng
+ * @param {string} currentPassword - Mật khẩu hiện tại
+ * @param {string} newPassword - Mật khẩu mới
+ */
+async function updatePassword(userId, currentPassword, newPassword) {
+  // 1. Lấy thông tin người dùng từ DB
+  const user = await User.findByPk(userId)
+  if (!user) {
+    throw createHttpError.NotFound('Người dùng không tồn tại.')
+  }
+
+  // 2. Xác minh mật khẩu hiện tại
+  const isPasswordCorrect = await user.isRightPassword(currentPassword)
+  if (!isPasswordCorrect) {
+    throw createHttpError.BadRequest(message.auth.passwordIncorrect)
+  }
+
+  // 3. Mã hóa mật khẩu mới
+  user.password = newPassword
+  await User.hashPassword(user)
+
+  // 4. Lưu thông tin đã cập nhật
+  await user.save()
+
+  return {
+    message: message.user.updateSuccess,
+  }
+}
+
 module.exports = {
   registerUser,
   findUserByEmail,
+  getProfile,
+  updatePassword,
 }
