@@ -162,4 +162,12 @@ module.exports = {
     missedToken: 'Yêu cầu token',
     passwordRequired: 'Yêu cầu mật khẩu',
   },
+  authreview: {
+    alreadyReviewed: 'Bạn đã đánh giá truyện này',
+    notFound: 'Không tìm thấy đánh giá',
+    createSuccess: 'Tạo đánh giá thành công',
+    updateSuccess: 'Chỉnh sửa đánh giá thành công',
+    deleteSuccess: 'Xóa đánh giá thành công',
+    getSuccess: 'Lấy đánh giá thành công',
+  },
 }
