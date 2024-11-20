@@ -282,7 +282,7 @@ exports.handleSearchStories = async (req, res) => {
   const { keyword } = req.params;
   // Lấy từ khóa tìm kiếm từ query params
   const { page } = req.query
-  const limit = 2
+  const limit = 10
   // console.log(req);
 
   console.log("check keyword", req.params);

@@ -11,22 +11,32 @@ class GenreService {
             throw new Error('Error fetching genres');
         }
     }
-    static async getGenres(
-        keyword,
-        sortBy,
-        order,
-        page,
-        limit
-    ) {
+    static async getGenres(keyword, sortBy, order, page, limit) {
         try {
-            console.log("KEYWORD", keyword);
-            // Tính tổng số bản ghi phù hợp với từ khóa tìm kiếm để tạo thông tin phân trang
+            console.log("KEYWORD:", keyword);
+
+            // Tách từ khóa thành từng từ hoặc ký tự để tạo các điều kiện tìm kiếm
+            const searchTerms = keyword.split(/\s+/); // Tách từ theo dấu cách
+
+            // Tạo mảng điều kiện tìm kiếm với từng từ hoặc ký tự
+            const searchConditions = searchTerms.flatMap(term => [
+                { genre_name: { [Op.like]: `%${term}%` } },
+                { description: { [Op.like]: `%${term}%` } },
+            ]);
+
+            // Thêm điều kiện đảo ngược từ khóa (ví dụ: "A B" -> "B A")
+            if (searchTerms.length > 1) {
+                const reversedKeyword = searchTerms.reverse().join(" ");
+                searchConditions.push(
+                    { genre_name: { [Op.like]: `%${reversedKeyword}%` } },
+                    { description: { [Op.like]: `%${reversedKeyword}%` } }
+                );
+            }
+
+            // Tính tổng số bản ghi phù hợp
             const total = await Genre.count({
                 where: {
-                    [Op.or]: [
-                        { genre_name: { [Op.like]: `%${keyword}%` } },
-                        { description: { [Op.like]: `%${keyword}%` } },
-                    ],
+                    [Op.or]: searchConditions,
                 },
             });
 
@@ -34,10 +44,7 @@ class GenreService {
             const data = await Genre.findAll({
                 attributes: ['id', 'genre_name', 'description', 'slug'],
                 where: {
-                    [Op.or]: [
-                        { genre_name: { [Op.like]: `%${keyword}%` } },
-                        { description: { [Op.like]: `%${keyword}%` } },
-                    ],
+                    [Op.or]: searchConditions,
                 },
                 order: [[sortBy, order]],
                 limit: limit,

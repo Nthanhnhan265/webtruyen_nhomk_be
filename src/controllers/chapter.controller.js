@@ -7,6 +7,7 @@ const {
   getChapterBySlug,
   getChaptersByStoryId,
   getChaptersByStory1,
+  deleteStoryId
 } = require("@services/chapter.service");
 const message = require("@root/message");
 const { chapterValidate } = require("@helper/validation");
@@ -291,6 +292,25 @@ async function handleDeleteChapter(req, res, next) {
     return next(error);
   }
 }
+async function handleDeleteStoryId(req, res, next) {
+  const id = req.params.id;
+  try {
+    const result = await deleteStoryId(id);
+    if (result.error) {
+      return next(result.error);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: message.chapter.deleteSuccess,
+      status: 200,
+      data: [],
+      links: [],
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
 
 module.exports = {
   handleCreateChapter,
@@ -299,6 +319,6 @@ module.exports = {
   getChaptersBySlug,
   getChaptersByStoryAll,
   HandelgetChaptersByStoryId,
-  HandelgetAllChapter
-
+  HandelgetAllChapter,
+  handleDeleteStoryId
 };
