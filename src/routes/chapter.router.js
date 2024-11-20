@@ -6,11 +6,10 @@ const {
   handleDeleteChapter,
   getChaptersByStory,
   handleGetChapterById,
-  HandelgetChaptersByStoryId,
   getChaptersBySlug,
   getChaptersByStoryAll,
   HandelgetChaptersByStoryId,
-  handleDeleteStoryId
+  handleDeleteStoryId,
 } = require('@controllers/chapter.controller')
 const router = express.Router()
 
