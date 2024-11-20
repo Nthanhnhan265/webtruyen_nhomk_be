@@ -145,7 +145,7 @@ async function searchUsers(
  * @param {number} id - ID của người dùng cần lấy thông tin.
  * @returns {Promise<Object|null>} - Trả về đối tượng người dùng hoặc null nếu không tìm thấy.
  */
-async function getUserByID(id) {
+async function getUserByID(id, showPassword = false) {
   return await User.findByPk(id, {
     attributes: [
       'id',
@@ -155,6 +155,7 @@ async function getUserByID(id) {
       'role_id',
       'status',
       'created_at',
+      showPassword ? 'password' : '',
     ],
   })
 }

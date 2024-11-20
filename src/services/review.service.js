@@ -27,7 +27,7 @@ async function createReview(review) {
 
     return await Review.create(review)
   } catch (error) {
-    console.log(error.status)
+    console.log(error)
     if (error.name === 'SequelizeValidationError') {
       throw createError(400, error.errors.map((err) => err.message).join(', '))
     } else if (error.name === 'SequelizeUniqueConstraintError') {
