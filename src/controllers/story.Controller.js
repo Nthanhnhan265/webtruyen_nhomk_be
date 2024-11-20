@@ -249,11 +249,22 @@ exports.deleteStory = async (req, res) => {
     })
   }
 }
-// lấy chương truyện bằng vào story_id
+
+// Lấy chương truyện dựa trên story_id
 exports.getChaptersByStory = async function handleGetChapters(req, res, next) {
   try {
-    const { story_id } = req.params // Lấy story_id từ params
-    const { story, chapters, pagination } = await getChaptersByStoryId(story_id)
+    const { story_id } = req.params
+    const { sortBy, order, page, limit, includeStory } = req.query
+    const shouldIncludeStory = includeStory === 'true'
+    const { story, chapters, pagination } = await getChaptersByStoryId(
+      story_id,
+      shouldIncludeStory,
+      true,
+      sortBy,
+      order,
+      Number(page),
+      Number(limit),
+    )
 
     return res.status(200).json({
       success: true,
@@ -267,7 +278,8 @@ exports.getChaptersByStory = async function handleGetChapters(req, res, next) {
       links: [],
     })
   } catch (error) {
-    console.error(error)
+    console.error('Error fetching chapters:', error)
+
     return res.status(500).json({
       success: false,
       message: message.chapter.fetchChaptersFailed,
