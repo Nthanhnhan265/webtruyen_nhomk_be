@@ -58,38 +58,79 @@ async function handleCreateChapter(req, res, next) {
     next(error)
   }
 }
+// READ CHAPTERS
 async function getChaptersBySlug(req, res) {
   try {
-    console.log(req);
+    console.log(req)
 
     // Lấy tham số từ query string
-    const { slug } = req.params;
-    console.log(slug);
+    const { slug } = req.params
+    console.log(slug)
 
-    console.log("Check query parameters:", req.params);
+    console.log('Check query parameters:', req.params)
 
     // Kiểm tra nếu story_id, page, và limit hợp lệ
     if (!slug) {
-      return res.status(400).json({ message: "khong tim thay url" });
+      return res.status(400).json({ message: 'khong tim thay url' })
     }
-    const { chapter } =
-      await getChapterBySlug(slug);
+    const { chapter } = await getChapterBySlug(slug)
 
     // Trả về danh sách chương theo story_id
     res.status(200).json({
       success: true,
-      message: "lay du lieu thanh cong",
+      message: 'lay du lieu thanh cong',
       data: chapter,
-    });
+    })
   } catch (error) {
-    console.error(error);
+    console.error(error)
     res.status(500).json({
-      message: "Error fetching chapters",
+      message: 'Error fetching chapters',
       error: error.message,
-    });
+    })
   }
 }
+async function getChaptersByStory(req, res) {
+  try {
+    // Lấy tham số từ query string
+    const { story_id, page, limit = 10 } = req.query
+    console.log('Check query parameters:', req.query)
 
+    // Kiểm tra nếu story_id, page, và limit hợp lệ
+    if (!story_id) {
+      return res.status(400).json({ message: 'Story ID is required' })
+    }
+
+    const pageNumber = parseInt(page, 10)
+    const limitNumber = parseInt(limit, 10)
+
+    if (isNaN(pageNumber) || pageNumber < 1) {
+      return res.status(400).json({ message: 'Invalid page number' })
+    }
+
+    if (isNaN(limitNumber) || limitNumber < 1) {
+      return res.status(400).json({ message: 'Invalid limit number' })
+    }
+
+    // Gọi hàm getChapters với các tham số để lấy danh sách chương theo story_id, phân trang và sắp xếp
+    const { chapters, totalCount, totalPages, currentPage } =
+      await getChaptersByStory1(story_id, pageNumber, limitNumber)
+
+    // Trả về danh sách chương theo story_id
+    res.status(200).json({
+      message: 'Chapters fetched successfully',
+      totalCount: totalCount,
+      totalPages: totalPages,
+      currentPage: currentPage,
+      chapters: chapters,
+    })
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({
+      message: 'Error fetching chapters',
+      error: error.message,
+    })
+  }
+}
 async function getChaptersByStoryAll(req, res) {
   try {
     // Lấy tham số từ query string
@@ -132,9 +173,9 @@ async function getChaptersByStoryAll(req, res) {
     })
   }
 }
-// READ CHAPTERS
+
 // GET CHAPTER BY ID
-async function handleGetChapterByID(req, res, next) {
+async function handleGetChapterById(req, res, next) {
   try {
     const id = req.params.id
     const chapter = await getChapterByID(id)
@@ -155,74 +196,69 @@ async function handleGetChapterByID(req, res, next) {
 async function HandelgetChaptersByStoryId(req, res) {
   try {
     // Lấy tham số từ request params
-    const { id } = req.params;
-    console.log("Story ID jjjj:", id);
+    const { id } = req.params
+    console.log('Story ID jjjj:', id)
 
     // Kiểm tra nếu id không hợp lệ
     if (!id) {
-      return res.status(400).json({ message: "Không tìm thấy story ID" });
+      return res.status(400).json({ message: 'Không tìm thấy story ID' })
     }
 
     // Gọi hàm getChaptersByStoryId1 để lấy dữ liệu chương
-    const { data } = await getChaptersByStoryId(id); // Đảm bảo getChaptersByStoryId1 trả về { data }
+    const { data } = await getChaptersByStoryId(id) // Đảm bảo getChaptersByStoryId1 trả về { data }
 
     // Nếu không tìm thấy chương nào, trả về lỗi
     if (!data || data.length === 0) {
-      return res.status(404).json({ message: "Không tìm thấy chương nào" });
+      return res.status(404).json({ message: 'Không tìm thấy chương nào' })
     }
 
     // Trả về kết quả nếu tìm thấy
     res.status(200).json({
       success: true,
-      message: "Lấy dữ liệu thành công",
+      message: 'Lấy dữ liệu thành công',
       data: data, // Trả về dữ liệu các chương
-    });
+    })
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error)
     res.status(500).json({
-      message: "Lấy chapter thất bại",
+      message: 'Lấy chapter thất bại',
       error: error.message,
-    });
+    })
   }
 }
 async function HandelgetAllChapter(req, res) {
   try {
     // Lấy tham số từ request params
-    const { id } = req.params;
-    console.log("Story ID:", id);
+    const { id } = req.params
+    console.log('Story ID:', id)
 
     // Kiểm tra nếu id không hợp lệ
     if (!id) {
-      return res.status(400).json({ message: "Không tìm thấy story ID" });
+      return res.status(400).json({ message: 'Không tìm thấy story ID' })
     }
 
     // Gọi hàm getChaptersByStoryId1 để lấy dữ liệu chương
-    const { data } = await getChaptersByStoryId(id); // Đảm bảo getChaptersByStoryId1 trả về { data }
+    const { data } = await getChaptersByStoryId(id) // Đảm bảo getChaptersByStoryId1 trả về { data }
 
     // Nếu không tìm thấy chương nào, trả về lỗi
     if (!data || data.length === 0) {
-      return res.status(404).json({ message: "Không tìm thấy chương nào" });
+      return res.status(404).json({ message: 'Không tìm thấy chương nào' })
     }
 
     // Trả về kết quả nếu tìm thấy
     res.status(200).json({
       success: true,
-      message: "Lấy dữ liệu thành công",
+      message: 'Lấy dữ liệu thành công',
       data: data, // Trả về dữ liệu các chương
-    });
+    })
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error)
     res.status(500).json({
-      message: "Lấy chapter thất bại",
+      message: 'Lấy chapter thất bại',
       error: error.message,
-    });
+    })
   }
 }
-
-
-// READ CHAPTERS
-
-// GET CHAPTER BY ID
 
 // UPDATE CHAPTER BY ID
 async function handleUpdateChapter(req, res, next) {
@@ -309,4 +345,5 @@ module.exports = {
   getChaptersByStoryAll,
   HandelgetChaptersByStoryId,
   HandelgetAllChapter,
+  handleGetChapterById,
 }
