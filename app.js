@@ -10,7 +10,7 @@ const cors = require('cors')
 const express = require('express')
 const config = require('./src/config/sys.config.js')
 const db = require('@models')
-const { verifyAccessToken } = require('./src/middlewares/auth.midleware.js')
+const { verifyAccessToken } = require('./src/middlewares/auth.middleware.js')
 const app = express()
 
 //======================================

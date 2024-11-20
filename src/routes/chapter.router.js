@@ -4,19 +4,23 @@ const {
   handleCreateChapter,
   handleUpdateChapter,
   handleDeleteChapter,
+  getChaptersByStory,
+  handleGetChapterByID,
+  HandelgetChaptersByStoryId,
   getChaptersBySlug,
   getChaptersByStoryAll,
-  HandelgetChaptersByStoryId,
 } = require('@controllers/chapter.controller')
-
 const router = express.Router()
-
+ 
 //===================
 // Chapter Create API Endpoint
 //===================
 router.post('/', handleCreateChapter)
+// v
+router.get('/chapterByStory', getChaptersByStory)
 router.get("/chapterByStory", getChaptersByStoryAll);
 
+router.get('/:id', handleGetChapterByID)
 //===================
 // Chapter Read API Endpoints
 //===================

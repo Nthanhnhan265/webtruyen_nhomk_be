@@ -85,6 +85,47 @@ const registerValidate = (data) => {
 
   return rule.validate(data)
 }
+
+/** USER'S PROFILE VALIDATION
+ * Kiểm tra thông tin cập nhật mật khẩu
+ * @param {Object} data
+ * @returns
+ */
+const updateProfilePassword = (data) => {
+  if (data.currentPassword === data.newPassword) {
+    const error = new Error(message.auth.passwordCannotBeSame)
+    return { error }
+  }
+  const rule = Joi.object({
+    // Mật khẩu hiện tại
+    currentPassword: Joi.string().required().messages({
+      'any.required': message.auth.currentPasswordRequired,
+      'string.pattern.base': message.auth.currentPasswordRequired,
+    }),
+
+    // Mật khẩu mới
+    newPassword: Joi.string()
+      .min(8)
+      .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$'))
+      .required()
+      .messages({
+        'string.pattern.base': message.user.passwordStrength,
+        'any.required': message.auth.passwordRequired,
+      }),
+
+    // Xác nhận mật khẩu
+    confirmPassword: Joi.string()
+      .valid(Joi.ref('newPassword'))
+      .required()
+      .messages({
+        'any.required': message.auth.passwordRequired,
+        'any.only': message.user.passwordsDoNotMatch,
+      }),
+  })
+
+  return rule.validate(data)
+}
+
 /** CHAPTER'S VALIDATION FUNCTION
  * Kiểm tra tạo và chỉnh sửa chương truyện
  * @param {Object} data
@@ -185,4 +226,5 @@ module.exports = {
   loginValidate,
   registerValidate,
   reviewValidate,
+  updateProfilePassword,
 }
