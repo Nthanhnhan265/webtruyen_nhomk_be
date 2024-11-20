@@ -29,10 +29,10 @@ const getReviewByUserAndStory = async (user_id, story_id) => {
  */
 const createReview = async ({ user_id, story_id, star, comment }) => {
   const existingReview = await getReviewByUserAndStory(user_id, story_id)
-  const story = await Story.findByPk(story_id);  // Sử dụng `findByPk` để tìm theo ID
-  if (!story) {
-    throw createError(404, message.authreview.storyNotFound);  // Nếu không tìm thấy truyện
-  }
+  //  const story = await Story.findByPk(story_id);  // Sử dụng `findByPk` để tìm theo ID
+  // if (!stories) {
+  //   throw createError(404, message.authreview.storyNotFound);  // Nếu không tìm thấy truyện
+  // }
   if (existingReview) {
     throw createError(400, message.authreview.alreadyReviewed)
   }

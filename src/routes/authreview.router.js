@@ -7,7 +7,7 @@ const reviewController = require('../controllers/authreview.controller');
 router.post('/add', reviewController.handleCreateUserReview);
 
 // Route để lấy danh sách đánh giá của một truyện
-// router.get('/story/:storyId', reviewController.handleGetUserReviews);
+router.get('/story/:storyId', reviewController.handleGetUserReviews);
 
 // Route để lấy danh sách đánh giá của một người dùng
 router.get('/user/:userId', reviewController.handleGetUserReviews);
