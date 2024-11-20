@@ -25,6 +25,7 @@ const chapterRouter = require('./src/routes/chapter.router.js')
 const reviewRouter = require('./src/routes/review.router.js')
 const genreStoriesRouter = require('./src/routes/genreStorie.router.js')
 const genreRouter = require('./src/routes/genre.router.js')
+const ratings  = require('./src/routes/authreview.router.js')
 
 //======================================
 //Configuration: static files,
@@ -39,7 +40,7 @@ app.use(cors({ credentials: true, origin: true }))
 //ROUTERS
 // Uncomment if needed: app.use(verifyAccessToken)
 app.use('/api/auth', authRouter)
-app.use(verifyAccessToken)
+// app.use(verifyAccessToken)
 app.use('/api/genres', genreRouter)
 app.use('/api/story/', storyRouter)
 app.use('/api/reviews', reviewRouter)
@@ -49,6 +50,7 @@ app.use('/api/authors', authorRouter)
 app.use('/api/stories', storyRouter)
 app.use('/api/reviews', reviewRouter)
 app.use('/api/story-genre', genreStoriesRouter)
+app.use('/api/ratings', ratings )
 
 //MIDDLEWARE
 // Middleware: error handler for 404

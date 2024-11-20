@@ -175,4 +175,12 @@ module.exports = {
     passwordCannotBeSame:
       'Mật khẩu hiện tại và mật khẩu mới không được giống nhau.',
   },
+  authreview: {
+    alreadyReviewed: 'Bạn đã đánh giá truyện này',
+    notFound: 'Không tìm thấy đánh giá',
+    createSuccess: 'Tạo đánh giá thành công',
+    updateSuccess: 'Chỉnh sửa đánh giá thành công',
+    deleteSuccess: 'Xóa đánh giá thành công',
+    getSuccess: 'Lấy đánh giá thành công',
+  },
 }
