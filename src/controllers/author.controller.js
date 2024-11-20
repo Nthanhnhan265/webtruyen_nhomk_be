@@ -32,9 +32,9 @@ const getAllAuthors = async (req, res) => {
     console.log("kiểm tra tham số", req.query);
 
     try {
-        const { author_name, description, sort, page, limit = 10 } = req.query; // Mặc định trang đầu tiên và giới hạn 10 hàng
+        const { author_name, description, sortBy, sort, page, limit = 10 } = req.query; // Mặc định trang đầu tiên và giới hạn 10 hàng
 
-        const { authors, totalCount, totalPages, currentPage } = await authorService.getAllAuthors(author_name, description, sort, page, limit);
+        const { authors, totalCount, totalPages, currentPage } = await authorService.getAllAuthors(author_name, description, sortBy, sort, page, limit);
         res.status(200).json({
             success: message.author.fetchSuccess,
             totalCount: totalCount

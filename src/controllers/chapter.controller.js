@@ -5,6 +5,7 @@ const {
   updateChapter,
   deleteChapterById,
   getChapterBySlug,
+  getChaptersByStoryId,
   getChaptersByStory1,
 } = require('@services/chapter.service')
 const message = require('@root/message')
@@ -57,8 +58,39 @@ async function handleCreateChapter(req, res, next) {
     next(error)
   }
 }
+async function getChaptersBySlug(req, res) {
+  try {
+    console.log(req);
 
-async function getChaptersByStory(req, res) {
+    // Lấy tham số từ query string
+    const { slug } = req.params;
+    console.log(slug);
+
+    console.log("Check query parameters:", req.params);
+
+    // Kiểm tra nếu story_id, page, và limit hợp lệ
+    if (!slug) {
+      return res.status(400).json({ message: "khong tim thay url" });
+    }
+    const { chapter } =
+      await getChapterBySlug(slug);
+
+    // Trả về danh sách chương theo story_id
+    res.status(200).json({
+      success: true,
+      message: "lay du lieu thanh cong",
+      data: chapter,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Error fetching chapters",
+      error: error.message,
+    });
+  }
+}
+
+async function getChaptersByStoryAll(req, res) {
   try {
     // Lấy tham số từ query string
     const { story_id, page, limit = 10 } = req.query
@@ -120,6 +152,77 @@ async function handleGetChapterByID(req, res, next) {
     next(error)
   }
 }
+async function HandelgetChaptersByStoryId(req, res) {
+  try {
+    // Lấy tham số từ request params
+    const { id } = req.params;
+    console.log("Story ID jjjj:", id);
+
+    // Kiểm tra nếu id không hợp lệ
+    if (!id) {
+      return res.status(400).json({ message: "Không tìm thấy story ID" });
+    }
+
+    // Gọi hàm getChaptersByStoryId1 để lấy dữ liệu chương
+    const { data } = await getChaptersByStoryId(id); // Đảm bảo getChaptersByStoryId1 trả về { data }
+
+    // Nếu không tìm thấy chương nào, trả về lỗi
+    if (!data || data.length === 0) {
+      return res.status(404).json({ message: "Không tìm thấy chương nào" });
+    }
+
+    // Trả về kết quả nếu tìm thấy
+    res.status(200).json({
+      success: true,
+      message: "Lấy dữ liệu thành công",
+      data: data, // Trả về dữ liệu các chương
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({
+      message: "Lấy chapter thất bại",
+      error: error.message,
+    });
+  }
+}
+async function HandelgetAllChapter(req, res) {
+  try {
+    // Lấy tham số từ request params
+    const { id } = req.params;
+    console.log("Story ID:", id);
+
+    // Kiểm tra nếu id không hợp lệ
+    if (!id) {
+      return res.status(400).json({ message: "Không tìm thấy story ID" });
+    }
+
+    // Gọi hàm getChaptersByStoryId1 để lấy dữ liệu chương
+    const { data } = await getChaptersByStoryId(id); // Đảm bảo getChaptersByStoryId1 trả về { data }
+
+    // Nếu không tìm thấy chương nào, trả về lỗi
+    if (!data || data.length === 0) {
+      return res.status(404).json({ message: "Không tìm thấy chương nào" });
+    }
+
+    // Trả về kết quả nếu tìm thấy
+    res.status(200).json({
+      success: true,
+      message: "Lấy dữ liệu thành công",
+      data: data, // Trả về dữ liệu các chương
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({
+      message: "Lấy chapter thất bại",
+      error: error.message,
+    });
+  }
+}
+
+
+// READ CHAPTERS
+
+// GET CHAPTER BY ID
 
 // UPDATE CHAPTER BY ID
 async function handleUpdateChapter(req, res, next) {
@@ -198,9 +301,12 @@ async function handleDeleteChapter(req, res, next) {
 }
 
 module.exports = {
-  handleGetChapterByID,
   handleCreateChapter,
   handleDeleteChapter,
   handleUpdateChapter,
   getChaptersByStory,
+  getChaptersBySlug,
+  getChaptersByStoryAll,
+  HandelgetChaptersByStoryId,
+  HandelgetAllChapter,
 }
