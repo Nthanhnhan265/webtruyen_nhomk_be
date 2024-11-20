@@ -1,4 +1,4 @@
-const { Chapter, Story, Author } = require('@models')
+const { Chapter, Story, Author, Genre } = require('@models')
 const createError = require('http-errors')
 const message = require('@root/message')
 const { Op } = require('sequelize')
@@ -18,8 +18,11 @@ async function createChapter(chapter) {
   try {
     return await Chapter.create(chapter)
   } catch (error) {
+    console.log(error)
     if (error.name === 'SequelizeValidationError') {
       throw createError(400, error.errors.map((err) => err.message).join(', '))
+    } else if ((error.name = 'SequelizeUniqueConstraintError')) {
+      throw createError(409, error.errors.map((err) => err.message).join(', '))
     } else {
       throw createError(500, message.chapter.createFailed)
     }
@@ -105,8 +108,10 @@ async function getChaptersByStory1(story_id, page, limit) {
 //nếu truyền vào all=true, không thì mặc định sẽ lấy tất cả truyện đã đăng (status=true)
 // Lấy thông tin truyện và danh sách chương dựa trên story_id
 // Nếu getAll=true, lấy tất cả chương, ngược lại mặc định chỉ lấy chương đã đăng (status=true)
+
 async function getChaptersByStoryId(
   story_id,
+  includeStory = true,
   getAll = false,
   sortBy = 'chapter_order',
   order = 'ASC',
@@ -114,43 +119,47 @@ async function getChaptersByStoryId(
   limit = 10,
 ) {
   try {
-    // Kiểm tra sự tồn tại của truyện trước
-    const story = await Story.findByPk(story_id, {
-      attributes: [
-        'id',
-        'status',
-        'author_id',
-        'description',
-        'story_name',
-        'views',
-        'slug',
-        'cover',
-        'created_at',
-        'keywords',
-      ],
-      include: [
-        {
-          model: Author,
-          attributes: ['author_name', 'id'],
-        },
-      ],
-    })
+    let story = null
 
-    if (!story) {
-      throw createHttpError.notFound('story not found')
+    if (includeStory) {
+      story = await Story.findByPk(story_id, {
+        attributes: [
+          'id',
+          'status',
+          'author_id',
+          'description',
+          'story_name',
+          'views',
+          'slug',
+          'cover',
+          'created_at',
+          'keywords',
+        ],
+        include: [
+          {
+            model: Author,
+            attributes: ['author_name', 'id'],
+          },
+          {
+            model: Genre,
+            as: 'genres',
+            attributes: ['id', 'genre_name'],
+          },
+        ],
+      })
+
+      if (!story) {
+        throw createHttpError.notFound('story not found')
+      }
     }
 
-    // Xây dựng điều kiện truy vấn cho danh sách chương
     const whereStatement = getAll ? {} : { status: true }
     whereStatement.story_id = story_id
 
-    // Tính toán phân trang
     const offset = (page - 1) * limit
 
-    // Đếm tổng số chương
     const total = await Chapter.count({ where: whereStatement })
 
-    // Truy vấn danh sách chương
     const chapters = await Chapter.findAll({
       where: whereStatement,
       attributes: [
@@ -159,15 +168,16 @@ async function getChaptersByStoryId(
         'views',
         'slug',
         'published_at',
+        'created_at',
         'chapter_order',
         'status',
+        'story_id',
       ],
       order: [[sortBy, order]],
       limit: limit,
       offset: offset,
     })
 
-    // Chuẩn bị thông tin phân trang
     const pagination = {
       total: total,
       page: page,
@@ -175,7 +185,6 @@ async function getChaptersByStoryId(
       totalPages: Math.ceil(total / limit),
     }
 
-    // Trả về thông tin truyện và danh sách chương
     return {
       story,
       chapters,
@@ -302,6 +311,7 @@ async function updateChapter(id, updatedData) {
 
     return await Chapter.findByPk(id)
   } catch (error) {
+    console.log(error)
     if (error.name === 'SequelizeValidationError') {
       throw createError(400, error.errors.map((err) => err.message).join(', '))
     } else {
@@ -325,7 +335,10 @@ async function deleteChapterById(id) {
     await chapter.destroy()
     return { success: true, message: message.chapter.deleteSuccess }
   } catch (error) {
-    throw createError(500, message.chapter.deleteFailed)
+    throw createError(
+      error.status || error.statusCode || 500,
+      message.chapter.deleteFailed,
+    )
   }
 }
 
