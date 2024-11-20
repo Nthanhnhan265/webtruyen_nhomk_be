@@ -341,6 +341,36 @@ async function deleteChapterById(id) {
     )
   }
 }
+async function deleteStoryId(storyId) {
+  try {
+    console.log(storyId);
+
+    // Find the story by its ID to check if it exists
+    // const story = await Story.findByPk(storyId);
+    // if (!story) {
+    //   // If the story is not found, throw a 404 error
+    //   throw createError(404, message.story.notFound);
+    // }
+
+    // Find all chapters associated with the story_id
+    const chapters = await Chapter.findAll({ where: { story_id: storyId } });
+
+    if (chapters.length === 0) {
+      // If no chapters are found for the story, return a message
+      return { success: false, message: message.chapter.notFound };
+    }
+
+    // Delete all chapters associated with the story
+    await Chapter.destroy({ where: { story_id: storyId } });
+
+    // Return a success message
+    return { success: true, message: message.chapter.deleteSuccess };
+  } catch (error) {
+    // Handle any errors that occur
+    throw createError(500, message.chapter.deleteFailed);
+  }
+}
+
 
 module.exports = {
   createChapter,
@@ -352,4 +382,6 @@ module.exports = {
   updateChapter,
   deleteChapterById,
   searchChapters,
-}
+  deleteStoryId
+};
+ 

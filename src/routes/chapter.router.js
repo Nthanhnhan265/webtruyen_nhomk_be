@@ -9,6 +9,8 @@ const {
   HandelgetChaptersByStoryId,
   getChaptersBySlug,
   getChaptersByStoryAll,
+  HandelgetChaptersByStoryId,
+  handleDeleteStoryId
 } = require('@controllers/chapter.controller')
 const router = express.Router()
 
@@ -40,5 +42,6 @@ router.patch('/:id', handleUpdateChapter)
 // Chapter Delete API Endpoint
 //===================
 router.delete('/:id', handleDeleteChapter)
+router.delete('/handleDeleteStoryId/:id', handleDeleteStoryId)
 
 module.exports = router

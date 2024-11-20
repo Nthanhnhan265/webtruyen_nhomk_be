@@ -32,6 +32,7 @@ const { uploadSingleFile } = require('../middlewares/upload.middleware')
 router.post("/create", uploadSingleFile("cover"), storiesController.createStory);
 router.get("/", storiesController.getStories);
 router.get("/:id", storiesController.getStoryById);
+router.get("/search/:keyword", storiesController.handleSearchStories);
 router.put("/update/:id", uploadSingleFile("cover"), storiesController.updateStory);
 
 router.delete("/delete/:id", storiesController.deleteStory);

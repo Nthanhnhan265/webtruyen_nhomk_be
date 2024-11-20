@@ -3,8 +3,9 @@ const storyService = require('../services/stories.service')
 const {
   getChaptersByStoryId,
   getChapterBySlug,
-} = require('../services/chapter.service')
-const createHttpError = require('http-errors')
+} = require("../services/chapter.service");
+const createHttpError = require("http-errors");
+const { date } = require("joi");
 // Tạo một câu chuyện mới
 exports.createStory = async (req, res) => {
   //   console.log("check create storie", req.body);
@@ -320,5 +321,38 @@ exports.getChapterBySlug = async function GetChapterBySlug(req, res, next) {
   } catch (error) {
     next(error)
   }
-}
+};
+exports.handleSearchStories = async (req, res) => {
+  const { keyword } = req.params;
+  // Lấy từ khóa tìm kiếm từ query params
+  const { page } = req.query
+  const limit = 10
+  // console.log(req);
 
+  console.log("check keyword", req.params);
+  console.log("check keyword", req.query);
+
+  console.log("check page", page);
+  console.log("check limit", limit);
+
+  if (!keyword) {
+    return res.status(400).json({ message: 'Keyword is required' });
+  }
+
+  try {
+    // Gọi service để thực hiện tìm kiếm
+    const stories = await storyService.searchStories(keyword, page, limit);
+
+    // Nếu không tìm thấy truyện
+    if (stories.length === 0) {
+      return res.status(404).json({ message: 'No stories found' });
+    }
+
+    // Trả về kết quả tìm kiếm
+    return res.status(200).json({ data: stories });
+  } catch (error) {
+    // Xử lý lỗi từ service
+    console.error('Error:', error);
+    return res.status(500).json({ message: 'Error searching stories', error: error.message });
+  }
+};
