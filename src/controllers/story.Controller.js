@@ -3,9 +3,10 @@ const storyService = require('../services/stories.service')
 const {
   getChaptersByStoryId,
   getChapterBySlug,
-} = require("../services/chapter.service");
-const createHttpError = require("http-errors");
-const { date } = require("joi");
+  searchChapters,
+} = require('../services/chapter.service')
+const createHttpError = require('http-errors')
+const { date } = require('joi')
 // Tạo một câu chuyện mới
 exports.createStory = async (req, res) => {
   //   console.log("check create storie", req.body);
@@ -264,32 +265,60 @@ exports.deleteStory = async (req, res) => {
 exports.getChaptersByStory = async function handleGetChapters(req, res, next) {
   try {
     const { story_id } = req.params
-    const { sortBy, order, page, limit, includeStory } = req.query
-    const shouldIncludeStory = includeStory === 'true'
-    const { story, chapters, pagination } = await getChaptersByStoryId(
-      story_id,
-      shouldIncludeStory,
-      true,
-      sortBy,
-      order,
-      Number(page),
-      Number(limit),
-    )
+    const {
+      sortBy = 'chapter_order',
+      order = 'ASC',
+      page = 1,
+      limit = 10,
+      includeStory = 'false',
+      keywords = '',
+    } = req.query
 
+    // Chuyển đổi các giá trị
+    const shouldIncludeStory = includeStory === 'true'
+    const pageNumber = Number(page) > 0 ? Number(page) : 1
+    const limitNumber = Number(limit) > 0 ? Number(limit) : 10
+
+    // Xác định hàm cần gọi dựa trên từ khóa
+    let result
+    if (keywords) {
+      result = await searchChapters(
+        story_id,
+        keywords,
+        shouldIncludeStory,
+        sortBy,
+        order,
+        pageNumber,
+        limitNumber,
+      )
+    } else {
+      result = await getChaptersByStoryId(
+        story_id,
+        shouldIncludeStory,
+        true,
+        sortBy,
+        order,
+        pageNumber,
+        limitNumber,
+      )
+    }
+
+    // Trả về kết quả
     return res.status(200).json({
       success: true,
       status: 200,
       message: message.chapter.fetchSuccess,
       data: {
-        story: story,
-        chapters: chapters,
+        story: result.story || null,
+        chapters: result.chapters,
       },
-      pagination: pagination,
+      pagination: result.pagination,
       links: [],
     })
   } catch (error) {
     console.error('Error fetching chapters:', error)
 
+    // Trả về lỗi
     return res.status(500).json({
       success: false,
       message: message.chapter.fetchChaptersFailed,
@@ -321,38 +350,40 @@ exports.getChapterBySlug = async function GetChapterBySlug(req, res, next) {
   } catch (error) {
     next(error)
   }
-};
+}
 exports.handleSearchStories = async (req, res) => {
-  const { keyword } = req.params;
+  const { keyword } = req.params
   // Lấy từ khóa tìm kiếm từ query params
   const { page } = req.query
   const limit = 10
   // console.log(req);
 
-  console.log("check keyword", req.params);
-  console.log("check keyword", req.query);
+  console.log('check keyword', req.params)
+  console.log('check keyword', req.query)
 
-  console.log("check page", page);
-  console.log("check limit", limit);
+  console.log('check page', page)
+  console.log('check limit', limit)
 
   if (!keyword) {
-    return res.status(400).json({ message: 'Keyword is required' });
+    return res.status(400).json({ message: 'Keyword is required' })
   }
 
   try {
     // Gọi service để thực hiện tìm kiếm
-    const stories = await storyService.searchStories(keyword, page, limit);
+    const stories = await storyService.searchStories(keyword, page, limit)
 
     // Nếu không tìm thấy truyện
     if (stories.length === 0) {
-      return res.status(404).json({ message: 'No stories found' });
+      return res.status(404).json({ message: 'No stories found' })
     }
 
     // Trả về kết quả tìm kiếm
-    return res.status(200).json({ data: stories });
+    return res.status(200).json({ data: stories })
   } catch (error) {
     // Xử lý lỗi từ service
-    console.error('Error:', error);
-    return res.status(500).json({ message: 'Error searching stories', error: error.message });
+    console.error('Error:', error)
+    return res
+      .status(500)
+      .json({ message: 'Error searching stories', error: error.message })
   }
-};
+}

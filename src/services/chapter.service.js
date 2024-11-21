@@ -69,19 +69,19 @@ async function getChaptersByStory1(story_id, page, limit) {
     if (page === 0) {
       const rows = await Chapter.findAll({
         where: { story_id },
-        order: [["chapter_order", "ASC"]], // Sắp xếp theo chapter_order (hoặc bất kỳ thứ tự nào bạn muốn)
-      });
+        order: [['chapter_order', 'ASC']], // Sắp xếp theo chapter_order (hoặc bất kỳ thứ tự nào bạn muốn)
+      })
 
       return {
         chapters: rows,
         totalCount: rows.length,
         totalPages: 1, // Tổng số trang là 1 vì không phân trang
         currentPage: 1, // Trang hiện tại là 1
-      };
+      }
     }
 
     // Nếu page không phải là chuỗi rỗng, thực hiện phân trang
-    const offset = (page - 1) * limit;
+    const offset = (page - 1) * limit
 
     const { rows, count } = await Chapter.findAndCountAll({
       where: { story_id },
@@ -122,7 +122,7 @@ async function getChaptersByStoryId(
     let story = null
 
     if (includeStory) {
-      story = await Story.findByPk(story_id, {
+      const storyInstance = await Story.findByPk(story_id, {
         attributes: [
           'id',
           'status',
@@ -148,6 +148,7 @@ async function getChaptersByStoryId(
         ],
       })
 
+      story = storyInstance.toJSON()
       if (!story) {
         throw createHttpError.notFound('story not found')
       }
@@ -184,7 +185,9 @@ async function getChaptersByStoryId(
       limit: limit,
       totalPages: Math.ceil(total / limit),
     }
-
+    if (includeStory) {
+      story['totalChapters'] = total
+    }
     return {
       story,
       chapters,
@@ -207,42 +210,100 @@ async function getChaptersByStoryId(
  * @returns {Promise<{data: Array, pagination: Object}>} - Dữ liệu chương và thông tin phân trang.
  */
 async function searchChapters(
+  story_id,
   keyword,
+  includeStory = true,
   sortBy = 'chapter_order',
   order = 'ASC',
   page = 1,
   limit = 10,
-  offset = 0,
 ) {
-  const total = await Chapter.count({
-    where: {
-      [Op.or]: [
-        { chapter_name: { [Op.like]: `%${keyword}%` } },
-        { content: { [Op.like]: `%${keyword}%` } },
-      ],
-    },
-  })
+  try {
+    const offset = (page - 1) * limit
+    let story = null
 
-  const data = await Chapter.findAll({
-    where: {
-      [Op.or]: [
-        { chapter_name: { [Op.like]: `%${keyword}%` } },
-        { content: { [Op.like]: `%${keyword}%` } },
-      ],
-    },
-    order: [[sortBy, order]],
-    limit: limit,
-    offset: offset,
-  })
+    // Kiểm tra nếu cần lấy thông tin của story
+    if (includeStory) {
+      story = await Story.findByPk(story_id, {
+        attributes: [
+          'id',
+          'status',
+          'author_id',
+          'description',
+          'story_name',
+          'views',
+          'slug',
+          'cover',
+          'created_at',
+          'keywords',
+        ],
+        include: [
+          {
+            model: Author,
+            attributes: ['author_name', 'id'],
+          },
+          {
+            model: Genre,
+            as: 'genres',
+            attributes: ['id', 'genre_name'],
+          },
+        ],
+      })
 
-  const pagination = {
-    total: total,
-    page: page,
-    limit: limit,
-    totalPages: Math.ceil(total / limit),
+      if (!story) {
+        throw new Error('Story not found')
+      }
+    }
+
+    // Tạo điều kiện tìm kiếm
+    const whereStatement = {
+      [Op.and]: [
+        { story_id },
+        {
+          [Op.or]: [
+            { chapter_name: { [Op.like]: `%${keyword}%` } },
+            { content: { [Op.like]: `%${keyword}%` } },
+          ],
+        },
+      ],
+    }
+
+    // Đếm tổng số kết quả
+    const total = await Chapter.count({ where: whereStatement })
+
+    // Truy vấn danh sách chapters
+    const chapters = await Chapter.findAll({
+      where: whereStatement,
+      attributes: [
+        'id',
+        'chapter_name',
+        'views',
+        'slug',
+        'published_at',
+        'created_at',
+        'chapter_order',
+        'status',
+        'story_id',
+      ],
+      order: [[sortBy, order]],
+      limit: limit,
+      offset: offset,
+    })
+
+    // Tính toán phân trang
+    const pagination = {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    }
+
+    // Trả về kết quả
+    return { story, chapters, pagination }
+  } catch (error) {
+    console.error('Error searching chapters:', error)
+    throw new Error('Failed to search chapters')
   }
-
-  return { data, pagination }
 }
 
 // GET CHAPTER BY ID
@@ -271,14 +332,14 @@ async function getChapterBySlug(slug) {
       },
     ],
     attributes: [
-      "id",
-      "chapter_name",
-      "content",
-      "slug",
-      "story_id",
-      "views",
-      "chapter_order",
-      "published_at",
+      'id',
+      'chapter_name',
+      'content',
+      'slug',
+      'story_id',
+      'views',
+      'chapter_order',
+      'published_at',
     ],
   })
 
@@ -343,7 +404,7 @@ async function deleteChapterById(id) {
 }
 async function deleteStoryId(storyId) {
   try {
-    console.log(storyId);
+    console.log(storyId)
 
     // Find the story by its ID to check if it exists
     // const story = await Story.findByPk(storyId);
@@ -353,24 +414,23 @@ async function deleteStoryId(storyId) {
     // }
 
     // Find all chapters associated with the story_id
-    const chapters = await Chapter.findAll({ where: { story_id: storyId } });
+    const chapters = await Chapter.findAll({ where: { story_id: storyId } })
 
     if (chapters.length === 0) {
       // If no chapters are found for the story, return a message
-      return { success: false, message: message.chapter.notFound };
+      return { success: false, message: message.chapter.notFound }
     }
 
     // Delete all chapters associated with the story
-    await Chapter.destroy({ where: { story_id: storyId } });
+    await Chapter.destroy({ where: { story_id: storyId } })
 
     // Return a success message
-    return { success: true, message: message.chapter.deleteSuccess };
+    return { success: true, message: message.chapter.deleteSuccess }
   } catch (error) {
     // Handle any errors that occur
-    throw createError(500, message.chapter.deleteFailed);
+    throw createError(500, message.chapter.deleteFailed)
   }
 }
-
 
 module.exports = {
   createChapter,
@@ -382,6 +442,5 @@ module.exports = {
   updateChapter,
   deleteChapterById,
   searchChapters,
-  deleteStoryId
-};
- 
+  deleteStoryId,
+}
