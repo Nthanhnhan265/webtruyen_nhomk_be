@@ -30,7 +30,7 @@ router.get('/:id', handleGetChapterById)
 // router.get('/:story_id/chapters', handleGetChapters)
 
 // GET /chapters/:slug -  người dùng nhập slug-truyen/slug-chuong để xem một chương cụ thể
-router.get('/:slug', getChaptersBySlug)
+router.get('/getChapterByslug/:slug', getChaptersBySlug)
 router.get('/getstory/:id', HandelgetChaptersByStoryId)
 //===================
 // Chapter Update API Endpoint
