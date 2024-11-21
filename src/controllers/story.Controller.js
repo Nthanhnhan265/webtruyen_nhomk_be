@@ -1,4 +1,5 @@
 const message = require("../../message");
+const { Story, Genre, Author } = require('../models');
 const storyService = require("../services/stories.service");
 const {
   getChaptersByStoryId,
@@ -275,17 +276,87 @@ exports.getChapterBySlug = async function GetChapterBySlug(req, res, next) {
     next(error);
   }
 };
+// exports.getStoriesByGenre = async (req, res) => {
+//   const { slug } = req.params; // Lấy slug từ URL
+
+//   try {
+//     const stories = await storyService.getStoriesByGenreSlug(slug);
+//     res.status(200).json({ stories });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Internal Server Error' });
+//   }
+// };
+ // controller story
 exports.getStoriesByGenre = async (req, res) => {
-  const { slug } = req.params; // Lấy slug từ URL
+  const { slug } = req.params;  // Lấy slug của thể loại từ URL
+  let { page = 1, limit = 10 } = req.query;  // Lấy tham số page và limit từ query, mặc định là page = 1, limit = 10
+
+  page = parseInt(page, 10); // Đảm bảo page là số nguyên
+  limit = parseInt(limit, 10); // Đảm bảo limit là số nguyên
 
   try {
-    const stories = await storyService.getStoriesByGenreSlug(slug);
-    res.status(200).json({ stories });
+    // Gọi service để lấy danh sách câu chuyện theo thể loại với phân trang
+    const stories = await storyService.getStoriesByGenreSlug(slug, page, limit);
+
+    // Truy vấn tổng số câu chuyện trong thể loại này để tính tổng số trang
+    const totalStories = await Story.count({
+      include: [
+        {
+          model: Genre,
+          as: 'genres',
+          where: { slug: slug },
+        }
+      ]
+    });
+
+    // Tính tổng số trang
+    const totalPages = Math.ceil(totalStories / limit);
+
+    // Tính toán phân trang
+    const pagination = {
+      currentPage: page,
+      totalPages: totalPages, // Tổng số trang
+      hasNext: page < totalPages,
+      hasPrevious: page > 1,
+      nextPage: page + 1 <= totalPages ? page + 1 : null,
+      previousPage: page - 1 >= 1 ? page - 1 : null
+    };
+
+    // Đưa dữ liệu câu chuyện vào đúng định dạng
+    const storiesData = stories.map(story => ({
+      story_id: story.id,
+      story_name: story.story_name,
+      story_slug: story.slug,
+      cover: story.cover,
+      total_chapters: story.total_chapters,
+      genres: story.genres.map(genre => ({
+        genre_name: genre.genre_name,
+        genre_slug: genre.slug
+      })),
+      author: {
+        author_name: story.author.author_name,
+        author_slug: story.author.slug
+      }
+    }));
+
+    // Trả về dữ liệu bao gồm câu chuyện và thông tin phân trang
+    return res.status(200).json({
+      message: true,
+      totalPages, // Tổng số trang
+      pagination, // Thông tin phân trang
+      data: {
+        stories: storiesData
+      }
+    });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
+
+
 
 
 // module.exports = { getStoriesByGenre };

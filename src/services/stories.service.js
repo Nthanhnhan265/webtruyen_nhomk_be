@@ -408,39 +408,81 @@ exports.deleteStory = async (id) => {
 }
 
 
-exports.getStoriesByGenreSlug = async (slug) => {
+// exports.getStoriesByGenreSlug = async (slug) => {
+//   try {
+//     const stories = await Story.findAll({
+//       attributes: [
+//         'id', 
+//         'story_name', 
+//         'slug', 
+//         'cover', 
+//         'description', 
+//         'total_chapters',
+//         'author_id',
+//       ],
+//       include: [
+//         {
+//           model: Genre,
+//           as: 'genres',  // Đặt alias cho quan hệ Genre
+//           attributes: ['genre_name', 'slug'],
+//           through: { attributes: [] }, // Loại bỏ cột của bảng join
+//           where: { slug: slug },
+//         },
+//         {
+//           model: Author,
+//           as: 'author',  // Đặt alias cho quan hệ Author
+//           attributes: ['author_name', 'slug'],
+//         }
+//       ]
+//     });
+
+//     return stories;
+//   } catch (error) {
+//     throw error; // Ném lỗi để controller có thể xử lý
+//   }
+// };
+
+// service story
+exports.getStoriesByGenreSlug = async (slug, page, limit) => {
   try {
+    const offset = (page - 1) * limit; // Tính toán offset dựa trên page và limit
+
+    // Truy vấn danh sách câu chuyện thuộc thể loại cụ thể với phân trang
     const stories = await Story.findAll({
       attributes: [
-        'id', 
-        'story_name', 
-        'slug', 
-        'cover', 
-        'description', 
+        'id',
+        'story_name',
+        'slug',
+        'cover',
+        'description',
         'total_chapters',
         'author_id',
       ],
       include: [
         {
           model: Genre,
-          as: 'genres',  // Đặt alias cho quan hệ Genre
+          as: 'genres',
           attributes: ['genre_name', 'slug'],
-          through: { attributes: [] }, // Loại bỏ cột của bảng join
-          where: { slug: slug },
+          through: { attributes: [] },
+          where: { slug: slug }, // Tìm thể loại theo slug
         },
         {
           model: Author,
-          as: 'author',  // Đặt alias cho quan hệ Author
+          as: 'author',
           attributes: ['author_name', 'slug'],
         }
-      ]
+      ],
+      limit: limit, // Giới hạn số lượng câu chuyện trên mỗi trang
+      offset: offset,  // Áp dụng offset để phân trang
     });
 
+    // Trả về danh sách câu chuyện
     return stories;
   } catch (error) {
-    throw error; // Ném lỗi để controller có thể xử lý
+    throw error;
   }
 };
+
 
 
 // module. = { getStoriesByGenreSlug };
