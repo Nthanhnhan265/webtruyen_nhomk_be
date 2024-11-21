@@ -2,7 +2,8 @@ const { Chapter, Story, Author, Genre } = require('@models')
 const createError = require('http-errors')
 const message = require('@root/message')
 const { Op } = require('sequelize')
-const createHttpError = require('http-errors')
+const { chapter } = require('../../message')
+// const createError = require('http-errors')
 
 // ==========================
 // Chapter CRUD Functions
@@ -150,7 +151,7 @@ async function getChaptersByStoryId(
 
       story = storyInstance.toJSON()
       if (!story) {
-        throw createHttpError.notFound('story not found')
+        throw createError('story not found')
       }
     }
 
@@ -431,6 +432,51 @@ async function deleteStoryId(storyId) {
     throw createError(500, message.chapter.deleteFailed)
   }
 }
+async function getChapterByStoryRead(story_id, sortBy = 'chapter_order', order = 'ASC') {
+  try {
+    console.log('Story ID:', story_id);
+
+    // Kiểm tra nếu không có `story_id`
+    if (!story_id) {
+      throw new Error('Story ID không hợp lệ');
+    }
+
+    // Điều kiện lọc chapter theo `story_id`
+    const whereStatement = { story_id };
+
+    // Lấy danh sách chapters sắp xếp theo `chapter_order`
+    const chapters = await Chapter.findAll({
+      where: whereStatement,
+      attributes: [
+        'id',
+        'chapter_name',
+        'views',
+        'slug',
+        'published_at',
+        'created_at',
+        'chapter_order',
+        'status',
+        'story_id',
+      ],
+      order: [[sortBy, order]],
+    });
+    console.log(chapters);
+
+
+    // Kiểm tra nếu không tìm thấy chapter nào
+    if (!chapters || chapters.length === 0) {
+      throw new Error('Không tìm thấy chapter nào cho truyện này');
+    }
+
+    // Trả về danh sách chapter
+    return {
+      chapters,
+    };
+  } catch (error) {
+    console.error('Error fetching chapters:', error);
+    throw new Error('Không thể lấy danh sách chapter');
+  }
+}
 
 module.exports = {
   createChapter,
@@ -443,4 +489,5 @@ module.exports = {
   deleteChapterById,
   searchChapters,
   deleteStoryId,
+  getChapterByStoryRead
 }
