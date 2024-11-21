@@ -52,6 +52,9 @@ const createReview = async ({ user_id, story_id, star, comment }) => {
  * @returns {Array} - Danh sách đánh giá
  */
 const getReviewsByStory = async (story_id) => {
+  if (!story_id) {
+    throw new Error('Story ID is required.');
+  }
   return await Review.findAll({
     where: { story_id },
     include: [

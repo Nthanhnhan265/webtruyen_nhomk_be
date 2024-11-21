@@ -5,6 +5,7 @@ const {
   getReviewsByUserId,
   updateReview,
   deleteReview,
+  getReviewsByStory
 } = require('@services/authreview.service')
 const message = require('@root/message')
 const { reviewValidate } = require('@helper/validation')
@@ -64,6 +65,28 @@ async function handleGetUserReviews(req, res, next) {
 }
 
 /**
+ * Lấy danh sách đánh giá của người dùng
+ * @param {Object} req - Yêu cầu HTTP
+ * @param {Object} res - Đối tượng phản hồi HTTP
+ * @param {Function} next - Hàm gọi tiếp theo
+ */
+async function handleGetStoryRewiews(req, res, next) {
+  const { story_id } = req.params
+  
+    try {
+      const reviews = await getReviewsByStory(story_id)
+      return res.status(200).json({
+        success: true,
+        status: 200,
+        message: message.authreview.getSuccess,
+        data: reviews,
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+/**
  * Cập nhật đánh giá của người dùng
  * @param {Object} req - Yêu cầu HTTP
  * @param {Object} res - Đối tượng phản hồi HTTP
@@ -111,6 +134,7 @@ async function handleDeleteUserReview(req, res, next) {
 module.exports = {
   handleCreateUserReview,
   handleGetUserReviews,
+  handleGetStoryRewiews,
   handleUpdateUserReview,
   handleDeleteUserReview,
 }

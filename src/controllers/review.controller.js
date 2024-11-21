@@ -97,7 +97,7 @@ async function handleSearchReviews(req, res, next) {
  * @param {Function} next - Hàm gọi tiếp theo
  */
 async function handleGetReviewsByStoryId(req, res, next) {
-  const { storyId } = req.params
+  const { storyId } = req.body
   try {
     const { data, pagination } = await getReviewsByStoryId(storyId)
     return res.status(200).json({
