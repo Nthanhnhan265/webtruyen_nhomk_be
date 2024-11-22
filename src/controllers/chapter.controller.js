@@ -7,7 +7,8 @@ const {
   getChapterBySlug,
   getChaptersByStoryId,
   getChaptersByStory1,
-  deleteStoryId
+  deleteStoryId,
+  getChapterByStoryRead
 } = require("@services/chapter.service");
 const message = require("@root/message");
 const { chapterValidate } = require("@helper/validation");
@@ -74,7 +75,7 @@ async function getChaptersBySlug(req, res) {
     if (!slug) {
       return res.status(400).json({ message: 'khong tim thay url' })
     }
-    const { chapter } = await getChapterBySlug(slug)
+    const chapter = await getChapterBySlug(slug)
 
     // Trả về danh sách chương theo story_id
     res.status(200).json({
@@ -196,37 +197,32 @@ async function handleGetChapterById(req, res, next) {
 }
 async function HandelgetChaptersByStoryId(req, res) {
   try {
-    // Lấy tham số từ request params
-    const { id } = req.params
-    console.log('Story ID jjjj:', id)
+    const { id } = req.params;
 
-    // Kiểm tra nếu id không hợp lệ
     if (!id) {
-      return res.status(400).json({ message: 'Không tìm thấy story ID' })
+      return res.status(400).json({ success: false, message: 'Story ID is required' });
     }
 
-    // Gọi hàm getChaptersByStoryId1 để lấy dữ liệu chương
-    const { data } = await getChaptersByStoryId(id) // Đảm bảo getChaptersByStoryId1 trả về { data }
-
-    // Nếu không tìm thấy chương nào, trả về lỗi
-    if (!data || data.length === 0) {
-      return res.status(404).json({ message: 'Không tìm thấy chương nào' })
+    const { chapters } = await getChapterByStoryRead(id, true, 'chapter_order', 'ASC');
+    if (!chapters || chapters.length === 0) {
+      return res.status(404).json({ success: false, message: 'No chapters found' });
     }
 
-    // Trả về kết quả nếu tìm thấy
     res.status(200).json({
       success: true,
-      message: 'Lấy dữ liệu thành công',
-      data: data, // Trả về dữ liệu các chương
-    })
+      message: 'Fetched chapters successfully',
+      data: { chapters },
+    });
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Error:', error);
     res.status(500).json({
-      message: 'Lấy chapter thất bại',
+      success: false,
+      message: 'Failed to fetch story and chapters',
       error: error.message,
-    })
+    });
   }
 }
+
 async function HandelgetAllChapter(req, res) {
   try {
     // Lấy tham số từ request params
