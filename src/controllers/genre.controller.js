@@ -86,6 +86,25 @@ const deleteGenre = async (req, res) => {
     }
 };
 
+const handleGetGenresBySlug = async (req, res) => {
+    const { slug } = req.params
+    console.log('>>slug duoc goi1: ', slug)
+    //xac thuc du lieu
+  
+    const result = await GenreService.getGenresBySlug(slug)
+    console.log(result)
+    return res.status(200).json(result)
+  }
+const handleGetStoriesByGenre = async (req, res) => {
+    const { slug } = req.params
+    console.log('>>slug duoc goi2: ', slug)
+    //xac thuc du lieu
+  
+    const result = await GenreService. getStoriesByGenre(slug)
+    console.log(result)
+    return res.status(200).json(result)
+  }
+//   import hàm
 module.exports = {
     getAllGenresByName,
     getAllGenres,
@@ -93,4 +112,6 @@ module.exports = {
     createGenre,
     updateGenre,
     deleteGenre,
+    handleGetGenresBySlug,
+    handleGetStoriesByGenre,
 };

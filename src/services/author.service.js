@@ -1,7 +1,8 @@
-const { Author } = require('../models');
+// const { Author } = require('../models');
 const { Op } = require('sequelize'); // Import toán tử Op từ Sequelize
 const createError = require('http-errors')
 const message = require('../../message');
+const { Author, Story, Genre } = require('../models');  // Import các model Sequelize
 
 // Tạo tác giả mới
 const createAuthor = async (authorData) => {
@@ -163,6 +164,132 @@ const deleteAuthor = async (id) => {
 };
 
 
+// Service để lấy thông tin tác giả và các sách của tác giả
+// const getAuthorWithStories = async (slug, page, limit) => {
+//   try {
+//     console.log(slug, page, limit);
+    
+//     // Kiểm tra và tính toán offset và limit cho phân trang
+//     const offset = (page - 1) * limit;
+
+//     // Sử dụng Sequelize để truy vấn tác giả và câu chuyện với phân trang
+//     const author = await Author.findOne({
+//       where: { slug },
+//       attributes: ['id', 'author_name', 'slug', 'description'],
+//       include: [
+//         {
+//           model: Story,
+//           as: 'stories',
+//           attributes: ['id', 'story_name', 'slug', 'cover', 'total_chapters'],
+//           limit,   // Số lượng câu chuyện mỗi lần truy vấn
+//           offset,  // Vị trí bắt đầu của câu chuyện (dựa trên trang)
+//           include: [
+//             {
+//               model: Genre,
+//               as: 'genres',
+//               attributes: ['genre_name', 'slug']
+//             }
+//           ]
+//         }
+//       ]
+//     });
+
+//     // Nếu không tìm thấy tác giả, trả về null
+//     if (!author) {
+//       throw new Error('Author not found');
+//     }
+
+//     // Truy vấn số lượng câu chuyện tổng cộng của tác giả để tính tổng số trang
+//     const totalStories = await Story.count({
+//     });
+
+//     // Tính tổng số trang
+//     const totalPages = Math.ceil(totalStories / limit);
+
+//     // Trả về tác giả, câu chuyện với phân trang và tổng số trang
+//     return {
+//       author,
+//       totalPages
+//     };
+//   } catch (error) {
+//     // Nếu có lỗi, throw ra error để xử lý ở nơi gọi
+//     throw new Error(`Error fetching author with stories: ${error.message}`);
+//   }
+// };
+
+const getAuthorWithStories = async (slug, page, limit) => {
+  try {
+    console.log(slug, page, limit);
+    
+    // Kiểm tra và tính toán offset và limit cho phân trang
+    const offset = (page - 1) * limit;
+
+    // Sử dụng Sequelize để truy vấn tác giả và câu chuyện với phân trang
+    const author = await Author.findOne({
+      where: { slug },
+      attributes: ['id', 'author_name', 'slug', 'description'],
+      include: [
+        {
+          model: Story,
+          as: 'stories',
+          attributes: ['id', 'story_name', 'slug', 'cover', 'total_chapters'],
+          limit,   // Số lượng câu chuyện mỗi lần truy vấn
+          offset,  // Vị trí bắt đầu của câu chuyện (dựa trên trang)
+          include: [
+            {
+              model: Genre,
+              as: 'genres',
+              attributes: ['genre_name', 'slug']
+            }
+          ]
+        }
+      ]
+    });
+
+    // Nếu không tìm thấy tác giả, trả về null
+    if (!author) {
+      throw new Error('Author not found');
+    }
+
+    // Truy vấn số lượng câu chuyện tổng cộng của tác giả để tính tổng số trang
+    const totalStories = await Story.count({
+      where: { author_id: author.id } // Đảm bảo tính số câu chuyện của tác giả này
+    });
+
+    // Tính tổng số trang
+    const totalPages = Math.ceil(totalStories / limit);
+    console.log("totalpage:" +totalPages);
+    
+
+    // Trả về tác giả, câu chuyện với phân trang và tổng số trang
+    return {
+      author,
+      totalPages,
+      totalStories // Cung cấp tổng số câu chuyện để có thể sử dụng trong tính toán
+    };
+  } catch (error) {
+    // Nếu có lỗi, throw ra error để xử lý ở nơi gọi
+    throw new Error(`Error fetching author with stories: ${error.message}`);
+  }
+};
+
+
+
+module.exports = {
+  getAuthorWithStories
+};
+
+module.exports = { getAuthorWithStories };
+
+
+
+
+
+
+
+
+
+
 
 module.exports = {
   createAuthor,
@@ -170,5 +297,6 @@ module.exports = {
   getAuthorById,
   updateAuthor,
   deleteAuthor,
-  getAllAuthorsName
+  getAllAuthorsName,
+  getAuthorWithStories
 };

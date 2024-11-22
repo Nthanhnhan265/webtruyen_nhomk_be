@@ -9,5 +9,7 @@ router.get('/authorsName', authorController.getAllAuthorsName);
 router.get('/:id', authorController.getAuthorById);
 router.put('/update/:id', authorController.updateAuthor);
 router.delete('/delete/:id', authorController.deleteAuthor);
+// Định nghĩa route để lấy thông tin tác giả và các sách của tác giả
+router.get('/authorsbooks/:slug', authorController.getAuthorWithStories);
 
 module.exports = router;

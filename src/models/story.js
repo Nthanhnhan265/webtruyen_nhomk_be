@@ -4,8 +4,10 @@ const { Model } = require('sequelize')
 module.exports = (sequelize, DataTypes) => {
   class Story extends Model {
     static associate(models) {
+      
       // Định nghĩa quan hệ ở đây nếu cần
       Story.belongsTo(models.Author, {
+        as: 'author',
         foreignKey: 'author_id',
         constraints: false,
       })
@@ -14,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
         constraints: false,
       })
       Story.belongsToMany(models.Genre, {
+        // through: 'genre_story',
         through: models.StoryGenre,
         foreignKey: 'story_id',
         otherKey: 'genre_id',
