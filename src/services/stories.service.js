@@ -93,6 +93,7 @@ exports.getAllStories = async (story_name, description, sortBy, sortOrder, page,
       include: [
         {
           model: Author,
+          as: 'author',
           attributes: ['author_name', 'id'],
         },
       ],
