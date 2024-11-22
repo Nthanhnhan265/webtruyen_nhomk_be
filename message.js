@@ -145,6 +145,7 @@ module.exports = {
       'Tham số page không hợp lệ: phải là một số nguyên dương và không được để trống . ',
   },
   auth: {
+    accountLocked: 'Tài khoản bị khóa',
     permissionDenied: 'Quyền không hợp lệ',
     fetchProfileSuccess: 'Lấy thông tin người dùng thành công',
     createSusses: 'Đăng ký thành công',

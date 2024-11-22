@@ -38,6 +38,10 @@ async function handleLogin(req, res, next) {
     }
     // Kiểm email có tồn tại trong db hay không
     const user = await findUserByEmail(email)
+    //kiểm tra xem trạng thái tài khoản có hoạt động hay không
+    if (!user.status) {
+      throw createHttpError.Forbidden(message.auth.accountLocked)
+    }
     if (!(await user.isRightPassword(password))) {
       throw createHttpError.Unauthorized(message.auth.unauthorized)
     }
@@ -136,10 +140,10 @@ async function handleRefreshToken(req, res, next) {
     if (!refreshToken)
       return next(createHttpError.BadRequest(message.auth.missedToken))
     // Lấy id từ token
-    const { userId } = await verifyRefreshToken(refreshToken)
+    const { userId, role_id } = await verifyRefreshToken(refreshToken)
     // cấp 1 cặp token mới
-    const accessToken = await signAccessToken(userId)
-    const refToken = await signRefreshToken(userId)
+    const accessToken = await signAccessToken(userId, role_id)
+    // const refToken = await signRefreshToken(userId)
 
     //=========== trả về dữ liệu ==========//
     return res.status(200).json({
@@ -147,7 +151,7 @@ async function handleRefreshToken(req, res, next) {
       status: 200,
       token: {
         accessToken,
-        refToken,
+        // refToken,
       },
       links: [],
     })
