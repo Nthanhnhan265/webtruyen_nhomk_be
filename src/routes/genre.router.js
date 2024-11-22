@@ -8,7 +8,7 @@ router.get('/', genreController.getAllGenresByName);
 router.get('/getAllgenres', genreController.getAllGenres);
 
 // Route để lấy một genre cụ thể theo ID
-// router.get('/:id', genreController.getGenreById);
+router.get('/:id', genreController.getGenreById);
 
 // Route để tạo một genre mới
 router.post('/', genreController.createGenre);
@@ -20,7 +20,7 @@ router.put('/:id', genreController.updateGenre);
 router.delete('/:id', genreController.deleteGenre);
 
 //route lay the loai theo slug
-router.get('/:slug', genreController.handleGetGenresBySlug)
+// router.get('/:slug', genreController.handleGetGenresBySlug)
 
 // // Route lấy danh sách truyện theo genre slug
 // router.get('/getstorybygenre/:slug', genreController.handleGetStoriesByGenre); // Lấy truyện theo thể loại (slug)

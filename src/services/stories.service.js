@@ -177,6 +177,7 @@ exports.searchStories = async (keyword, page, limit) => {
       include: [
         {
           model: Author,
+          as: 'author',
           attributes: ['author_name', 'id'],
         },
         {
