@@ -2,7 +2,7 @@
 const message = require("../../message");
 const { Story, Genre, Author } = require('../models');
 const storyService = require("../services/stories.service");
- 
+
 const {
   getChaptersByStoryId,
   getChapterBySlug,
@@ -389,7 +389,7 @@ exports.handleSearchStories = async (req, res) => {
       .status(500)
       .json({ message: 'Error searching stories', error: error.message })
   }
- };
+};
 // exports.getStoriesByGenre = async (req, res) => {
 //   const { slug } = req.params; // Lấy slug từ URL
 
@@ -401,7 +401,7 @@ exports.handleSearchStories = async (req, res) => {
 //     res.status(500).json({ message: 'Internal Server Error' });
 //   }
 // };
- // controller story
+// controller story
 exports.getStoriesByGenre = async (req, res) => {
   const { slug } = req.params;  // Lấy slug của thể loại từ URL
   let { page = 1, limit = 10 } = req.query;  // Lấy tham số page và limit từ query, mặc định là page = 1, limit = 10
@@ -474,5 +474,4 @@ exports.getStoriesByGenre = async (req, res) => {
 
 
 // module.exports = { getStoriesByGenre };
- }
- 
+//  }
