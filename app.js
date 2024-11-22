@@ -10,7 +10,7 @@ const cors = require('cors')
 const express = require('express')
 const config = require('./src/config/sys.config.js')
 const db = require('@models')
-const { verifyAccessToken } = require('./src/middlewares/auth.midleware.js')
+const { verifyAccessToken } = require('./src/middlewares/auth.middleware.js')
 const app = express()
 
 //======================================
@@ -25,6 +25,7 @@ const chapterRouter = require('./src/routes/chapter.router.js')
 const reviewRouter = require('./src/routes/review.router.js')
 const genreStoriesRouter = require('./src/routes/genreStorie.router.js')
 const genreRouter = require('./src/routes/genre.router.js')
+const ratings = require('./src/routes/authreview.router.js')
 
 //======================================
 //Configuration: static files,
@@ -49,6 +50,7 @@ app.use('/api/authors', authorRouter)
 app.use('/api/stories', storyRouter)
 app.use('/api/reviews', reviewRouter)
 app.use('/api/story-genre', genreStoriesRouter)
+app.use('/api/ratings', ratings)
 
 //MIDDLEWARE
 // Middleware: error handler for 404

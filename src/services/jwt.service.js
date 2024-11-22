@@ -8,15 +8,16 @@ const JWT = require('jsonwebtoken')
  *  @param {number} userId - Id người dùng
  *  @returns {Promise}
  */
-const signAccessToken = (userId) => {
+const signAccessToken = (userId, roleId) => {
   return new Promise((resolve, reject) => {
     const payload = {
       userId,
+      roleId,
     }
     const secretKey = process.env.ACCESS_TOKEN_SECRET
     const option = {
       //30 minutes
-      expiresIn: '20m',
+      expiresIn: '25m',
     }
     JWT.sign(payload, secretKey, option, (err, token) => {
       if (err) reject(err)
@@ -30,10 +31,11 @@ const signAccessToken = (userId) => {
  *  @param {number} userId - Id người dùng
  *  @returns {Promise}
  */
-const signRefreshToken = (useId) => {
+const signRefreshToken = (useId, roleId) => {
   return new Promise((resolve, reject) => {
     const payload = {
       useId,
+      roleId,
     }
     const secretKey = process.env.REFRESH_TOKEN_SECRET
     const option = {

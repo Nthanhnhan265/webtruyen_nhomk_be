@@ -27,9 +27,11 @@ router.get('/getStoryBySlug/:slug', storiesController.getStoryBySlug)
 const { uploadSingleFile } = require('../middlewares/upload.middleware')
 
 // Routes for managing stories
+
 router.post('/create', uploadSingleFile('cover'), storiesController.createStory)
 router.get('/', storiesController.getStories)
 router.get('/:id', storiesController.getStoryById)
+router.get('/search/:keyword', storiesController.handleSearchStories)
 router.put(
   '/update/:id',
   uploadSingleFile('cover'),

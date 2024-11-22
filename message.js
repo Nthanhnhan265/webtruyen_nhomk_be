@@ -145,6 +145,9 @@ module.exports = {
       'Tham số page không hợp lệ: phải là một số nguyên dương và không được để trống . ',
   },
   auth: {
+    accountLocked: 'Tài khoản bị khóa',
+    permissionDenied: 'Quyền không hợp lệ',
+    fetchProfileSuccess: 'Lấy thông tin người dùng thành công',
     createSusses: 'Đăng ký thành công',
     nameError: 'Tên đăng nhập không hợp lệ',
     nameInvalid: 'Tên đăng nhập không tồn tại',
@@ -160,6 +163,25 @@ module.exports = {
     invalidToken: 'Token không hợp lệ',
     expiredToken: 'Token đã hết hạn',
     missedToken: 'Yêu cầu token',
-    passwordRequired: 'Yêu cầu mật khẩu',
+    currentPasswordRequired: 'Vui lòng nhập mật khẩu hiện tại',
+    avatarRequired: 'Vui lòng chọn hình ảnh',
+
+    // Các thông báo mới được thêm vào
+    passwordTooShort: 'Mật khẩu phải có ít nhất 8 ký tự.',
+    passwordStrength:
+      'Mật khẩu phải chứa ít nhất một chữ hoa, một chữ thường và một số.',
+    passwordsDoNotMatch: 'Mật khẩu xác nhận không khớp với mật khẩu mới.',
+    newPasswordRequired: 'Vui lòng nhập mật khẩu mới.',
+    confirmPasswordRequired: 'Vui lòng nhập xác nhận mật khẩu mới.',
+    passwordCannotBeSame:
+      'Mật khẩu hiện tại và mật khẩu mới không được giống nhau.',
+  },
+  authreview: {
+    alreadyReviewed: 'Bạn đã đánh giá truyện này',
+    notFound: 'Không tìm thấy đánh giá',
+    createSuccess: 'Tạo đánh giá thành công',
+    updateSuccess: 'Chỉnh sửa đánh giá thành công',
+    deleteSuccess: 'Xóa đánh giá thành công',
+    getSuccess: 'Lấy đánh giá thành công',
   },
 }

@@ -19,7 +19,7 @@ const createAuthor = async (authorData) => {
 
 // Lấy tất cả các tác giả với bộ lọc và phân trang
 const getAllAuthors = async (
-  author_name, description, sortOrder, page, limit
+  author_name, description, sortBy, sortOrder, page, limit
 ) => {
   const pageInt = parseInt(page);
 
@@ -56,7 +56,7 @@ const getAllAuthors = async (
     // Fetch authors with pagination and sorting
     const authors = await Author.findAll({
       where,
-      order: [['author_name', sortOrder.toUpperCase()]],
+      order: [[sortBy, sortOrder.toUpperCase()]],
       offset,
       limit,
       attributes: [

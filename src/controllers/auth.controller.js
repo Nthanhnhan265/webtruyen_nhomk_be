@@ -1,5 +1,14 @@
-const { loginValidate, registerValidate } = require('@helper/validation')
-const { findUserByEmail, registerUser } = require('@services/auth.service.js')
+const {
+  loginValidate,
+  registerValidate,
+  updateProfilePassword,
+} = require('@helper/validation')
+const {
+  findUserByEmail,
+  registerUser,
+  getProfile,
+  updatePassword,
+} = require('@services/auth.service.js')
 const createHttpError = require('http-errors')
 const message = require('@root/message.js')
 const { JWT_SECRET } = process.env // Lấy JWT secret từ biến môi trường
@@ -8,6 +17,8 @@ const {
   signRefreshToken,
 } = require('@services/jwt.service.js')
 const { verifyRefreshToken } = require('../services/jwt.service')
+const { userValidate } = require('@helper/validation')
+const { updateUser, getUserByID } = require('@services/user.service.js')
 //LOGIN TO USER, ADMIN
 /** Xử lý yêu cầu đăng nhập và tạo token mới
  *  @param {Object} req -  Đối tượng yêu cầu.
@@ -27,13 +38,16 @@ async function handleLogin(req, res, next) {
     }
     // Kiểm email có tồn tại trong db hay không
     const user = await findUserByEmail(email)
+    //kiểm tra xem trạng thái tài khoản có hoạt động hay không
+    if (!user.status) {
+      throw createHttpError.Forbidden(message.auth.accountLocked)
+    }
     if (!(await user.isRightPassword(password))) {
       throw createHttpError.Unauthorized(message.auth.unauthorized)
     }
     // trả về JWT nếu nhập đúng tài khoản mật khẩu
-    const accessToken = await signAccessToken(user.id)
-    const refreshToken = await signRefreshToken(user.id)
-
+    const accessToken = await signAccessToken(user.id, user.role_id)
+    const refreshToken = await signRefreshToken(user.id, user.role_id)
     // xóa trường mật khẩu trước khi trả về
     const userData = user.toJSON()
 
@@ -126,10 +140,10 @@ async function handleRefreshToken(req, res, next) {
     if (!refreshToken)
       return next(createHttpError.BadRequest(message.auth.missedToken))
     // Lấy id từ token
-    const { userId } = await verifyRefreshToken(refreshToken)
+    const { userId, role_id } = await verifyRefreshToken(refreshToken)
     // cấp 1 cặp token mới
-    const accessToken = await signAccessToken(userId)
-    const refToken = await signRefreshToken(userId)
+    const accessToken = await signAccessToken(userId, role_id)
+    // const refToken = await signRefreshToken(userId)
 
     //=========== trả về dữ liệu ==========//
     return res.status(200).json({
@@ -137,8 +151,149 @@ async function handleRefreshToken(req, res, next) {
       status: 200,
       token: {
         accessToken,
-        refToken,
+        // refToken,
       },
+      links: [],
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+//HANDLE GET PROFILE
+/** Xử lý yêu cầu lấy thông tin người dùng
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Object} next
+ */
+async function handleGetProfile(req, res, next) {
+  try {
+    const payload = req.payload
+    const user = await getProfile(payload.userId)
+    res.status(200).json({
+      success: true,
+      message: '',
+      status: 200,
+      data: user,
+      links: [],
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+//HANDLE UPDATE PROFILE
+/** Xử lý yêu cầu lấy thông tin người dùng
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Object} next
+ */
+async function handleUpdateAvatar(req, res, next) {
+  try {
+    //lấy tên file được gửi lên
+    const payload = req.payload
+    const id = payload.userId
+    const uploadedFile = req.file
+    const newAvatar = uploadedFile ? uploadedFile.filename : ''
+    //xác thực đầu vào
+    if (!newAvatar) {
+      return next(createHttpError.BadRequest(message.auth.avatarRequired))
+    }
+    const result = await updateUser(id, {
+      avatar: newAvatar,
+    })
+    if (result.error) {
+      next(result.error)
+    }
+    if (result.message) {
+      console.log(result.message)
+      return res.status(200).json({
+        success: false,
+        status: 200,
+        message: result.message,
+        data: null,
+        links: [],
+      })
+    }
+    return res.status(200).json({
+      success: true,
+      status: 200,
+      message: message.user.updateSuccess,
+      data: result,
+      links: [],
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+//HANDLE PASSWORD PROFILE
+/** Xử lý yêu cầu lấy thông tin người dùng
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Object} next
+ */
+
+// async function handleUpdatePassword(req, res, next) {
+//   try {
+//     // 1. Lấy id từ JWT payload
+//     const { userId } = req.payload
+//     console.log(userId)
+//     // 2. Lấy dữ liệu từ body
+//     const { currentPassword, newPassword, confirmPassword } = req.body
+
+//     // 3. Validate dữ liệu đầu vào
+//     const { error } = updateProfilePassword({
+//       currentPassword,
+//       newPassword,
+//       confirmPassword,
+//     })
+//     if (error) {
+//       return next(createHttpError.BadRequest(error.message))
+//     }
+
+//     // 4. Gọi Service để cập nhật mật khẩu
+//     const result = await updatePassword(userId, currentPassword, newPassword)
+
+//     // 5. Phản hồi thành công
+//     return res.status(200).json({
+//       success: true,
+//       status: 200,
+//       message: result.message,
+//       data: null,
+//       links: [],
+//     })
+//   } catch (error) {
+//     next(error)
+//   }
+// }
+
+async function handleUpdatePassword(req, res, next) {
+  try {
+    //  Lấy id từ JWT payload
+    const { userId } = req.payload
+
+    //  Lấy dữ liệu từ body
+    const { currentPassword, newPassword, confirmPassword } = req.body
+
+    //  Validate dữ liệu đầu vào
+    const { error } = updateProfilePassword({
+      currentPassword,
+      newPassword,
+      confirmPassword,
+    })
+    if (error) {
+      return next(createHttpError.BadRequest(error.message))
+    }
+    //  Gọi service để xử lý việc cập nhật mật khẩu
+    await updatePassword(userId, currentPassword, newPassword)
+
+    //  Trả về phản hồi thành công
+    return res.status(200).json({
+      success: true,
+      status: 200,
+      message: message.user.updateSuccess,
+      data: null,
       links: [],
     })
   } catch (error) {
@@ -150,6 +305,9 @@ module.exports = {
   handleLogin,
   handleRefreshToken,
   handleRegister,
+  handleGetProfile,
+  handleUpdateAvatar,
+  handleUpdatePassword,
 }
 //LOGIN TO ADMIN
 /** Xử lý yêu cầu đăng nhập và tạo token mới
