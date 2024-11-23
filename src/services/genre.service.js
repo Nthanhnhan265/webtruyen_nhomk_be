@@ -11,78 +11,78 @@ class GenreService {
       throw new Error('Error fetching genres')
     }
  
-    static async getGenres(keyword, sortBy, order, page, limit) {
-        try {
-            console.log("KEYWORD:", keyword);
+    
+  }
+  
+  static async getGenres(keyword, sortBy, order, page, limit) {
+      try {
+          console.log("KEYWORD:", keyword);
 
-            // Tách từ khóa thành từng từ hoặc ký tự để tạo các điều kiện tìm kiếm
-            const searchTerms = keyword.split(/\s+/); // Tách từ theo dấu cách
+          // Tách từ khóa thành từng từ hoặc ký tự để tạo các điều kiện tìm kiếm
+          const searchTerms = keyword.split(/\s+/); // Tách từ theo dấu cách
 
-            // Tạo mảng điều kiện tìm kiếm với từng từ hoặc ký tự
-            const searchConditions = searchTerms.flatMap(term => [
-                { genre_name: { [Op.like]: `%${term}%` } },
-                { description: { [Op.like]: `%${term}%` } },
-            ]);
+          // Tạo mảng điều kiện tìm kiếm với từng từ hoặc ký tự
+          const searchConditions = searchTerms.flatMap(term => [
+              { genre_name: { [Op.like]: `%${term}%` } },
+              { description: { [Op.like]: `%${term}%` } },
+          ]);
 
-            // Thêm điều kiện đảo ngược từ khóa (ví dụ: "A B" -> "B A")
-            if (searchTerms.length > 1) {
-                const reversedKeyword = searchTerms.reverse().join(" ");
-                searchConditions.push(
-                    { genre_name: { [Op.like]: `%${reversedKeyword}%` } },
-                    { description: { [Op.like]: `%${reversedKeyword}%` } }
-                );
-            }
+          // Thêm điều kiện đảo ngược từ khóa (ví dụ: "A B" -> "B A")
+          if (searchTerms.length > 1) {
+              const reversedKeyword = searchTerms.reverse().join(" ");
+              searchConditions.push(
+                  { genre_name: { [Op.like]: `%${reversedKeyword}%` } },
+                  { description: { [Op.like]: `%${reversedKeyword}%` } }
+              );
+          }
 
-            // Tính tổng số bản ghi phù hợp
-            const total = await Genre.count({
-                where: {
-                    [Op.or]: searchConditions,
-                },
-            });
+          // Tính tổng số bản ghi phù hợp
+          const total = await Genre.count({
+              where: {
+                  [Op.or]: searchConditions,
+              },
+          });
 
-            // Lấy danh sách thể loại phù hợp từ cơ sở dữ liệu
-            const data = await Genre.findAll({
-                attributes: ['id', 'genre_name', 'description', 'slug'],
-                where: {
-                    [Op.or]: searchConditions,
-                },
-                order: [[sortBy, order]],
-                limit: limit,
-                offset: (page - 1) * limit,
-            });
+          // Lấy danh sách thể loại phù hợp từ cơ sở dữ liệu
+          const data = await Genre.findAll({
+              attributes: ['id', 'genre_name', 'description', 'slug'],
+              where: {
+                  [Op.or]: searchConditions,
+              },
+              order: [[sortBy, order]],
+              limit: limit,
+              offset: (page - 1) * limit,
+          });
 
-            if (!data.length) throw createError(404, "Không tìm thấy thể loại nào");
+          if (!data.length) throw createError(404, "Không tìm thấy thể loại nào");
 
-            // Tạo đối tượng chứa thông tin phân trang
-            const pagination = {
-                total,
-                page,
-                limit,
-                totalPages: Math.ceil(total / limit),
-            };
+          // Tạo đối tượng chứa thông tin phân trang
+          const pagination = {
+              total,
+              page,
+              limit,
+              totalPages: Math.ceil(total / limit),
+          };
 
-            return { data, pagination };
-        } catch (error) {
-            if (error.status === 404) {
-                throw createError(404, "Không tìm thấy thể loại phù hợp với từ khóa");
-            } else {
-                throw createError(500, "Có lỗi xảy ra khi lấy danh sách thể loại");
-            }
-        }
-    }
-
-    static async getGenreById(id) {
-        try {
-            const genre = await Genre.findByPk(id);
-            if (!genre) throw createError(404, 'Genre not found');
-            return genre;
-        } catch (error) {
-            throw createError(500, error.message);
-        }
-    }
-
+          return { data, pagination };
+      } catch (error) {
+          if (error.status === 404) {
+              throw createError(404, "Không tìm thấy thể loại phù hợp với từ khóa");
+          } else {
+              throw createError(500, "Có lỗi xảy ra khi lấy danh sách thể loại");
+          }
+      }
   }
 
+  static async getGenreById(id) {
+      try {
+          const genre = await Genre.findByPk(id);
+          if (!genre) throw createError(404, 'Genre not found');
+          return genre;
+      } catch (error) {
+          throw createError(500, error.message);
+      }
+  }
 
   static async createGenre(data) {
     try {
