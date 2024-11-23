@@ -471,7 +471,21 @@ exports.getStoriesByGenre = async (req, res) => {
 };
 
 
+exports.incrementViews = async (req, res) => {
+  const { id } = req.params;
 
+  try {
+    const updatedStory = await storyService.incrementStoryViews(id);
+    return res.status(200).json({
+      message: "Tăng lượt xem thành công!",
+      data: updatedStory,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      message: error.message || "Lỗi khi tăng lượt xem!",
+    });
+  }
+};
 
 // module.exports = { getStoriesByGenre };
 //  }

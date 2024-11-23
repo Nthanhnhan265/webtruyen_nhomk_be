@@ -622,6 +622,21 @@ exports.getStoriesByGenreSlug = async (slug, page, limit) => {
   }
 };
 
+exports.incrementStoryViews = async (storyId) => {
+  // Tìm kiếm câu chuyện theo ID
+  const story = await Story.findByPk(storyId);
+  if (!story) {
+    throw new Error("Câu chuyện không tồn tại!");
+  }
 
+  // Tăng giá trị `views`
+  story.views += 1;
+
+  // Lưu thay đổi
+  await story.save();
+
+  // Trả về thông tin câu chuyện sau khi cập nhật
+  return story;
+};
 
 // module. = { getStoriesByGenreSlug };
