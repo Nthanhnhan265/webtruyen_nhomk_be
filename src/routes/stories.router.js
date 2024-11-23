@@ -27,6 +27,7 @@ router.get('/getStoryBySlug/:slug', storiesController.getStoryBySlug)
 const { uploadSingleFile } = require('../middlewares/upload.middleware')
 
 // Routes for managing stories
+router.post("/:id/increment-views", storiesController.incrementViews);
 
 router.post('/create', uploadSingleFile('cover'), storiesController.createStory)
 router.get('/', storiesController.getStories)
