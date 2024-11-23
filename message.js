@@ -2,11 +2,11 @@ module.exports = {
   user: {
     createFailed: 'Tạo người dùng thất bại',
     createSuccess: 'Tạo người dùng thành công',
-    notFound: 'Không tìm thấy người dùng',
+    notFound: 'Người dùng không tồn tại',
     fetchSuccess: 'Lấy dữ liệu người dùng thành công',
 
     usernameExisted: 'Tên người dùng đã tồn tại',
-    emailExisted: 'Email đã tồn tại',
+    emailExisted: 'Email đã tồn tại, Vui lòng thử email khác',
 
     updateSuccess: 'Cập nhật người dùng thành công',
     updateFailed: 'Cập nhật người dùng không thành công',

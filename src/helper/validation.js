@@ -137,7 +137,8 @@ const chapterValidate = (data, isEdit = false) => {
     chapter_name: Joi.string()
       .min(1)
       .max(255)
-      .pattern(/^[a-zA-Z0-9\s]*$/)
+      // .pattern(/^[a-zA-Z0-9\s]*$/)
+      .pattern(/^[\p{L}\p{N}\s]*$/u)
       .required()
       .messages({
         'any.required': message.chapter.chapterNameRequired,

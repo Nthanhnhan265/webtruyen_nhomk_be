@@ -139,6 +139,7 @@ async function getChaptersByStoryId(
         include: [
           {
             model: Author,
+            as: 'author',
             attributes: ['author_name', 'id'],
           },
           {
@@ -314,7 +315,14 @@ async function searchChapters(
  * @returns {Promise<Object|null>} - Trả về đối tượng chương hoặc null nếu không tìm thấy.
  */
 async function getChapterByID(id) {
-  return await Chapter.findByPk(id)
+  return await Chapter.findByPk(id, {
+    include: [
+      {
+        model: Story,
+        attributes: ['story_name'],
+      },
+    ],
+  })
 }
 
 // GET CHAPTER BY SLUG
@@ -432,17 +440,21 @@ async function deleteStoryId(storyId) {
     throw createError(500, message.chapter.deleteFailed)
   }
 }
-async function getChapterByStoryRead(story_id, sortBy = 'chapter_order', order = 'ASC') {
+async function getChapterByStoryRead(
+  story_id,
+  sortBy = 'chapter_order',
+  order = 'ASC',
+) {
   try {
-    console.log('Story ID:', story_id);
+    console.log('Story ID:', story_id)
 
     // Kiểm tra nếu không có `story_id`
     if (!story_id) {
-      throw new Error('Story ID không hợp lệ');
+      throw new Error('Story ID không hợp lệ')
     }
 
     // Điều kiện lọc chapter theo `story_id`
-    const whereStatement = { story_id };
+    const whereStatement = { story_id }
 
     // Lấy danh sách chapters sắp xếp theo `chapter_order`
     const chapters = await Chapter.findAll({
@@ -459,22 +471,21 @@ async function getChapterByStoryRead(story_id, sortBy = 'chapter_order', order =
         'story_id',
       ],
       order: [[sortBy, order]],
-    });
-    console.log(chapters);
-
+    })
+    console.log(chapters)
 
     // Kiểm tra nếu không tìm thấy chapter nào
     if (!chapters || chapters.length === 0) {
-      throw new Error('Không tìm thấy chapter nào cho truyện này');
+      throw new Error('Không tìm thấy chapter nào cho truyện này')
     }
 
     // Trả về danh sách chapter
     return {
       chapters,
-    };
+    }
   } catch (error) {
-    console.error('Error fetching chapters:', error);
-    throw new Error('Không thể lấy danh sách chapter');
+    console.error('Error fetching chapters:', error)
+    throw new Error('Không thể lấy danh sách chapter')
   }
 }
 
@@ -489,5 +500,5 @@ module.exports = {
   deleteChapterById,
   searchChapters,
   deleteStoryId,
-  getChapterByStoryRead
+  getChapterByStoryRead,
 }

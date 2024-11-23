@@ -25,13 +25,9 @@ router.get('/:id', handleGetChapterById)
 //===================
 // Chapter Read API Endpoints
 //===================
-
-// GET /stories/:story_id/chapters - Lấy danh sách tất cả các chương của một truyện
-// router.get('/:story_id/chapters', handleGetChapters)
-
-// GET /chapters/:slug -  người dùng nhập slug-truyen/slug-chuong để xem một chương cụ thể
 router.get('/getChapterByslug/:slug', getChaptersBySlug)
 router.get('/getstory/:id', HandelgetChaptersByStoryId)
+
 //===================
 // Chapter Update API Endpoint
 //===================
@@ -44,3 +40,6 @@ router.delete('/:id', handleDeleteChapter)
 router.delete('/handleDeleteStoryId/:id', handleDeleteStoryId)
 
 module.exports = router
+// GET /stories/:story_id/chapters - Lấy danh sách tất cả các chương của một truyện
+// router.get('/:story_id/chapters', handleGetChapters)
+// GET /chapters/:slug -  người dùng nhập slug-truyen/slug-chuong để xem một chương cụ thể
