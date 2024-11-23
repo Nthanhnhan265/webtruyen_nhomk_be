@@ -15,7 +15,7 @@ const storiesController = require('../controllers/story.Controller')
 router.get('/getAllStorieView', storiesController.getAllStorieView)
 // // v
 router.get('/getAllStorieNew', storiesController.getAllStorieNew)
-// router.get("/:id", storiesController.getStoryById);
+router.get('/:id', storiesController.getStoryById)
 // // v
 router.get('/getStoryBySlug/:slug', storiesController.getStoryBySlug)
 // router.put(
@@ -46,9 +46,8 @@ router.get('/:story_id/chapters', storiesController.getChaptersByStory)
 // (Optional/Commented) Route to fetch a specific chapter using slugs for story and chapter
 // router.get('/:slugStory/:slugChapter', storiesController.getChapterBySlug)
 
-// Tài 
+// Tài
 // Định nghĩa route để lấy danh sách các stories theo genreSlug
-router.get('/genre/:slug', storiesController.getStoriesByGenre);
-
+router.get('/genre/:slug', storiesController.getStoriesByGenre)
 
 module.exports = router
