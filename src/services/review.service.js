@@ -27,7 +27,7 @@ async function createReview(review) {
 
     return await Review.create(review)
   } catch (error) {
-    console.log(error.status)
+    console.log(error)
     if (error.name === 'SequelizeValidationError') {
       throw createError(400, error.errors.map((err) => err.message).join(', '))
     } else if (error.name === 'SequelizeUniqueConstraintError') {
@@ -45,6 +45,7 @@ async function createReview(review) {
  * Lấy danh sách tất cả đánh giá.
  * @returns {Promise<Array>} - Trả về danh sách đánh giá.
  */
+
 async function getReviews(
   sortBy = 'created_at',
   order = 'DESC',
@@ -53,18 +54,29 @@ async function getReviews(
 ) {
   const offset = (page - 1) * limit
   const total = await Review.count()
+
+  const orderClause = (() => {
+    if (sortBy === 'username') {
+      return [{ model: User }, 'username', order]
+    } else if (sortBy === 'story_name') {
+      return [{ model: Story }, 'story_name', order]
+    } else {
+      return [sortBy, order]
+    }
+  })()
+
   const data = await Review.findAll({
-    order: [[sortBy, order]],
+    order: [orderClause],
     limit: limit,
     offset: offset,
     include: [
       {
         model: User,
-        attributes: ['id', 'username'], // Chọn các trường cần thiết từ model User
+        attributes: ['id', 'username'],
       },
       {
         model: Story,
-        attributes: ['id', 'story_name'], // Chọn các trường cần thiết từ model Story
+        attributes: ['id', 'story_name'],
       },
     ],
   })
@@ -75,6 +87,7 @@ async function getReviews(
     limit: limit,
     totalPages: Math.ceil(total / limit),
   }
+
   return { data, pagination }
 }
 
@@ -156,28 +169,53 @@ async function getReviewsByUserId(user_id, page = 1, limit = 10) {
     throw createError(500, message.review.fetchFailed)
   }
 }
-
 /**
  * Tìm kiếm đánh giá theo từ khóa.
  * @param {string} keyword - Từ khóa tìm kiếm.
+ * @param {string} sortBy - Trường cần sắp xếp.
+ * @param {string} order - Tăng hoặc giảm dần.
  * @param {number} page - Số trang.
  * @param {number} limit - Số lượng đánh giá trên mỗi trang.
  * @returns {Promise<Object>} - Dữ liệu đánh giá và thông tin phân trang.
  */
-async function searchReviews(keyword, page = 1, limit = 10) {
+async function searchReviews(
+  keyword,
+  sortBy = 'created_at',
+  order = 'DESC',
+  page = 1,
+  limit = 10,
+) {
   const offset = (page - 1) * limit
-  const total = await Review.count({
-    where: {
-      comment: { [Op.like]: `%${keyword}%` },
-    },
-  })
 
+  // Xây dựng `where` để tìm kiếm trong comment, username và story_name
+  const where = {
+    [Op.or]: [
+      { comment: { [Op.like]: `%${keyword}%` } },
+      { '$User.username$': { [Op.like]: `%${keyword}%` } },
+      { '$Story.story_name$': { [Op.like]: `%${keyword}%` } },
+    ],
+  }
+
+  // Kiểm tra `sortBy` để xây dựng `order` linh hoạt
+  const orderClause = (() => {
+    if (sortBy === 'username') {
+      return [{ model: User }, 'username', order]
+    } else if (sortBy === 'story_name') {
+      return [{ model: Story }, 'story_name', order]
+    } else {
+      return [sortBy, order] // Mặc định sắp xếp theo Review
+    }
+  })()
+
+  // Đếm tổng số kết quả
+  const total = await Review.count({ where, include: [User, Story] })
+
+  // Lấy dữ liệu đánh giá với điều kiện tìm kiếm và sắp xếp
   const data = await Review.findAll({
-    where: {
-      comment: { [Op.like]: `%${keyword}%` },
-    },
-    limit: limit,
-    offset: offset,
+    where,
+    limit,
+    offset,
+    order: [orderClause],
     include: [
       {
         model: User,
@@ -190,10 +228,11 @@ async function searchReviews(keyword, page = 1, limit = 10) {
     ],
   })
 
+  // Thông tin phân trang
   const pagination = {
-    total: total,
-    page: page,
-    limit: limit,
+    total,
+    page,
+    limit,
     totalPages: Math.ceil(total / limit),
   }
 

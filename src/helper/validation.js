@@ -62,6 +62,69 @@ const loginValidate = (data) => {
   })
   return rule.validate(data)
 }
+/** USER'S REGISTER VALIDATION
+ * Kiểm tra thông tin đăng nhập
+ * @param {Object} data
+ * @returns
+ */
+const registerValidate = (data) => {
+  const rule = Joi.object({
+    username: Joi.string().required().messages({
+      'any.required': message.auth.emailRequired,
+    }),
+    email: Joi.string().required().messages({
+      'any.required': message.auth.emailRequired,
+    }),
+    password: Joi.string().required().messages({
+      'any.required': message.auth.passwordRequired,
+    }),
+    confirmPassword: Joi.string().required().messages({
+      'any.required': message.auth.passwordRequired,
+    }),
+  })
+
+  return rule.validate(data)
+}
+
+/** USER'S PROFILE VALIDATION
+ * Kiểm tra thông tin cập nhật mật khẩu
+ * @param {Object} data
+ * @returns
+ */
+const updateProfilePassword = (data) => {
+  if (data.currentPassword === data.newPassword) {
+    const error = new Error(message.auth.passwordCannotBeSame)
+    return { error }
+  }
+  const rule = Joi.object({
+    // Mật khẩu hiện tại
+    currentPassword: Joi.string().required().messages({
+      'any.required': message.auth.currentPasswordRequired,
+      'string.pattern.base': message.auth.currentPasswordRequired,
+    }),
+
+    // Mật khẩu mới
+    newPassword: Joi.string()
+      .min(8)
+      .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$'))
+      .required()
+      .messages({
+        'string.pattern.base': message.user.passwordStrength,
+        'any.required': message.auth.passwordRequired,
+      }),
+
+    // Xác nhận mật khẩu
+    confirmPassword: Joi.string()
+      .valid(Joi.ref('newPassword'))
+      .required()
+      .messages({
+        'any.required': message.auth.passwordRequired,
+        'any.only': message.user.passwordsDoNotMatch,
+      }),
+  })
+
+  return rule.validate(data)
+}
 
 /** CHAPTER'S VALIDATION FUNCTION
  * Kiểm tra tạo và chỉnh sửa chương truyện
@@ -74,7 +137,8 @@ const chapterValidate = (data, isEdit = false) => {
     chapter_name: Joi.string()
       .min(1)
       .max(255)
-      .pattern(/^[a-zA-Z0-9\s]*$/)
+      // .pattern(/^[a-zA-Z0-9\s]*$/)
+      .pattern(/^[\p{L}\p{N}\s]*$/u)
       .required()
       .messages({
         'any.required': message.chapter.chapterNameRequired,
@@ -161,5 +225,7 @@ module.exports = {
   userValidate,
   chapterValidate,
   loginValidate,
+  registerValidate,
   reviewValidate,
+  updateProfilePassword,
 }

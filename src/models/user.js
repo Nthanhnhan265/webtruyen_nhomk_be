@@ -10,15 +10,20 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'role_id',
         constraints: false,
       })
+      User.hasMany(models.Review, {
+        foreignKey: 'user_id',
+        constraints: false,
+      })
     }
     // Phương thức kiểm tra mật khẩu
     async isRightPassword(password) {
       return bcrypt.compare(password, this.password)
     }
-    // Hook trước khi tạo người dùng
+    // Phuwong thức mã hóa mật khẩu
     static async hashPassword(user) {
       const salt = await bcrypt.genSalt(SALT_ROUNDS)
       user.password = await bcrypt.hash(user.password, salt)
+      // return user.password
     }
   }
 
@@ -71,7 +76,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: 'User',
       hooks: {
-        // beforeCreate: User.hashPassword, // Sử dụng hook trước khi tạo
+        beforeCreate: User.hashPassword, // Sử dụng hook trước khi tạo
       },
     },
   )

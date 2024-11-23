@@ -1,17 +1,44 @@
 const express = require('express')
+const { verifyAccessToken } = require('@middlewares/auth.middleware')
 const authRouter = express.Router()
 const {
-  handleLoginAdmin,
+  handleLogin,
   handleRefreshToken,
+  handleLoginUser,
+  handleRegister,
+  handleGetProfile,
+  handleUpdateAvatar,
+  handleUpdatePassword,
 } = require('@controllers/auth.controller.js')
-//=============== Authentication ===================//
-//=========================
-//sigin for admin, user
-//=========================
-authRouter.post('/admin/login', handleLoginAdmin)
+const { uploadSingleFile } = require('../middlewares/upload.middleware')
 
-//signup
+//=============== Authentication ===================//
+
+//Get profile information
+authRouter.get('/me', verifyAccessToken, handleGetProfile)
+
+//update avatar
+authRouter.patch(
+  '/me/avatar',
+  verifyAccessToken,
+  uploadSingleFile('avatar'),
+  handleUpdateAvatar,
+)
+//update password
+authRouter.patch('/me/password', verifyAccessToken, handleUpdatePassword)
+//sign in for admin, user
+authRouter.post('/login', handleLogin)
+
+//sign in for user
+//=========================
+// authRouter.post('/', handleLoginUser)
+
+//========================
+//sign up for user
+//========================
+authRouter.post('/register', handleRegister)
 
 //fresh token
-authRouter.post('/admin/refresh-token', handleRefreshToken)
+authRouter.post('/refresh-token', handleRefreshToken)
+
 module.exports = authRouter
