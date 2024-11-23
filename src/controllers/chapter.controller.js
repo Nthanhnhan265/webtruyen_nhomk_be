@@ -8,10 +8,10 @@ const {
   getChaptersByStoryId,
   getChaptersByStory1,
   deleteStoryId,
-  getChapterByStoryRead
-} = require("@services/chapter.service");
-const message = require("@root/message");
-const { chapterValidate } = require("@helper/validation");
+  getChapterByStoryRead,
+} = require('@services/chapter.service')
+const message = require('@root/message')
+const { chapterValidate } = require('@helper/validation')
 
 // ================================================
 //              Chapter Handler Functions
@@ -28,14 +28,11 @@ async function handleCreateChapter(req, res, next) {
     status,
     chapter_order,
   } = req.body
-
   const { error } = chapterValidate(req.body)
   if (error) {
     return next(createHttpError.BadRequest(error.message))
   }
-
   let published_at = status ? new Date().toISOString() : null
-
   try {
     const newChapter = await createChapter({
       chapter_name,
@@ -197,29 +194,38 @@ async function handleGetChapterById(req, res, next) {
 }
 async function HandelgetChaptersByStoryId(req, res) {
   try {
-    const { id } = req.params;
+    const { id } = req.params
 
     if (!id) {
-      return res.status(400).json({ success: false, message: 'Story ID is required' });
+      return res
+        .status(400)
+        .json({ success: false, message: 'Story ID is required' })
     }
 
-    const { chapters } = await getChapterByStoryRead(id, true, 'chapter_order', 'ASC');
+    const { chapters } = await getChapterByStoryRead(
+      id,
+      true,
+      'chapter_order',
+      'ASC',
+    )
     if (!chapters || chapters.length === 0) {
-      return res.status(404).json({ success: false, message: 'No chapters found' });
+      return res
+        .status(404)
+        .json({ success: false, message: 'No chapters found' })
     }
 
     res.status(200).json({
       success: true,
       message: 'Fetched chapters successfully',
       data: { chapters },
-    });
+    })
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error:', error)
     res.status(500).json({
       success: false,
       message: 'Failed to fetch story and chapters',
       error: error.message,
-    });
+    })
   }
 }
 
@@ -333,11 +339,11 @@ async function handleDeleteChapter(req, res, next) {
   }
 }
 async function handleDeleteStoryId(req, res, next) {
-  const id = req.params.id;
+  const id = req.params.id
   try {
-    const result = await deleteStoryId(id);
+    const result = await deleteStoryId(id)
     if (result.error) {
-      return next(result.error);
+      return next(result.error)
     }
 
     return res.status(200).json({
@@ -346,9 +352,9 @@ async function handleDeleteStoryId(req, res, next) {
       status: 200,
       data: [],
       links: [],
-    });
+    })
   } catch (error) {
-    return next(error);
+    return next(error)
   }
 }
 
