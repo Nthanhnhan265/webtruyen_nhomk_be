@@ -404,7 +404,7 @@ exports.handleSearchStories = async (req, res) => {
  // controller story
 exports.getStoriesByGenre = async (req, res) => {
   const { slug } = req.params;  // Lấy slug của thể loại từ URL
-  let { page = 1, limit = 10 } = req.query;  // Lấy tham số page và limit từ query, mặc định là page = 1, limit = 10
+  let { page = 1, limit = 3 } = req.query;  // Lấy tham số page và limit từ query, mặc định là page = 1, limit = 10
 
   page = parseInt(page, 10); // Đảm bảo page là số nguyên
   limit = parseInt(limit, 10); // Đảm bảo limit là số nguyên
